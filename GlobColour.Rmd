@@ -1,0 +1,555 @@
+---
+title: "XCO2 - Aquisição e Processamento de dados"
+author: "Panosso AR & Costa LM"
+date: "20/02/2021"
+output: html_document
+---
+
+# CO2 Virtual Science Data Environment
+
+O objetivo desse material é apresentar os procedimentos básicos para aquisição de dados do satélite OCO-2 e processamento inicial em R.
+
+## Aquisição de dados
+
+**1)** Acesse o endereço <https://co2.jpl.nasa.gov/>
+  
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_01.png")
+```
+**2)** Acesse Browse *OCO-2 Data* em *Level 2 Data Set OCO-2*.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_02.png")
+```
+
+**3)** Role a página para baixo e acesse *CUSTOMIZE PRODUCT ON BUILD PAGE*.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_03.png")
+```
+
+**4)** No menu à esquerda estarão as 9 categorias para personalizar o banco de dados.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_04.png")
+```
+
+**5)** Em *DATA TYPE* selecione **OCO-2 Satellite**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_05.png")
+```
+
+**6)** Em *PRODUCTS* selecione **OCO-2 Full**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_06.png")
+```
+
+**7)** Em *DATA VERSION* selecione **10**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_07.png")
+```
+
+**8)** Em *SPATIAL + TEMPORAL* selecione **Customize Your Spatial + Temporal Coverage**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_08.png")
+```
+
+**OPTION 01** Utilize para selecionar a área para aquisição dos dados.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_09.png")
+```
+
+**OPTION 02** Utilize para selecionar o período para aquisição dos dados.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_09_1.png")
+```
+
+**9)** Em *DOWN SAMPLE PRODUCT* selecione **Yes, I want a Level 3 data product**. Altere os valores das células e o passo temporal desejado.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_10.png")
+```
+
+**10)** Em *DATA VARIABLES* selecione as variáveis desejadas.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_11.png")
+```
+
+
+**11)** Abaixo são apresentadas as opções para os filtros e o tipo de arquivo, selecione **CSV FILE**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_11_1.png")
+```
+
+**12)** Forneça um endereço de e-mail para onde os links serão direcionados.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_12.png")
+```
+**13)** Acesse o seu e-mail, será enviado uma mensagem com o endereço dos arquivos onde você poderá acompanhar o progresso do processamento de seus dados. Ao final dessa etapa um novo e-mail é enviado informando que os dados estão disponíveis.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_13.png")
+```
+
+**14)** Acesse o link enviado em seu e-mail e você será direcionado a página.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/jpl_14.png")
+```
+
+**15)** Role a página para baixo e selecione a opção **WGET File List**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "800px"}
+knitr::include_graphics("../img/jpl_15.png")
+```
+
+
+**16)** Salve o arquivo txt em um diretório de seu computador.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "300px"}
+knitr::include_graphics("../img/jpl_16.png")
+```
+
+## Download e processamento dos dados no R.
+
+### Carregando os pacotes no ambiente de trabalho
+
+```{r, message=FALSE, error=FALSE}
+library(tidyverse)
+library(ggpubr)
+library(geobr)
+library(sp)
+```
+
+### Baixando os dados solicitados em CO2 Virtual Science Data Environment
+
+Antes de realizar a leitura, recomendamos ao usuário criar uma estrutra de diretórios como apresentado abaixo: 
+
+  * pasta **dados** que receberá o download dos arquivos CSV; 
+  
+  * pasta **dados_pre** que receberá o arquivos tratados em txt; 
+  
+  * pasta **url** contendo o arquivo dos endereços previamente baixado do *CO2 Virtual Science*; 
+  
+  * pasta **script** onde os nosso códigos serão armazenados.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "800px"}
+knitr::include_graphics("../img/diretorios.png")
+```
+
+Agora devemos definir a nossa pasta de trabalho como aquela que criamos com a estrutura acima, no nosso exemplo temos: `C:\Users\Panosso\Desktop\ProjetosR\XCO2`.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
+knitr::include_graphics("../img/diretorios2.png")
+```
+
+Defina o diretório com `setwd()` e verifique o caminho com `getwd()`
+```{r}
+# setwd("C:/Users/Panosso/Desktop/ProjetosR/XCO2/script")
+# getwd()
+```
+
+
+Vamos ler o arquivo de endereços que deve estar na pasta **url**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "700px"}
+knitr::include_graphics("../img/diretorios3.png")
+```
+
+```{r}
+# buscar o nome do arquivo contendo os endereços
+arquivo <- dir("../url/",pattern = ".txt")
+
+# ler os endereços armazenados no arquivo
+urls<-read.table(paste0("../url/",arquivo))
+
+# verificar os 6 primeiros registros do arquivo
+head(urls)
+
+# extrair do arquivo urls (data frame) o vetor com os endereços
+urls <- urls$V1
+```
+
+O número total de arquivos a serem baixados é igual ao número de endereços em `urls`.
+```{r}
+n_links <- length(urls)
+```
+
+Vamos extrair de `urls`os nomes dos arquivos `CSV`, por meio da função `str_split_fixed()`. Observe que utilizamos a função `str_split()` para dividir a string do primeiro link (`[1]`) em cada ocorrência do caracter `/` e o argumento `simplify = TRUE` faz o retorno da função na forma de vetor. Posteriormente, criamos os diretórios onde cada arquivo será salvo.
+
+```{r}
+n_split <- length(str_split(urls[1],"/",simplify = TRUE))
+nomes_arquivos <- str_split_fixed(urls,"/",n=Inf)[,n_split]
+dir_arquivos <- paste0("../dados/",nomes_arquivos)
+dir_arquivos_pre <- paste0("../dados_pre/",sub(".csv","",nomes_arquivos),".txt")
+```
+
+Realizar o download de cada arquivo de maneria individual. Para isso utilize a função `download.file()` passando como argumentos a url e o caminho onde cada arquivo deve ser salvo (pasta previamente criada **dados**). 
+
+Como cada arquivo será baixado individualmente, vamos utilizar a estrutura `for` para realizar a tarefa.  
+ 
+```{r, eval=FALSE}
+# for(i in 1:n_links){
+#  download.file(urls[i], dir_arquivos[i], mode="wb")
+#  }
+```
+
+Aguarde até todos os arquivos serem baixados. Verifique os arquivos na pasta **dados**.
+
+```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "700px"}
+knitr::include_graphics("../img/diretorios4.png")
+```
+
+Pronto, agora temos todos os arquivos em nosso computador para serem processados.
+
+
+### Manipulação dos arquivos
+
+Nos casos em que os arquivos são muito grandes (maiores que 20 MB) a alocação dinâmica dos dados na forma vetorial fica comprometida no R, portanto, vamos abrir cada arquivo individualmente, filtrar valores faltantes para xco2, e salvar em novos arquivos txt na pasta  **dados_pre**. Os valos de concentração não observados têm como marcação `-999999`.
+
+
+```{r}
+# for(i in 1:n_links){
+#     da<-read.csv(dir_arquivos[i],sep=",")
+#     da <- da %>%
+#       filter(xco2..Moles.Mole...1.. != -999999)
+#     write.table(da,dir_arquivos_pre[i],quote = FALSE,
+#                 sep="\t",row.names = FALSE)
+# }
+```
+
+Vamos agora juntar todos os arquivos em um único denominado `dados` para posterior processamento.
+
+```{r}
+for(i in 1:n_links){
+  if(i == 1){
+    dados<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
+  }else{
+    da<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
+    dados<-rbind(dados,da)
+    }
+}
+```
+
+Verificar o banco de dados com a função `glimpse()` do pacote `dplyr`.
+```{r}
+glimpse(dados)
+```
+ 
+Selecionar somente as variáveis necessárias para a sua análise, para isso, vamos criar um outro denominado `oco_2`, a partir da seleção de longitude, latitude, tempo e a concentração de $CO_2$ na coluna atmosférica:
+ 
+```{r}
+oco_2<-dados %>% 
+        select(longitude,
+               latitude,
+               time..YYYYMMDDHHMMSS.,
+               xco2..Moles.Mole...1..) %>% 
+  glimpse()
+```
+
+
+Agora precisamos transformar os dados de xco2 para ppm, e criar uma coluna para da data, o dia mês e ano de cada observação, a partir da coluna `time..YYYYMMDDHHMMSS`.
+
+```{r}
+oco_2 <- oco_2 %>% 
+  mutate(
+    xco2_obs = xco2..Moles.Mole...1.. *1e06,
+    ano = time..YYYYMMDDHHMMSS.%/%1e10,
+    mês = time..YYYYMMDDHHMMSS.%/%1e8 %%100,
+    dia = time..YYYYMMDDHHMMSS.%/%1e6 %%100,
+    data = as.Date(str_c(ano,mês,dia,sep="-"))
+    ) %>% 
+    glimpse()
+```
+
+Vamos filtrar os dados que estão dentro de uma área desejada, para isso vamos utlizar os polígonos e funções dos pacotes `geobr` e `sp`.
+ 
+Inicialmente, devemos plotar o mapa do brasil, mas ler os polígonos dos municípios de um estado (SP no eexmplo), cada estado, cada regiões e do país como um todo.
+```{r,message=FALSE,error=FALSE}
+muni <- read_municipality(code_muni = "SP",showProgress = FALSE)
+estados <- read_state(code_state = "all",showProgress = FALSE)
+regiao <- read_region(showProgress = FALSE)
+pais <- read_country(showProgress = FALSE)
+```
+
+Plotando as delimitações do país
+
+```{r}
+ggplot(pais) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal()
+```
+Plotando as regiões.
+
+```{r, message=FALSE}
+ggplot(regiao) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal()
+```
+
+Plotando as delimitações do país com os estados.
+
+```{r, message=FALSE}
+ggplot(estados) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal()
+```
+
+Plotando as delimitações do país com os estados específicos.
+
+```{r, message=FALSE}
+# fazer o download dos estados requeridos
+sp <- read_state(code_state = "SP",showProgress = FALSE)
+ms <- read_state(code_state = "MS",showProgress = FALSE)
+
+# plotar os estados
+ggplot(pais) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  geom_sf(data=sp,fill="#2D3E50", color="#FEBF57")+ 
+  geom_sf(data=ms,fill="#2D3E50", color="#FEBF57")+
+  theme_minimal()
+```
+Todos os munícipios de um estados.
+
+```{r,message=FALSE}
+# Fazer o plot
+ggplot(muni) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal()
+```
+
+A partir do mapa base, vamos sobrepor os registros do objeto `oco_2`.
+
+```{r}
+ggplot(pais) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal() +
+    geom_point(data=oco_2,
+             aes(x=longitude,y=latitude),shape=15,col="yellow",alpha=0.2)
+```
+
+É necessário selecionar somente aqueles pontos dentro do polígono de uma área. Inicialmente devemos extrair o polígono de cada shape do pacote `geobr`.
+
+```{r}
+pol_sp <- as.matrix(sp$geom[[1]]) # pol estado de são paulo
+pol_ms <- as.matrix(ms$geom[[1]]) # pol estado de ms
+pol_pais <- as.matrix(pais$geom[[1]]) # pol do brasil
+pol_pais <- pol_pais[pol_pais[,1]<=-34,] # CORREÇÃO do polígono
+pol_pais <- pol_pais[!((pol_pais[,1]>=-38.8 & pol_pais[,1]<=-38.6) &
+                              (pol_pais[,2]>= -19 & pol_pais[,2]<= -16)),]
+pol_norte <- as.matrix(regiao$geom[[1]]) # pol região norte
+pol_sudeste <- as.matrix(regiao$geom[[3]]) # pol região sudeste
+pol_sudeste <- pol_sudeste[pol_sudeste[,1]<=-34,] # CORREÇÃO do polígono
+pol_sul <- as.matrix(regiao$geom[[4]]) # pol região sul
+pol_centro_oeste <- as.matrix(regiao$geom[[5]]) # pol centro oeste
+pol_nordeste <- as.matrix(regiao$geom[[2]]) # pol nordeste
+pol_nordeste <- pol_nordeste[pol_nordeste[,1]<=-34,]# CORREÇÃO do polígono
+pol_nordeste <- pol_nordeste[!((pol_nordeste[,1]>=-38.7 & pol_nordeste[,1]<=-38.6) &
+                              pol_nordeste[,2]<= -15),]# CORREÇÃO do polígono
+```
+Agora devemos selecionar somente os pontos que estão dentro do polígono do estado de São Paulo e Mato Grosso do Sul, no nosso exemplo. Utilizaremos a função `point.in.polygon()` do pacote `sp`.
+
+```{r}
+oco_2 <- oco_2 %>% 
+  mutate(
+    point_in_pol = as.logical(point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_sp[,1],
+                                    pol.y = pol_sp[,2]) 
+                              |
+                              
+                                point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_ms[,1],
+                                    pol.y = pol_ms[,2]))
+  ) %>% 
+  glimpse()
+```
+
+Vamos refazer o mapa anterior com os dados dentro do polígono.
+
+```{r}
+ggplot(pais) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal() +
+    geom_point(data=oco_2 %>% filter(point_in_pol),
+             aes(x=longitude,y=latitude),shape=15,col="yellow",alpha=0.2)
+```
+
+Vamos olhar os outliers.
+
+```{r}
+oco_2 %>% 
+  filter(point_in_pol) %>% 
+  ggplot(aes(y=xco2..Moles.Mole...1..))+
+  geom_boxplot(fill="orange",outlier.colour = "red")+
+  coord_cartesian(xlim=c(-1,1))+
+  theme_classic()
+```
+
+O padrão de `coef` é 1,5 e define o comprimento dos bigodes com base no coeficiente e na distância interquartil, com todos os pontos fora dos bigodes considerados outliers.
+
+
+filtrando os outliers
+
+```{r}
+limites_outlier <- function(x,coefi=1.5){
+  med = median(x)
+  li = med - coefi*IQR(x)
+  ls<- med + coefi*IQR(x)
+  c(Lim_Inferior = li, Lim_Superior = ls)
+}
+
+oco_2 %>% 
+  filter(point_in_pol, xco2..Moles.Mole...1.. > limites_outlier(oco_2$xco2..Moles.Mole...1..)[1] &
+           xco2..Moles.Mole...1.. < limites_outlier(oco_2$xco2..Moles.Mole...1..)[2]) %>% 
+  ggplot(aes(y=xco2..Moles.Mole...1..))+
+  geom_boxplot(fill="orange",outlier.colour = "red")+
+  coord_cartesian(xlim=c(-1,1))+
+  theme_classic()
+```
+Retirar os outliers
+```{r}
+# oco_2<-oco_2 %>% 
+#   filter(point_in_pol, xco2..Moles.Mole...1..> remove_outlier(oco_2$xco2..Moles.Mole...1..)[1] &
+#            xco2..Moles.Mole...1.. < remove_outlier(oco_2$xco2..Moles.Mole...1..)[2])
+```
+
+
+
+```{r}
+oco_2 %>% 
+  mutate(ano_mes = paste0(ano,mês)) %>%  
+  group_by(ano,mês) %>% 
+  ggplot(aes(y=xco2_obs,x=as.factor(mês),
+             fill=as.factor(mês)))+
+  geom_violin(trim = FALSE) +
+  theme(legend.position = "none")+
+  facet_wrap(~ano,scales = "free")+
+  labs(x="Mês",y="XCO2 (ppm)")
+```
+
+
+Agora podemos ver a emissão de $CO_2$ ao longo do tempo para esses dados.
+
+```{r}
+oco_2 %>% 
+  filter(point_in_pol) %>% 
+  ggplot(aes(x=data,y=xco2_obs)) +
+  geom_point(color="blue") +
+  geom_line(color="red")
+```
+
+Agora devemos retirar a tendência ao longo do tempo, para isso, dentro do período específico, faremos a retirada por meio de um ajuste linear:
+
+```{r, error=FALSE, message=FALSE}
+oco_2 %>% 
+  mutate(x= 1:nrow(oco_2)) %>% 
+  ggplot(aes(x=x,y=xco2_obs)) +
+  geom_point(shape=21,color="black",fill="gray") +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(aes(
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+```
+
+Extrair os coeficientes $a$ e $b$ da análise de regressão linear ($y = a + bX$.
+
+```{r}
+d_aux<-oco_2 %>% 
+  mutate(x= 1:nrow(oco_2)) %>%                  
+  filter(point_in_pol) %>% 
+  select(x,xco2_obs)
+mod <- lm(d_aux$xco2_obs~d_aux$x)
+summary.lm(mod)
+a<-mod$coefficients[1]
+b<-mod$coefficients[2]
+```
+Criando a variável `xco2_est` a partir da retirada da tendência
+
+```{r}
+oco_2 <- oco_2 %>% 
+  mutate(
+    xco2_est = a + b * as.numeric(data),
+    delta = xco2_est - xco2_obs,
+    XCO2 = (a-delta) - (mean(xco2_obs) - a)
+  ) %>% 
+  glimpse()
+```
+```{r, error=FALSE, message=FALSE}
+oco_2 %>% 
+  # filter(point_in_pol) %>% 
+  ggplot(aes(x=data,y=XCO2)) +
+  geom_point(shape=21,color="black",fill="gray")
+```
+
+Buscando os dados de duas regiões
+
+```{r}
+# Criando o filtro
+oco_2 <- oco_2 %>% 
+  mutate(
+    point_in_pol_sp_ms = as.logical(point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_sp[,1],
+                                    pol.y = pol_sp[,2]) 
+                              |
+                              
+                                point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_ms[,1],
+                                    pol.y = pol_ms[,2]))
+  )
+
+# Plotando os dados
+ggplot(sp) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  geom_sf(data=ms,fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal() +
+    geom_point(data=oco_2 %>% filter(point_in_pol_sp_ms),
+             aes(x=longitude,y=latitude,color=xco2_est))
+```
+
+Agora devemos selecionar somente os pontos que estão dentro do polígono do estado de São Paulo, no nosso exemplo. Utilizaremos a função `point.in.polygon()` do pacote `sp`.
+
+```{r}
+oco_2 <- oco_2 %>% 
+  mutate(
+    point_in_pol_2 = as.logical(point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_ms[,1],
+                                    pol.y = pol_ms[,2]))
+  ) %>% 
+  glimpse()
+```
+
+Vamos refazer o mapa anterior com os dados dentro do polígono.
+
+```{r}
+ggplot(ms) + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  geom_sf(data=ms,fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  theme_minimal() +
+    geom_point(data=oco_2 %>% filter(point_in_pol_2),
+             aes(x=longitude,y=latitude),shape=15,col="yellow",alpha=0.2)
+```
+
