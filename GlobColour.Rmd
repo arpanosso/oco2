@@ -434,7 +434,7 @@ Retirar os outliers
 
 
 ```{r}
-oco_2 %>% 
+oco_2 %>%
   mutate(ano_mes = paste0(ano,mês)) %>%  
   group_by(ano,mês) %>% 
   ggplot(aes(y=xco2_obs,x=as.factor(mês),
@@ -460,6 +460,7 @@ Agora devemos retirar a tendência ao longo do tempo, para isso, dentro do perí
 
 ```{r, error=FALSE, message=FALSE}
 oco_2 %>% 
+  arrange(data) %>%
   mutate(x= 1:nrow(oco_2)) %>% 
   ggplot(aes(x=x,y=xco2_obs)) +
   geom_point(shape=21,color="black",fill="gray") +
@@ -472,6 +473,7 @@ Extrair os coeficientes $a$ e $b$ da análise de regressão linear ($y = a + bX$
 
 ```{r}
 d_aux<-oco_2 %>% 
+  arrange(data) %>%
   mutate(x= 1:nrow(oco_2)) %>%                  
   filter(point_in_pol) %>% 
   select(x,xco2_obs)
@@ -484,6 +486,7 @@ Criando a variável `xco2_est` a partir da retirada da tendência
 
 ```{r}
 oco_2 <- oco_2 %>% 
+  arrange(data) %>%
   mutate(
     xco2_est = a + b * as.numeric(data),
     delta = xco2_est - xco2_obs,
