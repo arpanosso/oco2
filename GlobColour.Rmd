@@ -1,6 +1,6 @@
 ---
 title: "XCO2 - Aquisição e Processamento de dados"
-author: "Panosso AR & Costa LM"
+author: "Panosso AR; Costa LM; Lima LR"
 date: "20/02/2021"
 output: html_document
 ---
@@ -16,7 +16,7 @@ O objetivo desse material é apresentar os procedimentos básicos para aquisiç�
 ```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
 knitr::include_graphics("../img/jpl_01.png")
 ```
-**2)** Acesse Browse *OCO-2 Data* em *Level 2 Data Set OCO-2*.
+**2)** Acesse o Browse *OCO-2 Data* em *Level 2 Data Set OCO-2*.
 
 ```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "600px"}
 knitr::include_graphics("../img/jpl_02.png")
@@ -132,7 +132,7 @@ library(sp)
 
 ### Baixando os dados solicitados em CO2 Virtual Science Data Environment
 
-Antes de realizar a leitura, recomendamos ao usuário criar uma estrutra de diretórios como apresentado abaixo: 
+Antes de realizar a leitura, recomendamos a criação da estrutra de diretórios como apresentado abaixo: 
 
   * pasta **dados** que receberá o download dos arquivos CSV; 
   
@@ -159,7 +159,7 @@ Defina o diretório com `setwd()` e verifique o caminho com `getwd()`
 ```
 
 
-Vamos ler o arquivo de endereços que deve estar na pasta **url**.
+Vamos ler o arquivo de endereços presente na pasta **url**.
 
 ```{r echo=FALSE, fig.cap="",fig.align='center',out.width = "700px"}
 knitr::include_graphics("../img/diretorios3.png")
@@ -170,13 +170,7 @@ knitr::include_graphics("../img/diretorios3.png")
 arquivo <- dir("../url/",pattern = ".txt")
 
 # ler os endereços armazenados no arquivo
-urls<-read.table(paste0("../url/",arquivo))
-
-# verificar os 6 primeiros registros do arquivo
-head(urls)
-
-# extrair do arquivo urls (data frame) o vetor com os endereços
-urls <- urls$V1
+urls<-read.table(paste0("../url/",arquivo))$V1
 ```
 
 O número total de arquivos a serem baixados é igual ao número de endereços em `urls`.
@@ -184,7 +178,7 @@ O número total de arquivos a serem baixados é igual ao número de endereços e
 n_links <- length(urls)
 ```
 
-Vamos extrair de `urls`os nomes dos arquivos `CSV`, por meio da função `str_split_fixed()`. Observe que utilizamos a função `str_split()` para dividir a string do primeiro link (`[1]`) em cada ocorrência do caracter `/` e o argumento `simplify = TRUE` faz o retorno da função na forma de vetor. Posteriormente, criamos os diretórios onde cada arquivo será salvo.
+Vamos extrair de `urls`os nomes dos arquivos `CSV`, por meio da função `str_split_fixed()`. Previamente utilizamos a função `str_split()` para dividir a string do primeiro link (`[1]`) em cada ocorrência do caracter `/` e o argumento `simplify = TRUE` faz o retorno da função na forma vetorial. Posteriormente, criamos os endereços onde cada arquivo será salvo.
 
 ```{r}
 n_split <- length(str_split(urls[1],"/",simplify = TRUE))
@@ -193,9 +187,9 @@ dir_arquivos <- paste0("../dados/",nomes_arquivos)
 dir_arquivos_pre <- paste0("../dados_pre/",sub(".csv","",nomes_arquivos),".txt")
 ```
 
-Realizar o download de cada arquivo de maneria individual. Para isso utilize a função `download.file()` passando como argumentos a url e o caminho onde cada arquivo deve ser salvo (pasta previamente criada **dados**). 
+Deve-se realizar o download de cada arquivo de maneria individual. Para isso utilize a função `download.file()` passando como argumentos a url e o caminho onde cada arquivo deverá ser salvo (pasta previamente criada **dados**). 
 
-Como cada arquivo será baixado individualmente, vamos utilizar a estrutura `for` para realizar a tarefa.  
+Como cada arquivo será baixado individualmente, vamos utilizar uma estrutura de repetição (`for`) nessa tarefa.  
  
 ```{r, eval=FALSE}
 # for(i in 1:n_links){
@@ -218,11 +212,19 @@ Nos casos em que os arquivos são muito grandes (maiores que 20 MB) a alocação
 
 
 ```{r}
-# for(i in 1:n_links){
-#     da<-read.csv(dir_arquivos[i],sep=",")
-#     da <- da %>%
-#       filter(xco2..Moles.Mole...1.. != -999999)
-#     write.table(da,dir_arquivos_pre[i],quote = FALSE,
+# Criando os endereços
+arquivos_<-dir("C:/Dropbox/ProjetosR/XCO2/dados_Todos_xco2_pre/")
+n_links_ <- length(arquivos_)
+dir_arquivos_ <- paste0("C:/Dropbox/ProjetosR/XCO2/dados_Todos_xco2_pre/",arquivos_)
+dir_arquivos_pre_ <- paste0("C:/Dropbox/ProjetosR/XCO2/dados_Todos_xco2_pre/",sub("csv","txt",arquivos_))
+#dir_arquivos_pre_ <- paste0("https://raw.githubusercontent.com/arpanosso/oco2/main/dados_Todos_xco2_pre/",sub("csv","txt",arquivos_))
+
+# Realizando a filtragem e posterior armazenamento dos arquivos
+# for(i in 1:n_links_){
+#    da<-read.csv(dir_arquivos_[i],sep=",")
+#      da <- da %>%
+#        filter(xco2..Moles.Mole...1.. != -999999)
+#      write.table(da,dir_arquivos_pre_[i],quote = FALSE,
 #                 sep="\t",row.names = FALSE)
 # }
 ```
@@ -230,14 +232,29 @@ Nos casos em que os arquivos são muito grandes (maiores que 20 MB) a alocação
 Vamos agora juntar todos os arquivos em um único denominado `dados` para posterior processamento.
 
 ```{r}
-for(i in 1:n_links){
+# Lendo os arquivo totais
+for(i in 1:n_links_){
   if(i == 1){
-    dados<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
+    dados<-read.table(dir_arquivos_pre_[i],h=TRUE,sep="\t")
   }else{
-    da<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
+    da<-read.table(dir_arquivos_pre_[i],h=TRUE,sep="\t")
     dados<-rbind(dados,da)
     }
 }
+glimpse(dados)
+
+#
+# write.table(dados,"dados.txt",quote = FALSE,
+#                 sep="\t",row.names = FALSE)
+
+# for(i in 1:n_links){
+#   if(i == 1){
+#     dados<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
+#   }else{
+#     da<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
+#     dados<-rbind(dados,da)
+#     }
+# }
 ```
 
 Verificar o banco de dados com a função `glimpse()` do pacote `dplyr`.
@@ -245,7 +262,7 @@ Verificar o banco de dados com a função `glimpse()` do pacote `dplyr`.
 glimpse(dados)
 ```
  
-Selecionar somente as variáveis necessárias para a sua análise, para isso, vamos criar um outro denominado `oco_2`, a partir da seleção de longitude, latitude, tempo e a concentração de $CO_2$ na coluna atmosférica:
+Selecionar somente as variáveis necessárias para a sua análise, para isso, vamos criar um outro denominado `oco_2`, a partir da seleção de longitude, latitude, tempo e a concentração de $CO_2$ atmosférico:
  
 ```{r}
 oco_2<-dados %>% 
@@ -273,7 +290,8 @@ oco_2 <- oco_2 %>%
 
 Vamos filtrar os dados que estão dentro de uma área desejada, para isso vamos utlizar os polígonos e funções dos pacotes `geobr` e `sp`.
  
-Inicialmente, devemos plotar o mapa do brasil, mas ler os polígonos dos municípios de um estado (SP no eexmplo), cada estado, cada regiões e do país como um todo.
+Inicialmente, devemos plotar o mapa do Brasil, mas ler os polígonos dos municípios de um estado (SP por exmplo), cada estado, cada regiões e do país como um todo.
+
 ```{r,message=FALSE,error=FALSE}
 muni <- read_municipality(code_muni = "SP",showProgress = FALSE)
 estados <- read_state(code_state = "all",showProgress = FALSE)
@@ -281,7 +299,7 @@ regiao <- read_region(showProgress = FALSE)
 pais <- read_country(showProgress = FALSE)
 ```
 
-Plotando as delimitações do país
+Plotando as delimitações do país.
 
 ```{r}
 ggplot(pais) + 
@@ -362,7 +380,9 @@ pol_nordeste <- pol_nordeste[pol_nordeste[,1]<=-34,]# CORREÇÃO do polígono
 pol_nordeste <- pol_nordeste[!((pol_nordeste[,1]>=-38.7 & pol_nordeste[,1]<=-38.6) &
                               pol_nordeste[,2]<= -15),]# CORREÇÃO do polígono
 ```
-Agora devemos selecionar somente os pontos que estão dentro do polígono do estado de São Paulo e Mato Grosso do Sul, no nosso exemplo. Utilizaremos a função `point.in.polygon()` do pacote `sp`.
+
+Selecionamos os pontos que estão dentro do polígono do estado de São Paulo e Mato Grosso do Sul, no nosso exemplo. Utilizaremos a função `point.in.polygon()` do pacote `sp`.
+
 
 ```{r}
 oco_2 <- oco_2 %>% 
@@ -406,7 +426,7 @@ oco_2 %>%
 O padrão de `coef` é 1,5 e define o comprimento dos bigodes com base no coeficiente e na distância interquartil, com todos os pontos fora dos bigodes considerados outliers.
 
 
-filtrando os outliers
+filtrando os outliers.
 
 ```{r}
 limites_outlier <- function(x,coefi=1.5){
@@ -424,7 +444,7 @@ oco_2 %>%
   coord_cartesian(xlim=c(-1,1))+
   theme_classic()
 ```
-Retirar os outliers
+Retirar os outliers se necessário;
 ```{r}
 # oco_2<-oco_2 %>% 
 #   filter(point_in_pol, xco2..Moles.Mole...1..> remove_outlier(oco_2$xco2..Moles.Mole...1..)[1] &
@@ -469,7 +489,7 @@ oco_2 %>%
   label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
 ```
 
-Extrair os coeficientes $a$ e $b$ da análise de regressão linear ($y = a + bX$.
+Extrair os coeficientes $a$ e $b$ da análise de regressão linear ($y = a + bX$).
 
 ```{r}
 d_aux<-oco_2 %>% 
@@ -482,7 +502,7 @@ summary.lm(mod)
 a<-mod$coefficients[1]
 b<-mod$coefficients[2]
 ```
-Criando a variável `xco2_est` a partir da retirada da tendência
+Criando a variável `xco2_est` a partir da retirada da tendência.
 
 ```{r}
 oco_2 <- oco_2 %>% 
@@ -501,7 +521,7 @@ oco_2 %>%
   geom_point(shape=21,color="black",fill="gray")
 ```
 
-Buscando os dados de duas regiões
+Buscando os dados de duas regiões.
 
 ```{r}
 # Criando o filtro
