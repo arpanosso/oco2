@@ -175,21 +175,21 @@ Pronto, agora temos todos os arquivos na pasta **data-raw** aguardando a faxina.
 Os arquivos `.csv` são, de maneira geral, maiores que 120 $MB$, portanto, vamos abrir cada arquivo individualmente, filtrar valores faltantes (`NA`) para a coluna de $CO_2$ atmosférico (`xco2`), e salvar em novos arquivos txt na pasta  **data-raw/txt**. Os valos de concentração não observados têm como marcação `-999999`.
 
 
-```{r}
-# for(i in 1:n_links){
-#    da<-read.csv(paste0("data-raw/CSV/", nomes_arquivos_csv[i]), sep=",")
-#      da <- da %>%
-#      filter(xco2..Moles.Mole...1.. != -999999)
-#      write.table(da,
-#                 paste0("data/TXT/",nomes_arquivos_txt[i]),
-#                 quote = FALSE,
-#                 sep="\t",row.names = FALSE)
-# }
+```{r,eval=FALSE}
+for(i in 1:n_links){
+   da<-read.csv(paste0("data-raw/CSV/", nomes_arquivos_csv[i]), sep=",")
+     da <- da %>%
+     filter(xco2..Moles.Mole...1.. != -999999)
+     write.table(da,
+                paste0("data/TXT/",nomes_arquivos_txt[i]),
+                quote = FALSE,
+                sep="\t",row.names = FALSE)
+}
 ```
 
 Vamos agora juntar todos os arquivos em um único denominado `XCO2_20142020.rds` para posterior processamento.
 
-```{r}
+```{r, eval=FALSE}
 # Lendo os arquivo totais
 for(i in 1:n_links){
   if(i == 1){
@@ -203,24 +203,42 @@ dplyr::glimpse(tab)
 readr::write_rds(tab,"data/XCO2_20142020.rds")
 ```
 
+## Processamento 
+
 Verificar o banco de dados com a função `glimpse()` do pacote `dplyr`.
-```{r}
-glimpse(dados)
+
+
+### Carregando os pacotes requeridos
+```{r, warning=FALSE,message=FALSE}
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+source("../r/graficos.R")
+source("../r/my_fun.R")
 ```
+
+
+```{r}
+xco2 <- readr::read_rds("../data/XCO2_20142020.rds")
+glimpse(xco2)
+```
+
+
  
 Selecionar somente as variáveis necessárias para a sua análise, para isso, vamos criar um outro denominado `oco_2`, a partir da seleção de longitude, latitude, tempo e a concentração de $CO_2$ atmosférico:
  
 ```{r}
-oco_2<-dados %>% 
+oco_2<-xco2 %>% 
         select(longitude,
                latitude,
                time..YYYYMMDDHHMMSS.,
                xco2..Moles.Mole...1..) %>% 
-  glimpse()
+View()
 ```
 
 
-Agora precisamos transformar os dados de xco2 para ppm, e criar uma coluna para da data, o dia mês e ano de cada observação, a partir da coluna `time..YYYYMMDDHHMMSS`.
+Agora precisamos transformar os dados de $CO_2$ para $ppm$, e criar uma coluna para da data, o dia mês e ano de cada observação, a partir da coluna `time..YYYYMMDDHHMMSS`.
 
 ```{r}
 oco_2 <- oco_2 %>% 
@@ -229,93 +247,100 @@ oco_2 <- oco_2 %>%
     ano = time..YYYYMMDDHHMMSS.%/%1e10,
     mês = time..YYYYMMDDHHMMSS.%/%1e8 %%100,
     dia = time..YYYYMMDDHHMMSS.%/%1e6 %%100,
-    data = as.Date(str_c(ano,mês,dia,sep="-"))
-    ) %>% 
-    glimpse()
+    data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
+  ) %>% 
+  glimpse()
 ```
 
 Vamos filtrar os dados que estão dentro de uma área desejada, para isso vamos utlizar os polígonos e funções dos pacotes `geobr` e `sp`.
  
-Inicialmente, devemos plotar o mapa do Brasil, mas ler os polígonos dos municípios de um estado (SP por exmplo), cada estado, cada regiões e do país como um todo.
+Inicialmente, devemos plotar o mapa do Brasil, e ler os polígonos dos municípios de um estado (SP por exmplo), cada estado, cada regiões e do país como um todo.
 
 ```{r,message=FALSE,error=FALSE}
-muni <- read_municipality(code_muni = "SP",showProgress = FALSE)
-estados <- read_state(code_state = "all",showProgress = FALSE)
-regiao <- read_region(showProgress = FALSE)
-pais <- read_country(showProgress = FALSE)
+muni <- geobr::read_municipality(code_muni = "SP",showProgress = FALSE)
+estados <- geobr::read_state(code_state = "all",showProgress = FALSE)
+regiao <- geobr::read_region(showProgress = FALSE)
+br <- geobr::read_country(showProgress = FALSE)
+sp <- geobr::read_state(code_state = "SP",showProgress = FALSE)
+ms <- geobr::read_state(code_state = "MS",showProgress = FALSE)
 ```
 
 Plotando as delimitações do país.
 
-```{r}
-ggplot(pais) + 
+```{r,message=FALSE,warning=FALSE}
+br %>% 
+  ggplot() + 
   geom_sf(fill="#2D3E50", color="#FEBF57", 
-          size=.15, show.legend = FALSE)+
-  theme_minimal()
+          size=.15, show.legend = FALSE) +
+  tema_mapa()
 ```
 Plotando as regiões.
 
 ```{r, message=FALSE}
-ggplot(regiao) + 
+regiao %>% 
+  ggplot() + 
   geom_sf(fill="#2D3E50", color="#FEBF57", 
           size=.15, show.legend = FALSE)+
-  theme_minimal()
+  tema_mapa()
 ```
 
 Plotando as delimitações do país com os estados.
 
 ```{r, message=FALSE}
-ggplot(estados) + 
+estados %>% 
+  ggplot() + 
   geom_sf(fill="#2D3E50", color="#FEBF57", 
           size=.15, show.legend = FALSE)+
-  theme_minimal()
+  tema_mapa()
 ```
 
 Plotando as delimitações do país com os estados específicos.
 
 ```{r, message=FALSE}
-# fazer o download dos estados requeridos
-sp <- read_state(code_state = "SP",showProgress = FALSE)
-ms <- read_state(code_state = "MS",showProgress = FALSE)
-
 # plotar os estados
-ggplot(pais) + 
+br %>% 
+  ggplot() + 
   geom_sf(fill="#2D3E50", color="#FEBF57", 
           size=.15, show.legend = FALSE)+
   geom_sf(data=sp,fill="#2D3E50", color="#FEBF57")+ 
   geom_sf(data=ms,fill="#2D3E50", color="#FEBF57")+
-  theme_minimal()
+  tema_mapa()
 ```
 Todos os munícipios de um estados.
 
 ```{r,message=FALSE}
 # Fazer o plot
-ggplot(muni) + 
+muni %>% 
+  ggplot() + 
   geom_sf(fill="#2D3E50", color="#FEBF57", 
           size=.15, show.legend = FALSE)+
-  theme_minimal()
+  tema_mapa()
 ```
 
 A partir do mapa base, vamos sobrepor os registros do objeto `oco_2`.
 
-```{r}
-ggplot(pais) + 
+```{r,message=FALSE}
+br %>% 
+  ggplot() + 
   geom_sf(fill="#2D3E50", color="#FEBF57", 
           size=.15, show.legend = FALSE)+
-  theme_minimal() +
-    geom_point(data=oco_2,
-             aes(x=longitude,y=latitude),shape=15,col="yellow",alpha=0.2)
+  tema_mapa() +
+  geom_point(data=oco_2 %>% filter(ano == 2014) ,
+             aes(x=longitude,y=latitude),
+             shape=3,
+             col="red",
+             alpha=0.2)
 ```
 
-É necessário selecionar somente aqueles pontos dentro do polígono de uma área. Inicialmente devemos extrair o polígono de cada shape do pacote `geobr`.
+É necessário selecionar somente aqueles pontos dentro do polígono da área. Inicialmente devemos extrair o polígono de cada shape do pacote `geobr`.
 
 ```{r}
 pol_sp <- as.matrix(sp$geom[[1]]) # pol estado de são paulo
 pol_ms <- as.matrix(ms$geom[[1]]) # pol estado de ms
-pol_pais <- as.matrix(pais$geom[[1]]) # pol do brasil
-pol_pais <- pol_pais[pol_pais[,1]<=-34,] # CORREÇÃO do polígono
-pol_pais <- pol_pais[!((pol_pais[,1]>=-38.8 & pol_pais[,1]<=-38.6) &
-                              (pol_pais[,2]>= -19 & pol_pais[,2]<= -16)),]
+pol_br <- as.matrix(br$geom[[1]]) # pol do brasil
+pol_br <- pol_br[pol_br[,1]<=-34,] # CORREÇÃO do polígono
+pol_br <- pol_br[!((pol_br[,1]>=-38.8 & pol_br[,1]<=-38.6) &
+                              (pol_br[,2]>= -19 & pol_br[,2]<= -16)),]
 pol_norte <- as.matrix(regiao$geom[[1]]) # pol região norte
 pol_sudeste <- as.matrix(regiao$geom[[3]]) # pol região sudeste
 pol_sudeste <- pol_sudeste[pol_sudeste[,1]<=-34,] # CORREÇÃO do polígono
@@ -333,30 +358,94 @@ Selecionamos os pontos que estão dentro do polígono do estado de São Paulo e 
 ```{r}
 oco_2 <- oco_2 %>% 
   mutate(
-    point_in_pol = as.logical(point.in.polygon(point.x = longitude, 
+    point_in_pol = as.logical(sp::point.in.polygon(point.x = longitude, 
                                     point.y = latitude,
                                     pol.x = pol_sp[,1],
                                     pol.y = pol_sp[,2]) 
                               |
-                              
-                                point.in.polygon(point.x = longitude, 
+                              sp::point.in.polygon(point.x = longitude, 
                                     point.y = latitude,
                                     pol.x = pol_ms[,1],
                                     pol.y = pol_ms[,2]))
-  ) %>% 
-  glimpse()
+  )
 ```
 
 Vamos refazer o mapa anterior com os dados dentro do polígono.
 
-```{r}
-ggplot(pais) + 
+```{r,message=FALSE}
+br %>% 
+  ggplot() + 
   geom_sf(fill="#2D3E50", color="#FEBF57", 
           size=.15, show.legend = FALSE)+
-  theme_minimal() +
-    geom_point(data=oco_2 %>% filter(point_in_pol),
-             aes(x=longitude,y=latitude),shape=15,col="yellow",alpha=0.2)
+  tema_mapa() +
+  geom_point(data=oco_2 %>% filter(point_in_pol),
+             aes(x=longitude,y=latitude),
+             shape=3,
+             col="red",
+             alpha=0.2)
 ```
+
+Selecionamos os pontos que estão dentro do Brasil.
+
+
+```{r}
+oco_2 <- oco_2 %>% 
+  mutate(
+    point_in_pol = as.logical(sp::point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_br[,1],
+                                    pol.y = pol_br[,2])))
+```
+
+Vamos refazer o mapa anterior com os dados dentro do polígono.
+
+```{r,message=FALSE}
+br %>% 
+  ggplot() + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  tema_mapa() +
+  geom_point(data=oco_2 %>% filter(ano==2014, point_in_pol),
+             aes(x=longitude,y=latitude),
+             shape=3,
+             col="red",
+             alpha=0.2)
+```
+
+Observa-se um problema na região nordeste, pontos não alocados, então vamos adicionar a esse mapa os pontos dessa região.
+
+
+```{r}
+oco_2 <- oco_2 %>% 
+  mutate(
+    point_in_pol = as.logical(sp::point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_br[,1],
+                                    pol.y = pol_br[,2]) 
+                              |
+                              sp::point.in.polygon(point.x = longitude, 
+                                    point.y = latitude,
+                                    pol.x = pol_nordeste[,1],
+                                    pol.y = pol_nordeste[,2]))
+  )
+```
+
+Vamos refazer o mapa anterior com os dados dentro do polígono.
+
+```{r,message=FALSE}
+br %>% 
+  ggplot() + 
+  geom_sf(fill="#2D3E50", color="#FEBF57", 
+          size=.15, show.legend = FALSE)+
+  tema_mapa() +
+  geom_point(data=oco_2 %>% filter(point_in_pol),
+             aes(x=longitude,y=latitude),
+             shape=3,
+             col="red",
+             alpha=0.2)
+```
+
+
 
 Vamos olhar os outliers.
 
@@ -375,13 +464,6 @@ O padrão de `coef` é 1,5 e define o comprimento dos bigodes com base no coefic
 filtrando os outliers.
 
 ```{r}
-limites_outlier <- function(x,coefi=1.5){
-  med = median(x)
-  li = med - coefi*IQR(x)
-  ls<- med + coefi*IQR(x)
-  c(Lim_Inferior = li, Lim_Superior = ls)
-}
-
 oco_2 %>% 
   filter(point_in_pol, xco2..Moles.Mole...1.. > limites_outlier(oco_2$xco2..Moles.Mole...1..)[1] &
            xco2..Moles.Mole...1.. < limites_outlier(oco_2$xco2..Moles.Mole...1..)[2]) %>% 
@@ -390,13 +472,6 @@ oco_2 %>%
   coord_cartesian(xlim=c(-1,1))+
   theme_classic()
 ```
-Retirar os outliers se necessário;
-```{r}
-# oco_2<-oco_2 %>% 
-#   filter(point_in_pol, xco2..Moles.Mole...1..> remove_outlier(oco_2$xco2..Moles.Mole...1..)[1] &
-#            xco2..Moles.Mole...1.. < remove_outlier(oco_2$xco2..Moles.Mole...1..)[2])
-```
-
 
 
 ```{r}
@@ -408,11 +483,12 @@ oco_2 %>%
   geom_violin(trim = FALSE) +
   theme(legend.position = "none")+
   facet_wrap(~ano,scales = "free")+
-  labs(x="Mês",y="XCO2 (ppm)")
+  labs(x="Mês",y="XCO2 (ppm)")+
+  theme_bw()
 ```
 
 
-Agora podemos ver a emissão de $CO_2$ ao longo do tempo para esses dados.
+Observe a emissão de $CO_2$ ao longo do tempo para esses dados.
 
 ```{r}
 oco_2 %>% 
@@ -431,7 +507,7 @@ oco_2 %>%
   ggplot(aes(x=x,y=xco2_obs)) +
   geom_point(shape=21,color="black",fill="gray") +
   geom_smooth(method = "lm") +
-  stat_regline_equation(aes(
+  ggpubr::stat_regline_equation(aes(
   label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
 ```
 
@@ -460,6 +536,8 @@ oco_2 <- oco_2 %>%
   ) %>% 
   glimpse()
 ```
+
+
 ```{r, error=FALSE, message=FALSE}
 oco_2 %>% 
   # filter(point_in_pol) %>% 
@@ -473,17 +551,16 @@ Buscando os dados de duas regiões.
 # Criando o filtro
 oco_2 <- oco_2 %>% 
   mutate(
-    point_in_pol_sp_ms = as.logical(point.in.polygon(point.x = longitude, 
-                                    point.y = latitude,
-                                    pol.x = pol_sp[,1],
-                                    pol.y = pol_sp[,2]) 
-                              |
-                              
-                                point.in.polygon(point.x = longitude, 
-                                    point.y = latitude,
-                                    pol.x = pol_ms[,1],
-                                    pol.y = pol_ms[,2]))
-  )
+    point_in_pol_sp_ms = as.logical(sp::point.in.polygon(point.x = longitude, 
+                                      point.y = latitude,
+                                      pol.x = pol_sp[,1],
+                                      pol.y = pol_sp[,2]) 
+                                    |
+                                    sp::point.in.polygon(point.x = longitude, 
+                                      point.y = latitude,
+                                      pol.x = pol_ms[,1],
+                                      pol.y = pol_ms[,2]))
+    )
 
 # Plotando os dados
 ggplot(sp) + 
@@ -491,34 +568,9 @@ ggplot(sp) +
           size=.15, show.legend = FALSE)+
   geom_sf(data=ms,fill="#2D3E50", color="#FEBF57", 
           size=.15, show.legend = FALSE)+
-  theme_minimal() +
+  tema_mapa() +
     geom_point(data=oco_2 %>% filter(point_in_pol_sp_ms),
              aes(x=longitude,y=latitude,color=xco2_est))
 ```
 
-Agora devemos selecionar somente os pontos que estão dentro do polígono do estado de São Paulo, no nosso exemplo. Utilizaremos a função `point.in.polygon()` do pacote `sp`.
-
-```{r}
-oco_2 <- oco_2 %>% 
-  mutate(
-    point_in_pol_2 = as.logical(point.in.polygon(point.x = longitude, 
-                                    point.y = latitude,
-                                    pol.x = pol_ms[,1],
-                                    pol.y = pol_ms[,2]))
-  ) %>% 
-  glimpse()
-```
-
-Vamos refazer o mapa anterior com os dados dentro do polígono.
-
-```{r}
-ggplot(ms) + 
-  geom_sf(fill="#2D3E50", color="#FEBF57", 
-          size=.15, show.legend = FALSE)+
-  geom_sf(data=ms,fill="#2D3E50", color="#FEBF57", 
-          size=.15, show.legend = FALSE)+
-  theme_minimal() +
-    geom_point(data=oco_2 %>% filter(point_in_pol_2),
-             aes(x=longitude,y=latitude),shape=15,col="yellow",alpha=0.2)
-```
-
+Pronto, agora seu projeto pode continuar...

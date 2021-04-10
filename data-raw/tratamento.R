@@ -38,18 +38,4 @@ for(i in 1:n_links){
   }
 }
 dplyr::glimpse(tab)
-
-#
-# write.table(dados,"dados.txt",quote = FALSE,
-#                 sep="\t",row.names = FALSE)
-
-# for(i in 1:n_links){
-#   if(i == 1){
-#     dados<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
-#   }else{
-#     da<-read.table(dir_arquivos_pre[i],h=TRUE,sep="\t")
-#     dados<-rbind(dados,da)
-#     }
-# }
-
-
+readr::write_rds(tab,"data/XCO2_20142020.rds")
