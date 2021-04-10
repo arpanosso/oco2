@@ -121,15 +121,6 @@ knitr::include_graphics("../inst/jpl_16.png")
 
 ## Download e processamento dos dados no R.
 
-### Carregando os pacotes no ambiente de trabalho
-
-```{r, message=FALSE, error=FALSE}
-library(tidyverse)
-library(ggpubr)
-library(geobr)
-library(sp)
-```
-
 ### Baixando os dados solicitados em CO2 Virtual Science Data Environment
 
 Antes de realizar a leitura, recomendamos a criação da estrutra de diretórios como apresentado abaixo: 
@@ -233,8 +224,7 @@ oco_2<-xco2 %>%
         select(longitude,
                latitude,
                time..YYYYMMDDHHMMSS.,
-               xco2..Moles.Mole...1..) %>% 
-View()
+               xco2..Moles.Mole...1..)
 ```
 
 
@@ -242,7 +232,7 @@ Agora precisamos transformar os dados de $CO_2$ para $ppm$, e criar uma coluna p
 
 ```{r}
 oco_2 <- oco_2 %>% 
-  mutate(
+  dplyr::mutate(
     xco2_obs = xco2..Moles.Mole...1.. *1e06,
     ano = time..YYYYMMDDHHMMSS.%/%1e10,
     mês = time..YYYYMMDDHHMMSS.%/%1e8 %%100,
