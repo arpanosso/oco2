@@ -1,4 +1,7 @@
 ---
+title: "XCO2 - Aquisição de dados de XCO2"
+author: "Panosso AR; Costa LM; Lima LR; Crispim, VS"
+date: "09/12/2021"
 output: github_document
 ---
 
