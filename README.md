@@ -1,13 +1,16 @@
-XCO2 - Aquisição de dados de XCO2
+Aprendizado de Máquina: Emissão de CO<sub>2</sub> e CO<sub>2</sub>
+Atmosférico
 ================
-Panosso AR; Costa LM; Lima LR; Crispim, VS
-09/12/2021
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-#### Financiamento Fapesp (202102487-0); CNPq-PIBIC (Nº 2517 EDITAL 4/2021)
+##### *Panosso AR; Costa LM; Lima LR; Crispim, VS*
 
-# oco2
+##### *09/12/2021*
+
+##### Financiamento Fapesp (202102487-0); CNPq-PIBIC (Nº 2517 EDITAL 4/2021)
+
+# Resumo do Projeto
 
 <!-- badges: start -->
 <!-- badges: end -->

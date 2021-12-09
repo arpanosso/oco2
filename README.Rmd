@@ -1,7 +1,5 @@
 ---
-title: "XCO2 - Aquisição de dados de XCO2"
-author: "Panosso AR; Costa LM; Lima LR; Crispim, VS"
-date: "09/12/2021"
+title: "Aprendizado de Máquina: Emissão de CO~2~ e CO~2~ Atmosférico"
 output: github_document
 ---
 
@@ -14,12 +12,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+##### *Panosso AR; Costa LM; Lima LR; Crispim, VS*
+##### *09/12/2021*
+##### Financiamento Fapesp (202102487-0); CNPq-PIBIC (Nº 2517 EDITAL 4/2021)
 
 
-#### Financiamento Fapesp (202102487-0); CNPq-PIBIC (Nº 2517 EDITAL 4/2021)
-
-
-# oco2 
+# Resumo do Projeto
 
 
 <!-- badges: start -->
