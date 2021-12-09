@@ -14,7 +14,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# oco2
+
+
+#### Financiamento Fapesp (202102487-0); CNPq-PIBIC (Nº 2517 EDITAL 4/2021)
+
+
+# oco2 
+
 
 <!-- badges: start -->
 <!-- badges: end -->
