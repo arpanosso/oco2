@@ -35,7 +35,7 @@ Para facilitar o acesso, os dodos poderão ser adquiridos por meio da instalaç�
 
 library(tidyverse)
 library(geobr)
-library(fco2r)
+library(fco2r) 
 ```
 
 ### Conhecendo a base de dados

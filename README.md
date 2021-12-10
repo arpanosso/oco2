@@ -30,7 +30,7 @@ instalação do pacote `{fco2}`.
 
 library(tidyverse)
 library(geobr)
-library(fco2r)
+library(fco2r) 
 ```
 
 ### Conhecendo a base de dados
