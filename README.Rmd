@@ -28,6 +28,9 @@ Para facilitar o acesso, os dodos poderão ser adquiridos por meio da instalaç�
 ```{r, message=FALSE, warning=FALSE, error=FALSE}
 ## Instalando pacotes (se necessário)
 # install.packages("devtools")
+# Sys.getenv("GITHUB_PAT")
+# Sys.unsetenv("GITHUB_PAT")
+# Sys.getenv("GITHUB_PAT")
 # devtools::install_github("arpanosso/fco2r")
 
 library(tidyverse)
@@ -38,14 +41,14 @@ library(fco2r)
 ### Conhecendo a base de dados
 
 ```{r}
-help(oco2)
-glimpse(oco2)
+help(oco2_br)
+glimpse(oco2_br)
 ```
 
 ### Alguns gráficos
 
 ```{r}
-oco2 %>% 
+oco2_br %>% 
   sample_n(1000) %>% 
   ggplot(aes(x = longitude, y = latitude)) + 
   geom_point(color = "blue")
@@ -63,7 +66,7 @@ br <- geobr::read_country(showProgress = FALSE)
 br %>% 
   ggplot() +
   geom_sf(fill = "white") +
-    geom_point(data=oco2 %>% 
+    geom_point(data=oco2_br %>% 
                  sample_n(1000),
              aes(x=longitude,y=latitude),
              shape=3,
@@ -71,4 +74,4 @@ br %>%
              alpha=0.2)
 ```
 
-Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $361,615$.
+Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $146,646$.
