@@ -23,7 +23,7 @@ A aquisição de dados e o processamento inicial destes pode ser encontrada no l
 #### https://arpanosso.github.io/oco2/
 
 
-Para facilitar o acesso, os dodos poderão ser adquiridos por meio da instalação do pacote `{fco2}`.
+Para facilitar o acesso, os dodos foram adquiridos por meio do pacote `{fco2}`.
 
 ```{r, message=FALSE, warning=FALSE, error=FALSE}
 ## Instalando pacotes (se necessário)
@@ -38,7 +38,7 @@ library(geobr)
 library(fco2r) 
 ```
 
-### Conhecendo a base de dados
+### Conhecendo a base de dados de CO~2~ atmosférico
 
 ```{r}
 help(oco2_br)
@@ -75,3 +75,22 @@ br %>%
 ```
 
 Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $146,646$.
+
+
+### Conhecendo a base de dados de emissão de CO~2~ do solo
+
+```{r}
+help(data_fco2)
+glimpse(data_fco2)
+```
+
+### Visualização de dados
+```{r}
+data_fco2 %>% 
+  group_by(experimento, cultura, data) %>% 
+  summarise(FCO2 = mean(FCO2, na.rm=TRUE)) %>% 
+  ggplot(aes(y=FCO2, x=data)) +
+  geom_line() +
+   facet_wrap(~experimento+ cultura, scale="free")
+```
+
