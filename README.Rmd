@@ -35,7 +35,9 @@ Para facilitar o acesso, os dodos foram adquiridos por meio do pacote `{fco2}`.
 
 library(tidyverse)
 library(geobr)
-library(fco2r) 
+library(fco2r)
+library(skimr)
+source("R/my_fun.R")
 ```
 
 ### Conhecendo a base de dados de CO~2~ atmosférico
@@ -67,7 +69,7 @@ br %>%
   ggplot() +
   geom_sf(fill = "white") +
     geom_point(data=oco2_br %>% 
-                 sample_n(1000),
+                 sample_n(2000),
              aes(x=longitude,y=latitude),
              shape=3,
              col="red",
@@ -75,6 +77,18 @@ br %>%
 ```
 
 Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $146,646$.
+
+
+#### Estatísticas descritivas
+
+```{r}
+skim(oco2_br)
+```
+
+```{r}
+visdat::vis_miss(oco2_br %>% 
+                   sample_n(10000))
+```
 
 
 ### Conhecendo a base de dados de emissão de CO~2~ do solo
@@ -94,3 +108,31 @@ data_fco2 %>%
    facet_wrap(~experimento+ cultura, scale="free")
 ```
 
+
+### Construindo o mapa com os pontos
+
+```{r}
+br %>% 
+  ggplot() +
+  geom_sf(fill = "white") +
+    geom_point(data=oco2_br %>% 
+                 sample_n(2000),
+             aes(x=longitude,y=latitude),
+             shape=3,
+             col="red",
+             alpha=0.2)
+```
+
+Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $146,646$.
+
+
+#### Estatísticas descritivas
+
+```{r}
+skim(data_fco2)
+```
+
+```{r}
+visdat::vis_miss(data_fco2 %>% 
+                   sample_n(10000))
+```
