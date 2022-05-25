@@ -136,3 +136,27 @@ skim(data_fco2)
 visdat::vis_miss(data_fco2 %>% 
                    sample_n(10000))
 ```
+
+Listando as datas em ambos os bancos de dados
+
+```{r}
+# Lista das datas de FCO2 
+unique(data_fco2$data)
+```
+
+
+```{r}
+# Lista do xCO2
+# 01 passar as datas que estão em ano-mes-dia-horas-min-segundos
+# para uma outra coluna denominada 'data' como ano-mes-dia
+# Fazer em pipeline, usar o mutate do pacote dplyr e provavelmente
+# a funçoes do pacote lubridate
+
+oco2_br <- oco2_br |> 
+  mutate( data = lubridate::as_date(time_yyyymmddhhmmss))
+
+unique(oco2_br$data)
+```
+
+
+
