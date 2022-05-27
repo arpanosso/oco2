@@ -137,12 +137,7 @@ visdat::vis_miss(data_fco2 %>%
                    sample_n(10000))
 ```
 
-Listando as datas em ambos os bancos de dados
 
-```{r}
-# Lista das datas de FCO2 
-unique(data_fco2$data)
-```
 
 
 ```{r}
@@ -152,11 +147,21 @@ unique(data_fco2$data)
 # Fazer em pipeline, usar o mutate do pacote dplyr e provavelmente
 # a funçoes do pacote lubridate
 
-oco2_br <- oco2_br |> 
-  mutate( data = lubridate::as_date(time_yyyymmddhhmmss))
-
-unique(oco2_br$data)
+oco2_br <- oco2_br |>
+  dplyr::mutate (
+    ano = time_yyyymmddhhmmss%/%1e10,
+    mês = time_yyyymmddhhmmss%/%1e8 %%100,
+    dia = time_yyyymmddhhmmss%/%1e6 %%100,
+    data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
+    )|>
+  dplyr::glimpse()
 ```
 
+Listando as datas em ambos os bancos de dados
+
+```{r}
+# Lista das datas de FCO2 
+unique(data_fco2$data)
+```
 
 
