@@ -161,7 +161,19 @@ Listando as datas em ambos os bancos de dados
 
 ```{r}
 # Lista das datas de FCO2 
-unique(data_fco2$data)
+lista_data_fco2 <- unique(data_fco2$data)
+lista_data_xco2 <- unique(oco2_br$data)
+length(lista_data_fco2)
+length(lista_data_xco2)
+datas <- lista_data_fco2[lista_data_fco2 %in% lista_data_xco2]
+
 ```
 
+```{r}
+fco2 <- data_fco2 |> 
+  dplyr::filter(data %in% datas)
+
+xco2 <- oco2_br |> 
+  dplyr::filter(data %in% datas)
+```
 
