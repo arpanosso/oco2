@@ -190,24 +190,42 @@ unique(fco2$municipio)
 Abordagem usando o join do `{dplyr}`
 
 ```{r}
-aux <- left_join(fco2 %>% 
+dados <- left_join(fco2 %>% 
             mutate(ano = lubridate::year(data),
                    mes = lubridate::month(data)) %>% 
-            select(data, ano, mes, x,y, FCO2), 
+            select(data, ano, mes,ID, x,y, FCO2, Ts, Us,
+                   MO, Ds, Macro, Micro, VTP, ARG, HLIFS), 
           xco2 %>% 
             select(data,mês,dia,longitude,latitude,xco2_moles_mole_1)) %>% 
-  mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2)) %>%
-  filter(dist <= .5, ano == 2016, mês == 4) 
+  mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2)) 
+```
+```{r}
+
+# Us,MO, Ds, Macro, Micro, VTP, ARG, HLIFS
+dados %>% 
+  filter(dist<=1.75) %>% 
+  group_by(ano, mes, ID) %>% 
+  summarise(FCO2 = mean(FCO2, na.rm=TRUE),
+            Ts = mean(Ts, na.rm=TRUE),
+            Us = mean(Us, na.rm=TRUE),
+            MO = mean(MO, na.rm=TRUE),
+            Ds = mean(Ds, na.rm=TRUE),
+            Macro = mean(Macro, na.rm=TRUE),
+            Micro = mean(Micro, na.rm=TRUE),
+            VTP = mean(VTP, na.rm=TRUE),
+            ARG = mean(ARG, na.rm=TRUE),
+            HLIFS = mean(HLIFS, na.rm=TRUE),
+            xco2_moles_mole_1= mean(xco2_moles_mole_1, na.rm=TRUE)) %>% 
+  drop_na()
 ```
 
 
 ```{r}
-br <- geobr::read_country(showProgress = FALSE)
 br |>
    ggplot2::ggplot() +
    ggplot2::geom_sf(fill="#2D3E50", color="#FEBF57",
            size=.15, show.legend = FALSE) +
-   ggplot2::geom_point(data=aux ,
+   ggplot2::geom_point(data=dados %>% sample_n(200) ,
               ggplot2::aes(x=longitude, y=latitude),
               shape=17,
               col="red",
