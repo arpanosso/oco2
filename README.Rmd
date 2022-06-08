@@ -169,6 +169,8 @@ datas <- lista_data_fco2[lista_data_fco2 %in% lista_data_xco2]
 
 ```
 
+Criação as listas de datas, que é chave para a mesclagem dos arquivos.
+
 ```{r}
 fco2 <- data_fco2 |> 
   dplyr::filter(data %in% datas)
@@ -176,4 +178,42 @@ fco2 <- data_fco2 |>
 xco2 <- oco2_br |> 
   dplyr::filter(data %in% datas)
 ```
+
+
+Coordenadas das cidades
+
+```{r}
+unique(fco2$municipio)
+```
+
+
+Abordagem usando o join do `{dplyr}`
+
+```{r}
+aux <- left_join(fco2 %>% 
+            mutate(ano = lubridate::year(data),
+                   mes = lubridate::month(data)) %>% 
+            select(data, ano, mes, x,y, FCO2), 
+          xco2 %>% 
+            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1)) %>% 
+  mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2)) %>%
+  filter(dist <= .5, ano == 2016, mês == 4) 
+```
+
+
+```{r}
+br <- geobr::read_country(showProgress = FALSE)
+br |>
+   ggplot2::ggplot() +
+   ggplot2::geom_sf(fill="#2D3E50", color="#FEBF57",
+           size=.15, show.legend = FALSE) +
+   ggplot2::geom_point(data=aux ,
+              ggplot2::aes(x=longitude, y=latitude),
+              shape=17,
+              col="red",
+              alpha=0.2)
+
+```
+
+
 
