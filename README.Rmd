@@ -88,6 +88,7 @@ skim(oco2_br)
 ```{r}
 visdat::vis_miss(oco2_br %>% 
                    sample_n(10000))
+oco2 <- oco2_br
 ```
 
 
@@ -115,8 +116,7 @@ data_fco2 %>%
 br %>% 
   ggplot() +
   geom_sf(fill = "white") +
-    geom_point(data=oco2_br %>% 
-                 sample_n(2000),
+    geom_point(data=oco2 %>% sample_n(1000),
              aes(x=longitude,y=latitude),
              shape=3,
              col="red",
@@ -135,6 +135,7 @@ skim(data_fco2)
 ```{r}
 visdat::vis_miss(data_fco2 %>% 
                    sample_n(10000))
+atributos <- data_fco2
 ```
 
 
@@ -147,7 +148,7 @@ visdat::vis_miss(data_fco2 %>%
 # Fazer em pipeline, usar o mutate do pacote dplyr e provavelmente
 # a funçoes do pacote lubridate
 
-oco2_br <- oco2_br |>
+oco2 <- oco2 |>
   dplyr::mutate (
     ano = time_yyyymmddhhmmss%/%1e10,
     mês = time_yyyymmddhhmmss%/%1e8 %%100,
@@ -161,58 +162,66 @@ Listando as datas em ambos os bancos de dados
 
 ```{r}
 # Lista das datas de FCO2 
-lista_data_fco2 <- unique(data_fco2$data)
-lista_data_xco2 <- unique(oco2_br$data)
-length(lista_data_fco2)
-length(lista_data_xco2)
-datas <- lista_data_fco2[lista_data_fco2 %in% lista_data_xco2]
+lista_data_fco2 <- unique(atributos$data)
+lista_data_oco2 <- unique(oco2$data)
+datas_fco2 <- paste0(lubridate::year(lista_data_fco2),"-",lubridate::month(lista_data_fco2)) %>% unique()
+
+datas_oco2 <- paste0(lubridate::year(lista_data_oco2),"-",lubridate::month(lista_data_oco2)) %>% unique()
+datas <- datas_fco2[datas_fco2 %in% datas_oco2]
 
 ```
 
 Criação as listas de datas, que é chave para a mesclagem dos arquivos.
 
 ```{r}
-fco2 <- data_fco2 |> 
-  dplyr::filter(data %in% datas)
+fco2 <- atributos %>% 
+  mutate(ano_mes = paste0(lubridate::year(data),"-",lubridate::month(data))) %>% 
+  dplyr::filter(ano_mes %in% datas)
 
-xco2 <- oco2_br |> 
-  dplyr::filter(data %in% datas)
+xco2 <- oco2 %>%   
+  mutate(ano_mes=paste0(ano,"-",mês)) %>% 
+  dplyr::filter(ano_mes %in% datas)
 ```
 
 
 Coordenadas das cidades
 
 ```{r}
-unique(fco2$municipio)
+unique(xco2$ano_mes) == 
+unique(fco2$ano_mes)
 ```
 
 
 Abordagem usando o join do `{dplyr}`
 
 ```{r}
-aux <- left_join(fco2 %>% 
+memory.limit(size=10001)
+data_set <- left_join(fco2 %>% 
             mutate(ano = lubridate::year(data),
-                   mes = lubridate::month(data)) %>% 
-            select(data, ano, mes, x,y, FCO2), 
+                   mes = lubridate::month(data)
+                   ) %>% 
+            select(ID, data, cultura, ano, mes, x,y, FCO2, Ts,
+                   Us, MO, Macro, VTP, ARG, ano_mes), 
           xco2 %>% 
-            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1)) %>% 
-  mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2)) %>%
-  filter(dist <= .5, ano == 2016, mês == 4) 
+            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_offset_relative_757nm_idp,fluorescence_offset_relative_771nm_idp,ano_mes), by = "ano_mes") %>% 
+  mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
+         SIF = (fluorescence_offset_relative_757nm_idp + 1.5*fluorescence_offset_relative_771nm_idp)/2) %>%
+  filter(dist <= .75) 
+(data_set)
+visdat::vis_miss(data_set %>% sample_n(2000))
+fco2$ano_mes %>% unique()
+xco2$ano_mes %>% unique()
+data_set$ano_mes %>% unique()
 ```
 
 
 ```{r}
-br <- geobr::read_country(showProgress = FALSE)
-br |>
-   ggplot2::ggplot() +
-   ggplot2::geom_sf(fill="#2D3E50", color="#FEBF57",
-           size=.15, show.legend = FALSE) +
-   ggplot2::geom_point(data=aux ,
-              ggplot2::aes(x=longitude, y=latitude),
-              shape=17,
-              col="red",
-              alpha=0.2)
-
+aux <- data_set %>% 
+  group_by(ano_mes, cultura, ID) %>% 
+  summarise(FCO2 = mean(FCO2, na.rm=TRUE),
+            XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
+            SIF = mean(SIF, na.rm=TRUE))
+plot(aux$SIF, aux$FCO2)
 ```
 
 
