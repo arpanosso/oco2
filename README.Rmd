@@ -206,12 +206,12 @@ data_set <- left_join(fco2 %>%
             select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_offset_relative_757nm_idp,fluorescence_offset_relative_771nm_idp,ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
          SIF = (fluorescence_offset_relative_757nm_idp + 1.5*fluorescence_offset_relative_771nm_idp)/2) %>%
-  filter(dist <= .75) 
-(data_set)
+  filter(dist <= .15) 
 visdat::vis_miss(data_set %>% sample_n(2000))
-fco2$ano_mes %>% unique()
-xco2$ano_mes %>% unique()
-data_set$ano_mes %>% unique()
+head(data_set)
+# fco2$ano_mes %>% unique()
+# xco2$ano_mes %>% unique()
+# data_set$ano_mes %>% unique()
 ```
 
 
@@ -222,6 +222,17 @@ aux <- data_set %>%
             XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
             SIF = mean(SIF, na.rm=TRUE))
 plot(aux$SIF, aux$FCO2)
+abline(lm((aux$FCO2~aux$SIF)))
+summary.lm(lm((aux$FCO2~aux$SIF)))
+
+plot(aux$XCO2, aux$FCO2)
+abline(lm((aux$FCO2~aux$XCO2)))
+summary.lm(lm((aux$FCO2~aux$XCO2)))
+
+
+plot(aux$SIF, aux$XCO2)
+abline(lm((aux$XCO2~aux$SIF)))
+summary.lm(lm((aux$XCO2~aux$SIF)))
 ```
 
 
