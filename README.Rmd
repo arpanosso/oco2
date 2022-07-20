@@ -239,7 +239,14 @@ summary.lm(lm((aux$XCO2~aux$SIF)))
 
 ## Estatística Descritiva
 
-
+```{r}
+aux <- data_set %>% 
+  mutate(SIF = ifelse(SIF <=0, mean(aux$SIF, na.rm=TRUE),SIF)) %>% 
+ # group_by(ano_mes, cultura) %>% 
+  summarise(FCO2 = mean(FCO2, na.rm=TRUE),
+            XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
+            SIF = mean(SIF, na.rm=TRUE))
+```
 
 
 
