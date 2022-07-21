@@ -203,12 +203,14 @@ data_set <- left_join(fco2 %>%
             select(ID, data, cultura, ano, mes, x,y, FCO2, Ts,
                    Us, MO, Macro, VTP, ARG, ano_mes), 
           xco2 %>% 
-            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_offset_relative_757nm_idp,fluorescence_offset_relative_771nm_idp,ano_mes), by = "ano_mes") %>% 
+            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
-         SIF = (fluorescence_offset_relative_757nm_idp + 1.5*fluorescence_offset_relative_771nm_idp)/2) %>%
-  filter(dist <= .12) 
+         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1)/2) #
+
+data_set<-data_set %>%
+  filter(dist <= .159) 
 visdat::vis_miss(data_set %>% sample_n(2000))
-head(data_set)
+# head(data_set)
 # fco2$ano_mes %>% unique()
 # xco2$ano_mes %>% unique()
 # data_set$ano_mes %>% unique()
@@ -217,7 +219,7 @@ head(data_set)
 
 ```{r}
 aux <- data_set %>% 
-  mutate(SIF = ifelse(SIF <=0, mean(aux$SIF, na.rm=TRUE),SIF)) %>% 
+  mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
   group_by(ano_mes, cultura) %>% 
   summarise(FCO2 = mean(FCO2, na.rm=TRUE),
             XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),

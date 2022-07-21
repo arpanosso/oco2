@@ -41,19 +41,40 @@ source("R/my_fun.R")
 help(oco2_br)
 #> starting httpd help server ... done
 glimpse(oco2_br)
-#> Rows: 146,646
-#> Columns: 11
-#> $ longitude                              <dbl> -70.33963, -70.33963, -70.33963~
-#> $ longitude_bnds                         <chr> "-70.4644097222:-70.21484375", ~
-#> $ latitude                               <dbl> -5.806417, -5.557240, -5.058887~
-#> $ latitude_bnds                          <chr> "-5.93100534001:-5.68182872924"~
-#> $ time_yyyymmddhhmmss                    <dbl> 2.014092e+13, 2.014092e+13, 2.0~
-#> $ time_bnds_yyyymmddhhmmss               <chr> "20140915000000:20140916000000"~
-#> $ altitude_km                            <dbl> 3307.8, 3307.8, 3307.8, 3307.8,~
-#> $ alt_bnds_km                            <chr> "0.0:6615.59960938", "0.0:6615.~
-#> $ fluorescence_offset_relative_771nm_idp <dbl> 0.0167236, 0.0187703, 0.0167454~
-#> $ fluorescence_offset_relative_757nm_idp <dbl> 0.01495360, 0.01348060, 0.01151~
-#> $ xco2_moles_mole_1                      <dbl> 0.000391583, 0.000394184, 0.000~
+#> Rows: 37,387
+#> Columns: 32
+#> $ longitude                                                     <dbl> -70.5, -~
+#> $ longitude_bnds                                                <chr> "-71.0:-~
+#> $ latitude                                                      <dbl> -5.5, -4~
+#> $ latitude_bnds                                                 <chr> "-6.0:-5~
+#> $ time_yyyymmddhhmmss                                           <dbl> 2.014091~
+#> $ time_bnds_yyyymmddhhmmss                                      <chr> "2014090~
+#> $ altitude_km                                                   <dbl> 3307.8, ~
+#> $ alt_bnds_km                                                   <chr> "0.0:661~
+#> $ fluorescence_radiance_757nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 7.272876~
+#> $ fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 2.537127~
+#> $ xco2_moles_mole_1                                             <dbl> 0.000394~
+#> $ aerosol_total_aod                                             <dbl> 0.148579~
+#> $ fluorescence_offset_relative_771nm_idp                        <dbl> 0.016753~
+#> $ fluorescence_at_reference_ph_sec_1_m_2_sr_1_um_1              <dbl> 2.615319~
+#> $ fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 3.088582~
+#> $ fluorescence_offset_relative_757nm_idp                        <dbl> 0.013969~
+#> $ fluorescence_radiance_771nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 5.577878~
+#> $ xco2                                                          <dbl> 394.3686~
+#> $ data                                                          <dttm> 2014-09~
+#> $ ano                                                           <dbl> 2014, 20~
+#> $ mes                                                           <dbl> 9, 9, 9,~
+#> $ dia                                                           <int> 6, 6, 6,~
+#> $ dia_semana                                                    <dbl> 7, 7, 7,~
+#> $ x                                                             <int> 7, 8, 11~
+#> $ xco2_est                                                      <dbl> 392.7080~
+#> $ delta                                                         <dbl> -1.66062~
+#> $ XCO2                                                          <dbl> 387.2781~
+#> $ flag_norte                                                    <lgl> TRUE, TR~
+#> $ flag_nordeste                                                 <lgl> FALSE, F~
+#> $ flag_sul                                                      <lgl> FALSE, F~
+#> $ flag_sudeste                                                  <lgl> FALSE, F~
+#> $ flag_centroeste                                               <lgl> FALSE, F~
 ```
 
 ### Alguns gráficos
@@ -104,12 +125,14 @@ skim(oco2_br)
 |                                                  |         |
 |:-------------------------------------------------|:--------|
 | Name                                             | oco2_br |
-| Number of rows                                   | 146646  |
-| Number of columns                                | 11      |
+| Number of rows                                   | 37387   |
+| Number of columns                                | 32      |
 | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |         |
 | Column type frequency:                           |         |
 | character                                        | 4       |
-| numeric                                          | 7       |
+| logical                                          | 5       |
+| numeric                                          | 22      |
+| POSIXct                                          | 1       |
 | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |         |
 | Group variables                                  | None    |
 
@@ -119,22 +142,53 @@ Data summary
 
 | skim_variable            | n_missing | complete_rate | min | max | empty | n_unique | whitespace |
 |:-------------------------|----------:|--------------:|----:|----:|------:|---------:|-----------:|
-| longitude_bnds           |         0 |             1 |  20 |  29 |     0 |      157 |          0 |
-| latitude_bnds            |         0 |             1 |  27 |  31 |     0 |      157 |          0 |
-| time_bnds_yyyymmddhhmmss |         0 |             1 |  29 |  29 |     0 |     2033 |          0 |
-| alt_bnds_km              |         0 |             1 |  11 |  17 |     0 |       73 |          0 |
+| longitude_bnds           |         0 |             1 |  11 |  11 |     0 |       39 |          0 |
+| latitude_bnds            |         0 |             1 |   7 |  11 |     0 |       38 |          0 |
+| time_bnds_yyyymmddhhmmss |         0 |             1 |  29 |  29 |     0 |     1765 |          0 |
+| alt_bnds_km              |         0 |             1 |  11 |  20 |     0 |       64 |          0 |
+
+**Variable type: logical**
+
+| skim_variable   | n_missing | complete_rate | mean | count                  |
+|:----------------|----------:|--------------:|-----:|:-----------------------|
+| flag_norte      |         0 |             1 | 0.34 | FAL: 24511, TRU: 12876 |
+| flag_nordeste   |         0 |             1 | 0.23 | FAL: 28765, TRU: 8622  |
+| flag_sul        |         0 |             1 | 0.08 | FAL: 34531, TRU: 2856  |
+| flag_sudeste    |         0 |             1 | 0.12 | FAL: 32834, TRU: 4553  |
+| flag_centroeste |         0 |             1 | 0.21 | FAL: 29612, TRU: 7775  |
 
 **Variable type: numeric**
 
-| skim_variable                          | n_missing | complete_rate |          mean |           sd |            p0 |           p25 |           p50 |           p75 |          p100 | hist  |
-|:---------------------------------------|----------:|--------------:|--------------:|-------------:|--------------:|--------------:|--------------:|--------------:|--------------:|:------|
-| longitude                              |         0 |             1 | -5.062000e+01 | 7.950000e+00 | -7.383000e+01 | -5.562000e+01 | -5.037000e+01 | -4.463000e+01 | -3.490000e+01 | ▁▃▇▇▅ |
-| latitude                               |         0 |             1 | -1.243000e+01 | 7.780000e+00 | -3.371000e+01 | -1.777000e+01 | -1.154000e+01 | -6.800000e+00 |  5.160000e+00 | ▂▅▇▇▂ |
-| time_yyyymmddhhmmss                    |         0 |             1 |  2.017376e+13 | 1.785733e+10 |  2.014091e+13 |  2.016051e+13 |  2.017111e+13 |  2.019061e+13 |  2.020103e+13 | ▅▅▃▅▇ |
-| altitude_km                            |         0 |             1 |  3.103830e+03 | 1.164900e+02 |  2.555700e+03 |  3.026300e+03 |  3.118260e+03 |  3.180210e+03 |  3.307800e+03 | ▁▁▃▇▆ |
-| fluorescence_offset_relative_771nm_idp |         0 |             1 | -1.077410e+03 | 3.280654e+04 | -9.999990e+05 |  1.000000e-02 |  1.000000e-02 |  2.000000e-02 |  3.070000e+00 | ▁▁▁▁▇ |
-| fluorescence_offset_relative_757nm_idp |         0 |             1 | -5.796100e+02 | 2.406853e+04 | -9.999990e+05 |  0.000000e+00 |  1.000000e-02 |  2.000000e-02 |  2.380000e+01 | ▁▁▁▁▇ |
-| xco2_moles_mole_1                      |         0 |             1 |  0.000000e+00 | 0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 | ▁▁▇▁▁ |
+| skim_variable                                                    | n_missing | complete_rate |          mean |           sd |            p0 |           p25 |           p50 |           p75 |          p100 | hist  |
+|:-----------------------------------------------------------------|----------:|--------------:|--------------:|-------------:|--------------:|--------------:|--------------:|--------------:|--------------:|:------|
+| longitude                                                        |         0 |             1 | -5.120000e+01 | 8.280000e+00 | -7.350000e+01 | -5.650000e+01 | -5.050000e+01 | -4.450000e+01 | -3.550000e+01 | ▂▃▇▇▅ |
+| latitude                                                         |         0 |             1 | -1.179000e+01 | 7.850000e+00 | -3.250000e+01 | -1.750000e+01 | -1.050000e+01 | -5.500000e+00 |  4.500000e+00 | ▂▃▇▇▃ |
+| time_yyyymmddhhmmss                                              |         0 |             1 |  2.016952e+13 | 1.564571e+10 |  2.014091e+13 |  2.016020e+13 |  2.017052e+13 |  2.018092e+13 |  2.020012e+13 | ▇▇▅▆▇ |
+| altitude_km                                                      |         0 |             1 |  3.123200e+03 | 1.108800e+02 |  2.555700e+03 |  3.056350e+03 |  3.126310e+03 |  3.196250e+03 |  3.307800e+03 | ▁▁▂▇▇ |
+| fluorescence_radiance_757nm_uncert_idp_ph_sec_1\_m_2\_sr_1\_um_1 |         0 |             1 |  8.520719e+17 | 5.599367e+18 | -9.999990e+05 |  6.323256e+17 |  6.951592e+17 |  7.671609e+17 |  9.365539e+20 | ▇▁▁▁▁ |
+| fluorescence_radiance_757nm_idp_ph_sec_1\_m_2\_sr_1\_um_1        |         0 |             1 | -1.358150e+18 | 1.946775e+20 | -3.400736e+22 |  7.735159e+17 |  1.676353e+18 |  2.566089e+18 |  2.316112e+20 | ▁▁▁▁▇ |
+| xco2_moles_mole_1                                                |         0 |             1 |  0.000000e+00 | 0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 | ▁▁▇▁▁ |
+| aerosol_total_aod                                                |         0 |             1 |  4.828100e+02 | 7.848572e+04 |  2.000000e-02 |  1.100000e-01 |  1.700000e-01 |  2.600000e-01 |  1.487623e+07 | ▇▁▁▁▁ |
+| fluorescence_offset_relative_771nm_idp                           |         0 |             1 | -4.814400e+02 | 2.193698e+04 | -9.999990e+05 |  1.000000e-02 |  1.000000e-02 |  2.000000e-02 |  1.230000e+00 | ▁▁▁▁▇ |
+| fluorescence_at_reference_ph_sec_1\_m_2\_sr_1\_um_1              |         0 |             1 |  1.296932e+18 | 2.245185e+18 | -8.394901e+19 |  2.014560e+17 |  1.268715e+18 |  2.395217e+18 |  8.610756e+19 | ▁▁▇▁▁ |
+| fluorescence_radiance_771nm_idp_ph_sec_1\_m_2\_sr_1\_um_1        |         0 |             1 |  1.904438e+18 | 2.236381e+18 | -8.453983e+19 |  9.694709e+17 |  1.987682e+18 |  2.918792e+18 |  4.338306e+19 | ▁▁▁▇▁ |
+| fluorescence_offset_relative_757nm_idp                           |         0 |             1 | -3.744400e+02 | 1.934763e+04 | -9.999990e+05 |  1.000000e-02 |  1.000000e-02 |  2.000000e-02 |  2.086000e+01 | ▁▁▁▁▇ |
+| fluorescence_radiance_771nm_uncert_idp_ph_sec_1\_m_2\_sr_1\_um_1 |         0 |             1 |  5.235574e+17 | 7.580471e+16 | -9.999990e+05 |  4.695467e+17 |  5.216793e+17 |  5.736367e+17 |  1.143215e+18 | ▁▂▇▁▁ |
+| xco2                                                             |         0 |             1 |  4.000400e+02 | 5.090000e+00 |  3.573800e+02 |  3.966000e+02 |  4.003200e+02 |  4.037000e+02 |  4.386500e+02 | ▁▁▇▁▁ |
+| ano                                                              |         0 |             1 |  2.016880e+03 | 1.570000e+00 |  2.014000e+03 |  2.016000e+03 |  2.017000e+03 |  2.018000e+03 |  2.020000e+03 | ▇▇▅▆▇ |
+| mes                                                              |         0 |             1 |  6.820000e+00 | 3.170000e+00 |  1.000000e+00 |  4.000000e+00 |  7.000000e+00 |  9.000000e+00 |  1.200000e+01 | ▆▆▇▆▇ |
+| dia                                                              |         0 |             1 |  1.572000e+01 | 8.680000e+00 |  1.000000e+00 |  8.000000e+00 |  1.600000e+01 |  2.300000e+01 |  3.100000e+01 | ▇▇▇▇▆ |
+| dia_semana                                                       |         0 |             1 |  3.980000e+00 | 2.020000e+00 |  1.000000e+00 |  2.000000e+00 |  4.000000e+00 |  6.000000e+00 |  7.000000e+00 | ▇▃▃▃▇ |
+| x                                                                |         0 |             1 |  5.566068e+04 | 3.223617e+04 |  7.000000e+00 |  2.811250e+04 |  5.606800e+04 |  8.290750e+04 |  1.117280e+05 | ▇▇▇▇▇ |
+| xco2_est                                                         |         0 |             1 |  3.997700e+02 | 4.090000e+00 |  3.927100e+02 |  3.962700e+02 |  3.998200e+02 |  4.032300e+02 |  4.068800e+02 | ▇▇▇▇▇ |
+| delta                                                            |         0 |             1 | -2.700000e-01 | 3.120000e+00 | -4.452000e+01 | -2.190000e+00 | -6.800000e-01 |  1.210000e+00 |  4.728000e+01 | ▁▁▇▁▁ |
+| XCO2                                                             |         0 |             1 |  3.858900e+02 | 3.120000e+00 |  3.383400e+02 |  3.844100e+02 |  3.862900e+02 |  3.878000e+02 |  4.301400e+02 | ▁▁▇▁▁ |
+
+**Variable type: POSIXct**
+
+| skim_variable | n_missing | complete_rate | min                 | max                 | median              | n_unique |
+|:--------------|----------:|--------------:|:--------------------|:--------------------|:--------------------|---------:|
+| data          |         0 |             1 | 2014-09-06 12:00:00 | 2020-01-20 12:00:00 | 2017-05-18 12:00:00 |     1765 |
 
 ``` r
 visdat::vis_miss(oco2_br %>% 
@@ -317,7 +371,7 @@ Data summary
 
 ``` r
 visdat::vis_miss(data_fco2 %>% 
-                   sample_n(10000))
+                   sample_n(15000))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
@@ -341,23 +395,41 @@ oco2 <- oco2 |>
     data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
     )|>
   dplyr::glimpse()
-#> Rows: 146,646
-#> Columns: 15
-#> $ longitude                              <dbl> -70.33963, -70.33963, -70.33963~
-#> $ longitude_bnds                         <chr> "-70.4644097222:-70.21484375", ~
-#> $ latitude                               <dbl> -5.806417, -5.557240, -5.058887~
-#> $ latitude_bnds                          <chr> "-5.93100534001:-5.68182872924"~
-#> $ time_yyyymmddhhmmss                    <dbl> 2.014092e+13, 2.014092e+13, 2.0~
-#> $ time_bnds_yyyymmddhhmmss               <chr> "20140915000000:20140916000000"~
-#> $ altitude_km                            <dbl> 3307.8, 3307.8, 3307.8, 3307.8,~
-#> $ alt_bnds_km                            <chr> "0.0:6615.59960938", "0.0:6615.~
-#> $ fluorescence_offset_relative_771nm_idp <dbl> 0.0167236, 0.0187703, 0.0167454~
-#> $ fluorescence_offset_relative_757nm_idp <dbl> 0.01495360, 0.01348060, 0.01151~
-#> $ xco2_moles_mole_1                      <dbl> 0.000391583, 0.000394184, 0.000~
-#> $ ano                                    <dbl> 2014, 2014, 2014, 2014, 2014, 2~
-#> $ mês                                    <dbl> 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9~
-#> $ dia                                    <dbl> 15, 15, 6, 6, 6, 6, 15, 6, 6, 6~
-#> $ data                                   <date> 2014-09-15, 2014-09-15, 2014-0~
+#> Rows: 37,387
+#> Columns: 33
+#> $ longitude                                                     <dbl> -70.5, -~
+#> $ longitude_bnds                                                <chr> "-71.0:-~
+#> $ latitude                                                      <dbl> -5.5, -4~
+#> $ latitude_bnds                                                 <chr> "-6.0:-5~
+#> $ time_yyyymmddhhmmss                                           <dbl> 2.014091~
+#> $ time_bnds_yyyymmddhhmmss                                      <chr> "2014090~
+#> $ altitude_km                                                   <dbl> 3307.8, ~
+#> $ alt_bnds_km                                                   <chr> "0.0:661~
+#> $ fluorescence_radiance_757nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 7.272876~
+#> $ fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 2.537127~
+#> $ xco2_moles_mole_1                                             <dbl> 0.000394~
+#> $ aerosol_total_aod                                             <dbl> 0.148579~
+#> $ fluorescence_offset_relative_771nm_idp                        <dbl> 0.016753~
+#> $ fluorescence_at_reference_ph_sec_1_m_2_sr_1_um_1              <dbl> 2.615319~
+#> $ fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 3.088582~
+#> $ fluorescence_offset_relative_757nm_idp                        <dbl> 0.013969~
+#> $ fluorescence_radiance_771nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 5.577878~
+#> $ xco2                                                          <dbl> 394.3686~
+#> $ data                                                          <date> 2014-09~
+#> $ ano                                                           <dbl> 2014, 20~
+#> $ mes                                                           <dbl> 9, 9, 9,~
+#> $ dia                                                           <dbl> 6, 6, 6,~
+#> $ dia_semana                                                    <dbl> 7, 7, 7,~
+#> $ x                                                             <int> 7, 8, 11~
+#> $ xco2_est                                                      <dbl> 392.7080~
+#> $ delta                                                         <dbl> -1.66062~
+#> $ XCO2                                                          <dbl> 387.2781~
+#> $ flag_norte                                                    <lgl> TRUE, TR~
+#> $ flag_nordeste                                                 <lgl> FALSE, F~
+#> $ flag_sul                                                      <lgl> FALSE, F~
+#> $ flag_sudeste                                                  <lgl> FALSE, F~
+#> $ flag_centroeste                                               <lgl> FALSE, F~
+#> $ mês                                                           <dbl> 9, 9, 9,~
 ```
 
 Listando as datas em ambos os bancos de dados
@@ -406,45 +478,19 @@ data_set <- left_join(fco2 %>%
             select(ID, data, cultura, ano, mes, x,y, FCO2, Ts,
                    Us, MO, Macro, VTP, ARG, ano_mes), 
           xco2 %>% 
-            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_offset_relative_757nm_idp,fluorescence_offset_relative_771nm_idp,ano_mes), by = "ano_mes") %>% 
+            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
-         SIF = (fluorescence_offset_relative_757nm_idp + 1.5*fluorescence_offset_relative_771nm_idp)/2) %>%
-  filter(dist <= .15) 
+         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1)/2) #
+
+data_set<-data_set %>%
+  filter(dist <= .159) 
 visdat::vis_miss(data_set %>% sample_n(2000))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
-head(data_set)
-#>   ID     data.x   cultura  ano mes x y FCO2   Ts Us MO      Macro      VTP
-#> 1 43 2016-01-20 eucalipto 2016   1 0 0 3.54 26.9  7 34 0.06753939 38.99053
-#> 2 44 2016-01-20 eucalipto 2016   1 0 0 4.48 25.5  7 28 0.03211898 31.61935
-#> 3 45 2016-01-20 eucalipto 2016   1 0 0 5.85 25.8 11 36 0.08391657 42.28709
-#> 4 46 2016-01-20 eucalipto 2016   1 0 0 5.36 25.9 11 31 0.04035888 38.54338
-#> 5 47 2016-01-20 eucalipto 2016   1 0 0 5.92 25.9 11 33 0.05993138 40.37482
-#> 6 48 2016-01-20 eucalipto 2016   1 0 0 6.33 25.9 13 30 0.08172364 39.18752
-#>        ARG ano_mes     data.y mês dia longitude  latitude xco2_moles_mole_1
-#> 1 301.7294  2016-1 2016-01-25   1  25 -51.37261 -20.25866       0.000394524
-#> 2 303.1536  2016-1 2016-01-25   1  25 -51.37261 -20.25866       0.000394524
-#> 3 282.1974  2016-1 2016-01-25   1  25 -51.37261 -20.25866       0.000394524
-#> 4 302.9562  2016-1 2016-01-25   1  25 -51.37261 -20.25866       0.000394524
-#> 5 358.6420  2016-1 2016-01-25   1  25 -51.37261 -20.25866       0.000394524
-#> 6 338.9002  2016-1 2016-01-25   1  25 -51.37261 -20.25866       0.000394524
-#>   fluorescence_offset_relative_757nm_idp fluorescence_offset_relative_771nm_idp
-#> 1                              0.0237122                              0.0263085
-#> 2                              0.0237122                              0.0263085
-#> 3                              0.0237122                              0.0263085
-#> 4                              0.0237122                              0.0263085
-#> 5                              0.0237122                              0.0263085
-#> 6                              0.0237122                              0.0263085
-#>        dist        SIF
-#> 1 0.1160156 0.03158747
-#> 2 0.1160156 0.03158747
-#> 3 0.1160156 0.03158747
-#> 4 0.1160156 0.03158747
-#> 5 0.1160156 0.03158747
-#> 6 0.1160156 0.03158747
+# head(data_set)
 # fco2$ano_mes %>% unique()
 # xco2$ano_mes %>% unique()
 # data_set$ano_mes %>% unique()
@@ -452,12 +498,14 @@ head(data_set)
 
 ``` r
 aux <- data_set %>% 
-  group_by(ano_mes, cultura, ID) %>% 
+  mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
+  group_by(ano_mes, cultura) %>% 
   summarise(FCO2 = mean(FCO2, na.rm=TRUE),
             XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
             SIF = mean(SIF, na.rm=TRUE))
-#> `summarise()` has grouped output by 'ano_mes', 'cultura'. You can override
-#> using the `.groups` argument.
+#> `summarise()` has grouped output by 'ano_mes'. You can override using the
+#> `.groups` argument.
+
 plot(aux$SIF, aux$FCO2)
 abline(lm((aux$FCO2~aux$SIF)))
 ```
@@ -472,18 +520,19 @@ summary.lm(lm((aux$FCO2~aux$SIF)))
 #> 
 #> Residuals:
 #>     Min      1Q  Median      3Q     Max 
-#> -5.8035 -1.1958 -0.3027  0.8793 16.5620 
+#> -2.5601 -0.7685 -0.2498  0.7287  3.2973 
 #> 
 #> Coefficients:
-#>             Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  2.10259    0.06546   32.12   <2e-16 ***
-#> aux$SIF     92.46793    3.21778   28.74   <2e-16 ***
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 1.697e+00  3.140e-01   5.404 1.58e-06 ***
+#> aux$SIF     7.805e-19  1.121e-19   6.960 5.22e-09 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 1.876 on 1617 degrees of freedom
-#> Multiple R-squared:  0.3381, Adjusted R-squared:  0.3376 
-#> F-statistic: 825.8 on 1 and 1617 DF,  p-value: < 2.2e-16
+#> Residual standard error: 1.3 on 53 degrees of freedom
+#>   (1 observation deleted due to missingness)
+#> Multiple R-squared:  0.4776, Adjusted R-squared:  0.4677 
+#> F-statistic: 48.45 on 1 and 53 DF,  p-value: 5.223e-09
 
 plot(aux$XCO2, aux$FCO2)
 abline(lm((aux$FCO2~aux$XCO2)))
@@ -499,18 +548,19 @@ summary.lm(lm((aux$FCO2~aux$XCO2)))
 #> 
 #> Residuals:
 #>     Min      1Q  Median      3Q     Max 
-#> -3.9565 -1.3151 -0.4670  0.9086 18.2061 
+#> -2.5967 -1.1203  0.0094  1.0345  5.0067 
 #> 
 #> Coefficients:
 #>               Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  1.140e+02  5.042e+00   22.61   <2e-16 ***
-#> aux$XCO2    -2.751e+05  1.254e+04  -21.94   <2e-16 ***
+#> (Intercept)      96.43      17.18   5.612 7.46e-07 ***
+#> aux$XCO2    -231337.00   42779.92  -5.408 1.56e-06 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 2.024 on 1617 degrees of freedom
-#> Multiple R-squared:  0.2293, Adjusted R-squared:  0.2289 
-#> F-statistic: 481.2 on 1 and 1617 DF,  p-value: < 2.2e-16
+#> Residual standard error: 1.443 on 53 degrees of freedom
+#>   (1 observation deleted due to missingness)
+#> Multiple R-squared:  0.3556, Adjusted R-squared:  0.3434 
+#> F-statistic: 29.24 on 1 and 53 DF,  p-value: 1.557e-06
 
 
 plot(aux$SIF, aux$XCO2)
@@ -527,16 +577,27 @@ summary.lm(lm((aux$XCO2~aux$SIF)))
 #> 
 #> Residuals:
 #>        Min         1Q     Median         3Q        Max 
-#> -9.089e-06 -1.798e-06  2.646e-07  1.855e-06  7.940e-06 
+#> -7.048e-06 -2.944e-06 -9.258e-07  3.147e-06  8.491e-06 
 #> 
 #> Coefficients:
 #>               Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  4.042e-04  1.160e-07 3483.18   <2e-16 ***
-#> aux$SIF     -1.549e-04  5.704e-06  -27.16   <2e-16 ***
+#> (Intercept)  4.044e-04  1.008e-06 401.183  < 2e-16 ***
+#> aux$SIF     -1.164e-24  3.622e-25  -3.214  0.00221 ** 
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 3.325e-06 on 1617 degrees of freedom
-#> Multiple R-squared:  0.3133, Adjusted R-squared:  0.3129 
-#> F-statistic: 737.9 on 1 and 1617 DF,  p-value: < 2.2e-16
+#> Residual standard error: 4.207e-06 on 54 degrees of freedom
+#> Multiple R-squared:  0.1606, Adjusted R-squared:  0.145 
+#> F-statistic: 10.33 on 1 and 54 DF,  p-value: 0.002209
+```
+
+## Estatística Descritiva
+
+``` r
+aux <- data_set %>% 
+  mutate(SIF = ifelse(SIF <=0, mean(aux$SIF, na.rm=TRUE),SIF)) %>% 
+ # group_by(ano_mes, cultura) %>% 
+  summarise(FCO2 = mean(FCO2, na.rm=TRUE),
+            XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
+            SIF = mean(SIF, na.rm=TRUE))
 ```
