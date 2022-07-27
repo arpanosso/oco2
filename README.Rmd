@@ -32,7 +32,7 @@ Para facilitar o acesso, os dodos foram adquiridos por meio do pacote `{fco2}`.
 # Sys.unsetenv("GITHUB_PAT")
 # Sys.getenv("GITHUB_PAT")
 # devtools::install_github("arpanosso/fco2r")
-
+library(readxl)
 library(tidyverse)
 library(geobr)
 library(fco2r)
@@ -40,10 +40,19 @@ library(skimr)
 source("R/my_fun.R")
 ```
 
+
+### Carregando os dados meteorológicos
+
+```{r,}
+dados_estacao <- read_excel("data-raw/xlsx/estacao_meteorologia_ilha_solteira.xlsx", na = "NA") 
+  # dplyr::mutate_if(is.character, as.numeric)
+dplyr::glimpse(dados_estacao)
+```
+
 ### Conhecendo a base de dados de CO~2~ atmosférico
 
 ```{r}
-help(oco2_br)
+# help(oco2_br)
 glimpse(oco2_br)
 ```
 
@@ -76,7 +85,7 @@ br %>%
              alpha=0.2)
 ```
 
-Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $146,646$.
+Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $37387$.
 
 
 #### Estatísticas descritivas
@@ -139,7 +148,17 @@ atributos <- data_fco2
 ```
 
 
+#### Estatísticas descritivas
 
+```{r}
+skim(dados_estacao)
+```
+
+```{r}
+dados_estacao <- dados_estacao %>% 
+                   drop_na()
+visdat::vis_miss(dados_estacao)
+```
 
 ```{r}
 # Lista do xCO2
@@ -147,28 +166,45 @@ atributos <- data_fco2
 # para uma outra coluna denominada 'data' como ano-mes-dia
 # Fazer em pipeline, usar o mutate do pacote dplyr e provavelmente
 # a funçoes do pacote lubridate
-
-oco2 <- oco2 |>
+oco2 <- oco2  %>% 
   dplyr::mutate (
     ano = time_yyyymmddhhmmss%/%1e10,
     mês = time_yyyymmddhhmmss%/%1e8 %%100,
     dia = time_yyyymmddhhmmss%/%1e6 %%100,
     data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
-    )|>
+    ) %>% 
   dplyr::glimpse()
+
+
+dados_estacao <- dados_estacao %>% 
+  mutate(
+    ano = lubridate::year(data),
+    mês = lubridate::month(data),
+    dia = lubridate::day(data),
+    data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
+)
 ```
 
-Listando as datas em ambos os bancos de dados
+## Manipulação dos bancos de dados Fco2 e de estação.
+
+```{r}
+dim(atributos)
+atributos <- left_join(atributos, dados_estacao, by = "data")
+```
+
+
+
+#### Listando as datas em ambos os bancos de dados
 
 ```{r}
 # Lista das datas de FCO2 
 lista_data_fco2 <- unique(atributos$data)
 lista_data_oco2 <- unique(oco2$data)
+lista_data_estacao <- unique(dados_estacao$data)
 datas_fco2 <- paste0(lubridate::year(lista_data_fco2),"-",lubridate::month(lista_data_fco2)) %>% unique()
 
 datas_oco2 <- paste0(lubridate::year(lista_data_oco2),"-",lubridate::month(lista_data_oco2)) %>% unique()
 datas <- datas_fco2[datas_fco2 %in% datas_oco2]
-
 ```
 
 Criação as listas de datas, que é chave para a mesclagem dos arquivos.
@@ -201,7 +237,9 @@ data_set <- left_join(fco2 %>%
                    mes = lubridate::month(data)
                    ) %>% 
             select(ID, data, cultura, ano, mes, x,y, FCO2, Ts,
-                   Us, MO, Macro, VTP, ARG, ano_mes), 
+                   Us, MO, Macro, VTP, ARG, ano_mes,Tmed,Tmax, Tmin, Umed,
+                   Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
+                   chuva, inso), 
           xco2 %>% 
             select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),

@@ -27,7 +27,7 @@ Para facilitar o acesso, os dodos foram adquiridos por meio do pacote
 # Sys.unsetenv("GITHUB_PAT")
 # Sys.getenv("GITHUB_PAT")
 # devtools::install_github("arpanosso/fco2r")
-
+library(readxl)
 library(tidyverse)
 library(geobr)
 library(fco2r)
@@ -35,11 +35,36 @@ library(skimr)
 source("R/my_fun.R")
 ```
 
+### Carregando os dados meteorológicos
+
+``` r
+dados_estacao <- read_excel("data-raw/xlsx/estacao_meteorologia_ilha_solteira.xlsx", na = "NA") 
+  # dplyr::mutate_if(is.character, as.numeric)
+dplyr::glimpse(dados_estacao)
+#> Rows: 1,826
+#> Columns: 16
+#> $ data    <dttm> 2015-01-01, 2015-01-02, 2015-01-03, 2015-01-04, 2015-01-05, 2~
+#> $ Tmed    <dbl> 30.5, 30.0, 26.8, 27.1, 27.0, 27.6, 30.2, 28.2, 28.5, 29.9, 30~
+#> $ Tmax    <dbl> 36.5, 36.7, 35.7, 34.3, 33.2, 36.4, 37.2, 32.4, 37.1, 38.1, 38~
+#> $ Tmin    <dbl> 24.6, 24.5, 22.9, 22.7, 22.3, 22.8, 22.7, 24.0, 23.0, 23.3, 24~
+#> $ Umed    <dbl> 66.6, 70.4, 82.7, 76.8, 81.6, 75.5, 65.8, 70.0, 72.9, 67.6, 66~
+#> $ Umax    <dbl> 89.6, 93.6, 99.7, 95.0, 98.3, 96.1, 99.2, 83.4, 90.7, 97.4, 90~
+#> $ Umin    <dbl> 42.0, 44.2, 52.9, 43.8, 57.1, 47.5, 34.1, 57.4, 42.7, 38.3, 37~
+#> $ PkPa    <dbl> 97.2, 97.3, 97.4, 97.5, 97.4, 97.5, 97.4, 97.4, 97.4, 97.4, 97~
+#> $ Rad     <dbl> 23.6, 24.6, 20.2, 21.4, 17.8, 19.2, 27.0, 15.2, 21.6, 24.3, 24~
+#> $ PAR     <dbl> 496.6, 513.3, 430.5, 454.0, 378.2, 405.4, 565.7, 317.2, 467.5,~
+#> $ Eto     <dbl> 5.7, 5.8, 4.9, 5.1, 4.1, 4.8, 6.2, 4.1, 5.5, 5.7, 5.9, 6.1, 6.~
+#> $ Velmax  <dbl> 6.1, 4.8, 12.1, 6.2, 5.1, 4.5, 4.6, 5.7, 5.8, 5.2, 5.2, 4.7, 6~
+#> $ Velmin  <dbl> 1.0, 1.0, 1.2, 1.0, 0.8, 0.9, 0.9, 1.5, 1.2, 0.8, 0.8, 1.2, 1.~
+#> $ Dir_vel <dbl> 17.4, 261.9, 222.0, 25.0, 56.9, 74.9, 53.4, 89.0, 144.8, 303.9~
+#> $ chuva   <dbl> 0.0, 0.0, 3.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.~
+#> $ inso    <dbl> 7.9, 8.7, 5.2, 6.2, 3.4, 4.5, 10.5, 1.3, 6.3, 8.4, 8.6, 7.9, 1~
+```
+
 ### Conhecendo a base de dados de CO<sub>2</sub> atmosférico
 
 ``` r
-help(oco2_br)
-#> starting httpd help server ... done
+# help(oco2_br)
 glimpse(oco2_br)
 #> Rows: 37,387
 #> Columns: 32
@@ -86,7 +111,7 @@ oco2_br %>%
   geom_point(color = "blue")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ### Carregando o contorno do território
 
@@ -109,12 +134,12 @@ br %>%
              alpha=0.2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 Observe que utilizamos `dplyr::sample_n()` para retirar apenas
 ![1000](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;1000 "1000")
 amostras do total do banco de dados
-![146,646](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;146%2C646 "146,646").
+![37387](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;37387 "37387").
 
 #### Estatísticas descritivas
 
@@ -199,7 +224,7 @@ visdat::vis_miss(oco2_br %>%
 #> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
 oco2 <- oco2_br
@@ -209,6 +234,7 @@ oco2 <- oco2_br
 
 ``` r
 help(data_fco2)
+#> starting httpd help server ... done
 glimpse(data_fco2)
 #> Rows: 15,397
 #> Columns: 39
@@ -266,7 +292,7 @@ data_fco2 %>%
 #> using the `.groups` argument.
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ### Construindo o mapa com os pontos
 
@@ -281,7 +307,7 @@ br %>%
              alpha=0.2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 Observe que utilizamos `dplyr::sample_n()` para retirar apenas
 ![1000](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;1000 "1000")
@@ -374,11 +400,65 @@ visdat::vis_miss(data_fco2 %>%
                    sample_n(15000))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 atributos <- data_fco2
 ```
+
+#### Estatísticas descritivas
+
+``` r
+skim(dados_estacao)
+```
+
+|                                                  |               |
+|:-------------------------------------------------|:--------------|
+| Name                                             | dados_estacao |
+| Number of rows                                   | 1826          |
+| Number of columns                                | 16            |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |               |
+| Column type frequency:                           |               |
+| numeric                                          | 15            |
+| POSIXct                                          | 1             |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |               |
+| Group variables                                  | None          |
+
+Data summary
+
+**Variable type: numeric**
+
+| skim_variable | n_missing | complete_rate |   mean |    sd |   p0 |    p25 |    p50 |    p75 |  p100 | hist  |
+|:--------------|----------:|--------------:|-------:|------:|-----:|-------:|-------:|-------:|------:|:------|
+| Tmed          |         8 |          1.00 |  25.38 |  3.17 | 11.3 |  23.72 |  25.90 |  27.50 |  32.0 | ▁▁▃▇▃ |
+| Tmax          |         8 |          1.00 |  32.45 |  3.82 | 15.9 |  30.42 |  33.00 |  35.00 |  41.6 | ▁▁▃▇▂ |
+| Tmin          |         8 |          1.00 |  19.89 |  3.40 |  5.1 |  17.70 |  20.90 |  22.40 |  28.4 | ▁▁▃▇▁ |
+| Umed          |         8 |          1.00 |  74.28 | 13.17 | 34.3 |  65.50 |  75.80 |  84.50 | 100.0 | ▁▃▆▇▅ |
+| Umax          |         8 |          1.00 |  94.57 |  7.79 | 52.1 |  91.30 |  98.50 | 100.00 | 100.0 | ▁▁▁▂▇ |
+| Umin          |         8 |          1.00 |  49.14 | 14.43 | 14.9 |  38.23 |  49.25 |  58.90 | 100.0 | ▂▇▇▂▁ |
+| PkPa          |         8 |          1.00 |  97.47 |  0.33 | 96.2 |  97.20 |  97.40 |  97.70 |  98.6 | ▁▂▇▃▁ |
+| Rad           |         9 |          1.00 |  15.32 |  4.76 |  1.8 |  12.30 |  15.20 |  18.90 |  27.0 | ▁▃▇▆▂ |
+| PAR           |        62 |          0.97 | 325.61 | 99.10 | 34.8 | 264.85 | 322.00 | 395.92 | 785.2 | ▂▇▇▁▁ |
+| Eto           |         0 |          1.00 |   3.73 |  1.19 |  0.7 |   2.90 |   3.70 |   4.70 |   7.2 | ▂▇▇▆▁ |
+| Velmax        |         8 |          1.00 |   5.77 |  1.71 |  2.2 |   4.60 |   5.50 |   6.60 |  16.6 | ▆▇▁▁▁ |
+| Velmin        |         8 |          1.00 |   1.14 |  0.50 |  0.1 |   0.80 |   1.10 |   1.40 |   3.0 | ▃▇▅▂▁ |
+| Dir_vel       |         8 |          1.00 | 131.47 | 89.22 |  0.1 |  67.93 | 100.45 | 187.52 | 359.4 | ▆▇▂▃▂ |
+| chuva         |         0 |          1.00 |   3.61 |  9.99 |  0.0 |   0.00 |   0.00 |   0.80 |  93.2 | ▇▁▁▁▁ |
+| inso          |        10 |          0.99 |   5.03 |  2.78 |  0.0 |   3.20 |   5.50 |   7.20 |  11.2 | ▅▅▇▇▁ |
+
+**Variable type: POSIXct**
+
+| skim_variable | n_missing | complete_rate | min        | max        | median              | n_unique |
+|:--------------|----------:|--------------:|:-----------|:-----------|:--------------------|---------:|
+| data          |         0 |             1 | 2015-01-01 | 2019-12-31 | 2017-07-01 12:00:00 |     1826 |
+
+``` r
+dados_estacao <- dados_estacao %>% 
+                   drop_na()
+visdat::vis_miss(dados_estacao)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 # Lista do xCO2
@@ -386,14 +466,13 @@ atributos <- data_fco2
 # para uma outra coluna denominada 'data' como ano-mes-dia
 # Fazer em pipeline, usar o mutate do pacote dplyr e provavelmente
 # a funçoes do pacote lubridate
-
-oco2 <- oco2 |>
+oco2 <- oco2  %>% 
   dplyr::mutate (
     ano = time_yyyymmddhhmmss%/%1e10,
     mês = time_yyyymmddhhmmss%/%1e8 %%100,
     dia = time_yyyymmddhhmmss%/%1e6 %%100,
     data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
-    )|>
+    ) %>% 
   dplyr::glimpse()
 #> Rows: 37,387
 #> Columns: 33
@@ -430,14 +509,32 @@ oco2 <- oco2 |>
 #> $ flag_sudeste                                                  <lgl> FALSE, F~
 #> $ flag_centroeste                                               <lgl> FALSE, F~
 #> $ mês                                                           <dbl> 9, 9, 9,~
+
+
+dados_estacao <- dados_estacao %>% 
+  mutate(
+    ano = lubridate::year(data),
+    mês = lubridate::month(data),
+    dia = lubridate::day(data),
+    data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
+)
 ```
 
-Listando as datas em ambos os bancos de dados
+## Manipulação dos bancos de dados Fco2 e de estação.
+
+``` r
+dim(atributos)
+#> [1] 15397    39
+atributos <- left_join(atributos, dados_estacao, by = "data")
+```
+
+#### Listando as datas em ambos os bancos de dados
 
 ``` r
 # Lista das datas de FCO2 
 lista_data_fco2 <- unique(atributos$data)
 lista_data_oco2 <- unique(oco2$data)
+lista_data_estacao <- unique(dados_estacao$data)
 datas_fco2 <- paste0(lubridate::year(lista_data_fco2),"-",lubridate::month(lista_data_fco2)) %>% unique()
 
 datas_oco2 <- paste0(lubridate::year(lista_data_oco2),"-",lubridate::month(lista_data_oco2)) %>% unique()
@@ -476,7 +573,9 @@ data_set <- left_join(fco2 %>%
                    mes = lubridate::month(data)
                    ) %>% 
             select(ID, data, cultura, ano, mes, x,y, FCO2, Ts,
-                   Us, MO, Macro, VTP, ARG, ano_mes), 
+                   Us, MO, Macro, VTP, ARG, ano_mes,Tmed,Tmax, Tmin, Umed,
+                   Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
+                   chuva, inso), 
           xco2 %>% 
             select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
@@ -487,7 +586,7 @@ data_set<-data_set %>%
 visdat::vis_miss(data_set %>% sample_n(2000))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 ``` r
 # head(data_set)
@@ -510,7 +609,7 @@ plot(aux$SIF, aux$FCO2)
 abline(lm((aux$FCO2~aux$SIF)))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 ``` r
 summary.lm(lm((aux$FCO2~aux$SIF)))
@@ -538,7 +637,7 @@ plot(aux$XCO2, aux$FCO2)
 abline(lm((aux$FCO2~aux$XCO2)))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-23-2.png)<!-- -->
 
 ``` r
 summary.lm(lm((aux$FCO2~aux$XCO2)))
@@ -567,7 +666,7 @@ plot(aux$SIF, aux$XCO2)
 abline(lm((aux$XCO2~aux$SIF)))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-19-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-23-3.png)<!-- -->
 
 ``` r
 summary.lm(lm((aux$XCO2~aux$SIF)))
