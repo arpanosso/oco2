@@ -37,6 +37,10 @@ library(tidyverse)
 library(geobr)
 library(fco2r)
 library(skimr)
+library(tidymodels)
+library(ISLR)
+library(modeldata)
+library(vip)
 source("R/my_fun.R")
 ```
 
@@ -104,7 +108,7 @@ oco2 <- oco2_br
 ### Conhecendo a base de dados de emissão de CO~2~ do solo
 
 ```{r}
-help(data_fco2)
+# help(data_fco2)
 glimpse(data_fco2)
 ```
 
@@ -223,8 +227,8 @@ xco2 <- oco2 %>%
 Coordenadas das cidades
 
 ```{r}
-unique(xco2$ano_mes) == 
-unique(fco2$ano_mes)
+unique(xco2$ano_mes)[unique(xco2$ano_mes) %>% order()] == 
+unique(fco2$ano_mes)[unique(fco2$ano_mes) %>% order()]
 ```
 
 
@@ -241,12 +245,13 @@ data_set <- left_join(fco2 %>%
                    Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
                    chuva, inso), 
           xco2 %>% 
-            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
+            select(data,mês,dia,longitude,latitude,xco2,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
-         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1)/2) #
+         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1*2.6250912*10^(-19)  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1* 2.57743*10^(-19))/2) #
 
 data_set<-data_set %>%
-  filter(dist <= .159) 
+  select(-fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1, -fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1 ) %>% 
+  filter(dist <= .16) 
 visdat::vis_miss(data_set %>% sample_n(2000))
 # head(data_set)
 # fco2$ano_mes %>% unique()
@@ -255,59 +260,199 @@ visdat::vis_miss(data_set %>% sample_n(2000))
 ```
 
 
-```{r}
-aux <- data_set %>% 
+```{r,message=FALSE,warning=FALSE,error=FALSE}
+tab_medias <- data_set %>% 
   mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
   group_by(ano_mes, cultura) %>% 
   summarise(FCO2 = mean(FCO2, na.rm=TRUE),
-            XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
+            XCO2 = mean(xco2, na.rm=TRUE),
             SIF = mean(SIF, na.rm=TRUE))
 
-plot(aux$SIF, aux$FCO2)
-abline(lm((aux$FCO2~aux$SIF)))
-summary.lm(lm((aux$FCO2~aux$SIF)))
+tab_medias %>% 
+  ggplot(aes(x=XCO2, y=SIF)) +
+  geom_point()+
+  geom_smooth(method = "lm")
 
-plot(aux$XCO2, aux$FCO2)
-abline(lm((aux$FCO2~aux$XCO2)))
-summary.lm(lm((aux$FCO2~aux$XCO2)))
+tab_medias %>% 
+  ggplot(aes(x=XCO2, y=FCO2)) +
+  geom_point()+
+  geom_smooth(method = "lm")
 
-
-plot(aux$SIF, aux$XCO2)
-abline(lm((aux$XCO2~aux$SIF)))
-summary.lm(lm((aux$XCO2~aux$SIF)))
+tab_medias %>% 
+  ggplot(aes(x=FCO2, y=SIF)) +
+  geom_point()+
+  geom_smooth(method = "lm")
 ```
 
 ## Estatística Descritiva
 
+Completar posteriormente. 
+
+
+## Definindo a base de treino e a base de teste
+
+Definindo a semente aleatória mais o conjunto de dados para teste e treino dos modelos
 ```{r}
-aux <- data_set %>% 
-  mutate(SIF = ifelse(SIF <=0, mean(aux$SIF, na.rm=TRUE),SIF)) %>% 
- # group_by(ano_mes, cultura) %>% 
-  summarise(FCO2 = mean(FCO2, na.rm=TRUE),
-            XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
-            SIF = mean(SIF, na.rm=TRUE))
+set.seed(1235)
+fco2_initial_split <- initial_split(data_set, prop = 0.75)
+```
+
+
+```{r,message=FALSE,warning=FALSE,error=FALSE}
+fco2_train <- training(fco2_initial_split)
+fco2_train  %>% 
+  ggplot(aes(x=FCO2, y=..density..))+
+  geom_histogram(bins = 30, color="black",  fill="lightgray")+
+  geom_density(alpha=.05,fill="red")+
+  theme_bw() +
+  labs(x="FCO2", y = "Densidade")
+```
+
+
+
+```{r}
+fco2_train  %>% 
+  ggplot(aes(x=SIF, y=..density..))+
+  geom_histogram(bins = 11, color="black",  fill="lightgray")+
+  geom_density(alpha=.05,fill="green")+
+  theme_bw() +
+  labs(x="SIF", y = "Densidade")
 ```
 
 
 
 
+```{r}
+fco2_train  %>% 
+  ggplot(aes(x=xco2, y=..density..))+
+  geom_histogram(bins = 15, color="black",  fill="lightgray")+
+  geom_density(alpha=.05,fill="blue")+
+  theme_bw() +
+  labs(x="XCO2", y = "Densidade")
+```
 
 
 
+## Correlação
+
+```{r}
+glimpse(fco2_train)
+fco2_train   %>%  
+  select(where(is.numeric)) %>%
+  select(-c(ID,ano,mes,x,y,latitude,longitude,dist,mês,dia)) %>% 
+  drop_na() %>% 
+  cor()  %>%  
+  corrplot::corrplot()
+```
 
 
+## Data-prep
+
+```{r}
+fco2_recipe <- recipe(FCO2 ~ ., data = fco2_train %>% 
+                    select(-c(data.x,data.y,ID,ano,mes,x,y,latitude,longitude,dist,mês,dia,ano_mes))
+                      ) %>%  
+  step_normalize(all_numeric_predictors())  %>% 
+  step_novel(all_nominal_predictors()) %>% 
+  step_zv(all_predictors()) %>%
+  # step_poly(c(n_vacas, prod_diaria), degree = 9)  |> 
+  step_dummy(all_nominal_predictors())
+
+bake(prep(fco2_recipe), new_data = NULL)
+```
 
 
+```{r}
+visdat::vis_miss(bake(prep(fco2_recipe), new_data = NULL))
+```
+## TUNAGEM
+
+```{r}
+fco2_resamples <- vfold_cv(fco2_train, v = 5)
+grid <- grid_regular(
+  penalty(range = c(-4, -2)),
+  levels = 20
+)
+```
 
 
+## ÁRVORE DE DECISÃO (decision tree - dt)
+
+```{r}
+fco2_dt_model <- decision_tree(
+  cost_complexity = tune(),
+  tree_depth = tune(),
+  min_n = tune()
+)  %>%  
+  set_mode("regression")  %>%  
+  set_engine("rpart")
+```
 
 
+### Workflow
+
+```{r}
+fco2_dt_wf <- workflow()   %>%  
+  add_model(fco2_dt_model) %>% 
+  add_recipe(fco2_recipe)
+```
+
+### Criando a matriz (grid) com os valores de hiperparâmetros a serem testados
+
+```{r}
+grid_dt <- grid_random(
+  cost_complexity(c(-6, -4)),
+  tree_depth(range = c(8, 18)),
+  min_n(range = c(42, 52)),
+  size = 20
+)
+glimpse(grid_dt)
+```
+
+```{r}
+fco2_dt_tune_grid <- tune_grid(
+  fco2_dt_wf,
+  resamples = fco2_resamples,
+  grid = grid_dt,
+  metrics = metric_set(rmse)
+)
+```
+
+```{r}
+autoplot(fco2_dt_tune_grid)
+```
+
+```{r}
+collect_metrics(fco2_dt_tune_grid)
+```
+
+## Desempenho dos modelos finais
+
+```{r}
+fco2_dt_best_params <- select_best(fco2_dt_tune_grid, "rmse")
+fco2_dt_wf <- fco2_dt_wf %>% finalize_workflow(fco2_dt_best_params)
+fco2_dt_last_fit <- last_fit(fco2_dt_wf, fco2_initial_split)
+```
+
+## Criar os preditos
+
+```{r}
+fco2_test_preds <- bind_rows(
+  collect_predictions(fco2_dt_last_fit)  %>%   mutate(modelo = "dt")
+)
+```
+
+```{r}
+fco2_test_preds %>% 
+  ggplot(aes(x=.pred, y=FCO2)) +
+  geom_point()
+```
+
+## Variáveis importantes
 
 
-
-
-
-
-
-
+```{r}
+fco2_dt_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
+vip(fco2_dt_last_fit_model)
+```
 

@@ -32,6 +32,10 @@ library(tidyverse)
 library(geobr)
 library(fco2r)
 library(skimr)
+library(tidymodels)
+library(ISLR)
+library(modeldata)
+library(vip)
 source("R/my_fun.R")
 ```
 
@@ -233,8 +237,7 @@ oco2 <- oco2_br
 ### Conhecendo a base de dados de emissão de CO<sub>2</sub> do solo
 
 ``` r
-help(data_fco2)
-#> starting httpd help server ... done
+# help(data_fco2)
 glimpse(data_fco2)
 #> Rows: 15,397
 #> Columns: 39
@@ -556,11 +559,10 @@ xco2 <- oco2 %>%
 Coordenadas das cidades
 
 ``` r
-unique(xco2$ano_mes) == 
-unique(fco2$ano_mes)
-#>  [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE
-#> [13] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-#> [25]  TRUE  TRUE  TRUE  TRUE  TRUE
+unique(xco2$ano_mes)[unique(xco2$ano_mes) %>% order()] == 
+unique(fco2$ano_mes)[unique(fco2$ano_mes) %>% order()]
+#>  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+#> [16] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 ```
 
 Abordagem usando o join do `{dplyr}`
@@ -577,12 +579,13 @@ data_set <- left_join(fco2 %>%
                    Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
                    chuva, inso), 
           xco2 %>% 
-            select(data,mês,dia,longitude,latitude,xco2_moles_mole_1,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
+            select(data,mês,dia,longitude,latitude,xco2,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
-         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1)/2) #
+         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1*2.6250912*10^(-19)  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1* 2.57743*10^(-19))/2) #
 
 data_set<-data_set %>%
-  filter(dist <= .159) 
+  select(-fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1, -fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1 ) %>% 
+  filter(dist <= .16) 
 visdat::vis_miss(data_set %>% sample_n(2000))
 ```
 
@@ -596,107 +599,299 @@ visdat::vis_miss(data_set %>% sample_n(2000))
 ```
 
 ``` r
-aux <- data_set %>% 
+tab_medias <- data_set %>% 
   mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
   group_by(ano_mes, cultura) %>% 
   summarise(FCO2 = mean(FCO2, na.rm=TRUE),
-            XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
+            XCO2 = mean(xco2, na.rm=TRUE),
             SIF = mean(SIF, na.rm=TRUE))
-#> `summarise()` has grouped output by 'ano_mes'. You can override using the
-#> `.groups` argument.
 
-plot(aux$SIF, aux$FCO2)
-abline(lm((aux$FCO2~aux$SIF)))
+tab_medias %>% 
+  ggplot(aes(x=XCO2, y=SIF)) +
+  geom_point()+
+  geom_smooth(method = "lm")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 ``` r
-summary.lm(lm((aux$FCO2~aux$SIF)))
-#> 
-#> Call:
-#> lm(formula = (aux$FCO2 ~ aux$SIF))
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -2.5601 -0.7685 -0.2498  0.7287  3.2973 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 1.697e+00  3.140e-01   5.404 1.58e-06 ***
-#> aux$SIF     7.805e-19  1.121e-19   6.960 5.22e-09 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 1.3 on 53 degrees of freedom
-#>   (1 observation deleted due to missingness)
-#> Multiple R-squared:  0.4776, Adjusted R-squared:  0.4677 
-#> F-statistic: 48.45 on 1 and 53 DF,  p-value: 5.223e-09
 
-plot(aux$XCO2, aux$FCO2)
-abline(lm((aux$FCO2~aux$XCO2)))
+tab_medias %>% 
+  ggplot(aes(x=XCO2, y=FCO2)) +
+  geom_point()+
+  geom_smooth(method = "lm")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-23-2.png)<!-- -->
 
 ``` r
-summary.lm(lm((aux$FCO2~aux$XCO2)))
-#> 
-#> Call:
-#> lm(formula = (aux$FCO2 ~ aux$XCO2))
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -2.5967 -1.1203  0.0094  1.0345  5.0067 
-#> 
-#> Coefficients:
-#>               Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)      96.43      17.18   5.612 7.46e-07 ***
-#> aux$XCO2    -231337.00   42779.92  -5.408 1.56e-06 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 1.443 on 53 degrees of freedom
-#>   (1 observation deleted due to missingness)
-#> Multiple R-squared:  0.3556, Adjusted R-squared:  0.3434 
-#> F-statistic: 29.24 on 1 and 53 DF,  p-value: 1.557e-06
 
-
-plot(aux$SIF, aux$XCO2)
-abline(lm((aux$XCO2~aux$SIF)))
+tab_medias %>% 
+  ggplot(aes(x=FCO2, y=SIF)) +
+  geom_point()+
+  geom_smooth(method = "lm")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-23-3.png)<!-- -->
 
-``` r
-summary.lm(lm((aux$XCO2~aux$SIF)))
-#> 
-#> Call:
-#> lm(formula = (aux$XCO2 ~ aux$SIF))
-#> 
-#> Residuals:
-#>        Min         1Q     Median         3Q        Max 
-#> -7.048e-06 -2.944e-06 -9.258e-07  3.147e-06  8.491e-06 
-#> 
-#> Coefficients:
-#>               Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  4.044e-04  1.008e-06 401.183  < 2e-16 ***
-#> aux$SIF     -1.164e-24  3.622e-25  -3.214  0.00221 ** 
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 4.207e-06 on 54 degrees of freedom
-#> Multiple R-squared:  0.1606, Adjusted R-squared:  0.145 
-#> F-statistic: 10.33 on 1 and 54 DF,  p-value: 0.002209
-```
-
 ## Estatística Descritiva
 
+Completar posteriormente.
+
+## Definindo a base de treino e a base de teste
+
+Definindo a semente aleatória mais o conjunto de dados para teste e
+treino dos modelos
+
 ``` r
-aux <- data_set %>% 
-  mutate(SIF = ifelse(SIF <=0, mean(aux$SIF, na.rm=TRUE),SIF)) %>% 
- # group_by(ano_mes, cultura) %>% 
-  summarise(FCO2 = mean(FCO2, na.rm=TRUE),
-            XCO2 = mean(xco2_moles_mole_1, na.rm=TRUE),
-            SIF = mean(SIF, na.rm=TRUE))
+set.seed(1235)
+fco2_initial_split <- initial_split(data_set, prop = 0.75)
 ```
+
+``` r
+fco2_train <- training(fco2_initial_split)
+fco2_train  %>% 
+  ggplot(aes(x=FCO2, y=..density..))+
+  geom_histogram(bins = 30, color="black",  fill="lightgray")+
+  geom_density(alpha=.05,fill="red")+
+  theme_bw() +
+  labs(x="FCO2", y = "Densidade")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
+``` r
+fco2_train  %>% 
+  ggplot(aes(x=SIF, y=..density..))+
+  geom_histogram(bins = 11, color="black",  fill="lightgray")+
+  geom_density(alpha=.05,fill="green")+
+  theme_bw() +
+  labs(x="SIF", y = "Densidade")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+``` r
+fco2_train  %>% 
+  ggplot(aes(x=xco2, y=..density..))+
+  geom_histogram(bins = 15, color="black",  fill="lightgray")+
+  geom_density(alpha=.05,fill="blue")+
+  theme_bw() +
+  labs(x="XCO2", y = "Densidade")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+## Correlação
+
+``` r
+glimpse(fco2_train)
+#> Rows: 6,141
+#> Columns: 37
+#> $ ID        <int> 64, 72, 31, 14, 66, 6, 42, 63, 74, 49, 17, 76, 14, 42, 66, 4~
+#> $ data.x    <date> 2019-05-26, 2016-02-16, 2018-06-21, 2016-04-15, 2018-06-04,~
+#> $ cultura   <chr> "pasto", "eucalipto", "silvipastoril", "mata ciliar", "silvi~
+#> $ ano       <dbl> 2019, 2016, 2018, 2016, 2018, 2017, 2017, 2019, 2017, 2018, ~
+#> $ mes       <dbl> 5, 2, 6, 4, 6, 2, 6, 8, 6, 6, 7, 6, 3, 10, 7, 10, 3, 8, 2, 7~
+#> $ x         <dbl> 7747952, 0, 7749399, 0, 7749428, 100, 115, 7747952, 80, 7749~
+#> $ y         <dbl> 456878.7, 0.0, 457163.2, 0.0, 457254.1, 0.0, 20.0, 456878.7,~
+#> $ FCO2      <dbl> 2.80, 8.92, 0.94, 5.98, 3.08, 7.02, 2.54, 1.59, 2.21, 1.16, ~
+#> $ Ts        <dbl> 18.00000, 27.90000, 17.60000, 27.30000, 23.20000, 28.10000, ~
+#> $ Us        <dbl> 2.10000, 9.00000, 13.96000, 12.00000, 12.58123, 11.00000, 18~
+#> $ MO        <dbl> 23, 34, 4, 23, 30, 31, 30, 21, 28, 25, 16, 24, 23, 34, 26, 3~
+#> $ Macro     <dbl> 0.10000000, 0.07565281, 11.45000000, 0.04698687, 12.82000000~
+#> $ VTP       <dbl> 0.42000, 37.24987, 57.11000, 42.38546, 51.28000, NA, NA, 0.3~
+#> $ ARG       <dbl> 137.0000, 255.2497, NA, 403.6876, 667.9900, NA, NA, 135.2100~
+#> $ ano_mes   <chr> "2019-5", "2016-2", "2018-6", "2016-4", "2018-6", "2017-2", ~
+#> $ Tmed      <dbl> 20.7, NA, 24.5, NA, 20.7, 27.1, 13.7, 25.8, 13.7, 23.8, 23.9~
+#> $ Tmax      <dbl> 28.6, NA, 32.3, NA, 28.1, 34.4, 20.7, 34.0, 20.7, 30.5, 33.4~
+#> $ Tmin      <dbl> 13.0, NA, 16.8, NA, 16.1, 20.5, 8.0, 18.2, 8.0, 19.0, 16.0, ~
+#> $ Umed      <dbl> 67.1, NA, 58.5, NA, 81.8, 75.4, 72.6, 49.9, 72.6, 67.4, 60.1~
+#> $ Umax      <dbl> 89.1, NA, 85.1, NA, 100.0, 99.1, 95.7, 75.4, 95.7, 89.6, 98.~
+#> $ Umin      <dbl> 43.1, NA, 38.7, NA, 56.9, 47.3, 40.8, 30.3, 40.8, 45.7, 27.7~
+#> $ PkPa      <dbl> 97.7, NA, 97.9, NA, 98.1, 97.5, 98.1, 97.6, 98.1, 97.5, 97.6~
+#> $ Rad       <dbl> 11.4, NA, 11.5, NA, 10.7, 22.3, 14.8, 13.4, 14.8, 7.3, 12.5,~
+#> $ Eto       <dbl> 2.7, NA, 2.7, NA, 2.1, 4.8, 2.2, 4.7, 2.2, 2.1, 2.8, 2.8, NA~
+#> $ Velmax    <dbl> 4.6, NA, 5.4, NA, 4.3, 4.9, 4.6, 7.3, 4.6, 4.3, 4.3, 4.6, NA~
+#> $ Velmin    <dbl> 1.2, NA, 0.9, NA, 0.7, 0.7, 1.0, 2.1, 1.0, 0.8, 0.8, 1.2, NA~
+#> $ Dir_vel   <dbl> 98.0, NA, 61.1, NA, 171.7, 33.8, 213.8, 77.7, 213.8, 55.2, 8~
+#> $ chuva     <dbl> 0.0, NA, 0.0, NA, 0.0, 0.0, 0.3, 0.0, 0.3, 0.0, 0.0, 0.0, NA~
+#> $ inso      <dbl> 4.1, NA, 5.9, NA, 5.1, 7.2, 9.0, 5.1, 9.0, 1.8, 5.5, 8.2, NA~
+#> $ data.y    <date> 2019-05-25, 2016-02-26, 2018-06-16, 2016-04-30, 2018-06-16,~
+#> $ mês       <dbl> 5, 2, 6, 4, 6, 2, 6, 8, 6, 6, 7, 6, 3, 10, 7, 10, 3, 8, 2, 7~
+#> $ dia       <dbl> 25, 26, 16, 30, 16, 12, 29, 29, 20, 16, 18, 20, 6, 21, 5, 21~
+#> $ longitude <dbl> -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.~
+#> $ latitude  <dbl> -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.~
+#> $ xco2      <dbl> 405.7114, 394.3991, 405.5445, 398.5355, 405.5445, 399.1649, ~
+#> $ dist      <dbl> 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.156~
+#> $ SIF       <dbl> 0.34747084, 1.12135961, -0.26169899, 0.58374462, -0.26169899~
+fco2_train   %>%  
+  select(where(is.numeric)) %>%
+  select(-c(ID,ano,mes,x,y,latitude,longitude,dist,mês,dia)) %>% 
+  drop_na() %>% 
+  cor()  %>%  
+  corrplot::corrplot()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+## Data-prep
+
+``` r
+fco2_recipe <- recipe(FCO2 ~ ., data = fco2_train %>% 
+                    select(-c(data.x,data.y,ID,ano,mes,x,y,latitude,longitude,dist,mês,dia,ano_mes))
+                      ) %>%  
+  step_normalize(all_numeric_predictors())  %>% 
+  step_novel(all_nominal_predictors()) %>% 
+  step_zv(all_predictors()) %>%
+  # step_poly(c(n_vacas, prod_diaria), degree = 9)  |> 
+  step_dummy(all_nominal_predictors())
+
+bake(prep(fco2_recipe), new_data = NULL)
+#> # A tibble: 6,141 x 29
+#>         Ts       Us      MO  Macro    VTP    ARG    Tmed   Tmax    Tmin   Umed
+#>      <dbl>    <dbl>   <dbl>  <dbl>  <dbl>  <dbl>   <dbl>  <dbl>   <dbl>  <dbl>
+#>  1 -0.794  -1.64     0.0860 -0.755 -1.56  -0.966 -0.706  -0.565 -1.08   -0.314
+#>  2  0.901  -0.689    1.17   -0.759  0.130 -0.347 NA      NA     NA      NA    
+#>  3 -0.862  -0.00807 -1.78    1.14   1.04  NA      0.147   0.208 -0.234  -1.21 
+#>  4  0.799  -0.277    0.0860 -0.764  0.366  0.429 NA      NA     NA      NA    
+#>  5  0.0966 -0.197    0.775   1.36   0.775  1.81  -0.706  -0.669 -0.389   1.22 
+#>  6  0.936  -0.414    0.874  NA     NA     NA      0.731   0.647  0.587   0.550
+#>  7 -0.623   0.642    0.775  NA     NA     NA     -2.28   -2.22  -2.19    0.258
+#>  8 -0.383  -1.46    -0.111  -0.762 -1.56  -0.975  0.439   0.563  0.0769 -2.10 
+#>  9 -0.794   0.615    0.578  NA     NA     NA     -2.28   -2.22  -2.19    0.258
+#> 10  0.268  -0.358    0.283   0.582  0.544  1.57  -0.0101 -0.168  0.254  -0.283
+#> # ... with 6,131 more rows, and 19 more variables: Umax <dbl>, Umin <dbl>,
+#> #   PkPa <dbl>, Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>,
+#> #   Dir_vel <dbl>, chuva <dbl>, inso <dbl>, xco2 <dbl>, SIF <dbl>, FCO2 <dbl>,
+#> #   cultura_eucalipto <dbl>, cultura_mata.ciliar <dbl>, cultura_pasto <dbl>,
+#> #   cultura_pinus <dbl>, cultura_silvipastoril <dbl>, cultura_new <dbl>
+```
+
+``` r
+visdat::vis_miss(bake(prep(fco2_recipe), new_data = NULL))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- --> \## TUNAGEM
+
+``` r
+fco2_resamples <- vfold_cv(fco2_train, v = 5)
+grid <- grid_regular(
+  penalty(range = c(-4, -2)),
+  levels = 20
+)
+```
+
+## ÁRVORE DE DECISÃO (decision tree - dt)
+
+``` r
+fco2_dt_model <- decision_tree(
+  cost_complexity = tune(),
+  tree_depth = tune(),
+  min_n = tune()
+)  %>%  
+  set_mode("regression")  %>%  
+  set_engine("rpart")
+```
+
+### Workflow
+
+``` r
+fco2_dt_wf <- workflow()   %>%  
+  add_model(fco2_dt_model) %>% 
+  add_recipe(fco2_recipe)
+```
+
+### Criando a matriz (grid) com os valores de hiperparâmetros a serem testados
+
+``` r
+grid_dt <- grid_random(
+  cost_complexity(c(-6, -4)),
+  tree_depth(range = c(8, 18)),
+  min_n(range = c(42, 52)),
+  size = 20
+)
+glimpse(grid_dt)
+#> Rows: 20
+#> Columns: 3
+#> $ cost_complexity <dbl> 1.335198e-06, 2.145548e-06, 5.823121e-05, 8.188277e-05~
+#> $ tree_depth      <int> 10, 17, 18, 9, 8, 17, 10, 18, 8, 13, 8, 10, 18, 9, 10,~
+#> $ min_n           <int> 52, 50, 42, 48, 47, 45, 42, 51, 43, 47, 42, 48, 48, 47~
+```
+
+``` r
+fco2_dt_tune_grid <- tune_grid(
+  fco2_dt_wf,
+  resamples = fco2_resamples,
+  grid = grid_dt,
+  metrics = metric_set(rmse)
+)
+```
+
+``` r
+autoplot(fco2_dt_tune_grid)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+``` r
+collect_metrics(fco2_dt_tune_grid)
+#> # A tibble: 20 x 9
+#>    cost_complexity tree_depth min_n .metric .estimator  mean     n std_err
+#>              <dbl>      <int> <int> <chr>   <chr>      <dbl> <int>   <dbl>
+#>  1      0.00000134         10    52 rmse    standard    1.44     5   0.115
+#>  2      0.00000215         17    50 rmse    standard    1.44     5   0.110
+#>  3      0.0000582          18    42 rmse    standard    1.44     5   0.114
+#>  4      0.0000819           9    48 rmse    standard    1.44     5   0.113
+#>  5      0.0000491           8    47 rmse    standard    1.45     5   0.114
+#>  6      0.0000428          17    45 rmse    standard    1.44     5   0.112
+#>  7      0.0000163          10    42 rmse    standard    1.44     5   0.114
+#>  8      0.00000554         18    51 rmse    standard    1.44     5   0.110
+#>  9      0.0000165           8    43 rmse    standard    1.45     5   0.115
+#> 10      0.0000165          13    47 rmse    standard    1.44     5   0.108
+#> 11      0.0000202           8    42 rmse    standard    1.45     5   0.115
+#> 12      0.00000235         10    48 rmse    standard    1.44     5   0.112
+#> 13      0.00000435         18    48 rmse    standard    1.44     5   0.109
+#> 14      0.0000132           9    47 rmse    standard    1.44     5   0.113
+#> 15      0.00000265         10    50 rmse    standard    1.43     5   0.114
+#> 16      0.00000399         11    47 rmse    standard    1.44     5   0.109
+#> 17      0.00000231         10    48 rmse    standard    1.44     5   0.112
+#> 18      0.0000892          14    49 rmse    standard    1.44     5   0.108
+#> 19      0.00000275          8    44 rmse    standard    1.45     5   0.115
+#> 20      0.0000805           8    46 rmse    standard    1.45     5   0.115
+#> # ... with 1 more variable: .config <chr>
+```
+
+## Desempenho dos modelos finais
+
+``` r
+fco2_dt_best_params <- select_best(fco2_dt_tune_grid, "rmse")
+fco2_dt_wf <- fco2_dt_wf %>% finalize_workflow(fco2_dt_best_params)
+fco2_dt_last_fit <- last_fit(fco2_dt_wf, fco2_initial_split)
+```
+
+## Criar os preditos
+
+``` r
+fco2_test_preds <- bind_rows(
+  collect_predictions(fco2_dt_last_fit)  %>%   mutate(modelo = "dt")
+)
+```
+
+``` r
+fco2_test_preds %>% 
+  ggplot(aes(x=.pred, y=FCO2)) +
+  geom_point()
+#> Warning: Removed 12 rows containing missing values (geom_point).
+```
+
+![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+
+## Variáveis importantes
+
+``` r
+fco2_dt_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
+vip(fco2_dt_last_fit_model)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
