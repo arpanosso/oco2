@@ -1,5 +1,5 @@
 Aprendizado de Máquina: Emissão de CO<sub>2</sub> e CO<sub>2</sub>
-Atmosférico
+Atmosférico e SIF
 ================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -36,6 +36,7 @@ library(tidymodels)
 library(ISLR)
 library(modeldata)
 library(vip)
+library(ggpubr)
 source("R/my_fun.R")
 ```
 
@@ -69,41 +70,7 @@ dplyr::glimpse(dados_estacao)
 
 ``` r
 # help(oco2_br)
-glimpse(oco2_br)
-#> Rows: 37,387
-#> Columns: 32
-#> $ longitude                                                     <dbl> -70.5, -~
-#> $ longitude_bnds                                                <chr> "-71.0:-~
-#> $ latitude                                                      <dbl> -5.5, -4~
-#> $ latitude_bnds                                                 <chr> "-6.0:-5~
-#> $ time_yyyymmddhhmmss                                           <dbl> 2.014091~
-#> $ time_bnds_yyyymmddhhmmss                                      <chr> "2014090~
-#> $ altitude_km                                                   <dbl> 3307.8, ~
-#> $ alt_bnds_km                                                   <chr> "0.0:661~
-#> $ fluorescence_radiance_757nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 7.272876~
-#> $ fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 2.537127~
-#> $ xco2_moles_mole_1                                             <dbl> 0.000394~
-#> $ aerosol_total_aod                                             <dbl> 0.148579~
-#> $ fluorescence_offset_relative_771nm_idp                        <dbl> 0.016753~
-#> $ fluorescence_at_reference_ph_sec_1_m_2_sr_1_um_1              <dbl> 2.615319~
-#> $ fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 3.088582~
-#> $ fluorescence_offset_relative_757nm_idp                        <dbl> 0.013969~
-#> $ fluorescence_radiance_771nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 5.577878~
-#> $ xco2                                                          <dbl> 394.3686~
-#> $ data                                                          <dttm> 2014-09~
-#> $ ano                                                           <dbl> 2014, 20~
-#> $ mes                                                           <dbl> 9, 9, 9,~
-#> $ dia                                                           <int> 6, 6, 6,~
-#> $ dia_semana                                                    <dbl> 7, 7, 7,~
-#> $ x                                                             <int> 7, 8, 11~
-#> $ xco2_est                                                      <dbl> 392.7080~
-#> $ delta                                                         <dbl> -1.66062~
-#> $ XCO2                                                          <dbl> 387.2781~
-#> $ flag_norte                                                    <lgl> TRUE, TR~
-#> $ flag_nordeste                                                 <lgl> FALSE, F~
-#> $ flag_sul                                                      <lgl> FALSE, F~
-#> $ flag_sudeste                                                  <lgl> FALSE, F~
-#> $ flag_centroeste                                               <lgl> FALSE, F~
+# glimpse(oco2_br)
 ```
 
 ### Alguns gráficos
@@ -121,7 +88,6 @@ oco2_br %>%
 
 ``` r
 br <- geobr::read_country(showProgress = FALSE)
-#> Using year 2010
 ```
 
 ### Construindo o mapa com os pontos
@@ -131,7 +97,7 @@ br %>%
   ggplot() +
   geom_sf(fill = "white") +
     geom_point(data=oco2_br %>% 
-                 sample_n(2000),
+                 sample_n(1000),
              aes(x=longitude,y=latitude),
              shape=3,
              col="red",
@@ -148,87 +114,8 @@ amostras do total do banco de dados
 #### Estatísticas descritivas
 
 ``` r
-skim(oco2_br)
+# skim(oco2_br)
 ```
-
-|                                                  |         |
-|:-------------------------------------------------|:--------|
-| Name                                             | oco2_br |
-| Number of rows                                   | 37387   |
-| Number of columns                                | 32      |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |         |
-| Column type frequency:                           |         |
-| character                                        | 4       |
-| logical                                          | 5       |
-| numeric                                          | 22      |
-| POSIXct                                          | 1       |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |         |
-| Group variables                                  | None    |
-
-Data summary
-
-**Variable type: character**
-
-| skim_variable            | n_missing | complete_rate | min | max | empty | n_unique | whitespace |
-|:-------------------------|----------:|--------------:|----:|----:|------:|---------:|-----------:|
-| longitude_bnds           |         0 |             1 |  11 |  11 |     0 |       39 |          0 |
-| latitude_bnds            |         0 |             1 |   7 |  11 |     0 |       38 |          0 |
-| time_bnds_yyyymmddhhmmss |         0 |             1 |  29 |  29 |     0 |     1765 |          0 |
-| alt_bnds_km              |         0 |             1 |  11 |  20 |     0 |       64 |          0 |
-
-**Variable type: logical**
-
-| skim_variable   | n_missing | complete_rate | mean | count                  |
-|:----------------|----------:|--------------:|-----:|:-----------------------|
-| flag_norte      |         0 |             1 | 0.34 | FAL: 24511, TRU: 12876 |
-| flag_nordeste   |         0 |             1 | 0.23 | FAL: 28765, TRU: 8622  |
-| flag_sul        |         0 |             1 | 0.08 | FAL: 34531, TRU: 2856  |
-| flag_sudeste    |         0 |             1 | 0.12 | FAL: 32834, TRU: 4553  |
-| flag_centroeste |         0 |             1 | 0.21 | FAL: 29612, TRU: 7775  |
-
-**Variable type: numeric**
-
-| skim_variable                                                    | n_missing | complete_rate |          mean |           sd |            p0 |           p25 |           p50 |           p75 |          p100 | hist  |
-|:-----------------------------------------------------------------|----------:|--------------:|--------------:|-------------:|--------------:|--------------:|--------------:|--------------:|--------------:|:------|
-| longitude                                                        |         0 |             1 | -5.120000e+01 | 8.280000e+00 | -7.350000e+01 | -5.650000e+01 | -5.050000e+01 | -4.450000e+01 | -3.550000e+01 | ▂▃▇▇▅ |
-| latitude                                                         |         0 |             1 | -1.179000e+01 | 7.850000e+00 | -3.250000e+01 | -1.750000e+01 | -1.050000e+01 | -5.500000e+00 |  4.500000e+00 | ▂▃▇▇▃ |
-| time_yyyymmddhhmmss                                              |         0 |             1 |  2.016952e+13 | 1.564571e+10 |  2.014091e+13 |  2.016020e+13 |  2.017052e+13 |  2.018092e+13 |  2.020012e+13 | ▇▇▅▆▇ |
-| altitude_km                                                      |         0 |             1 |  3.123200e+03 | 1.108800e+02 |  2.555700e+03 |  3.056350e+03 |  3.126310e+03 |  3.196250e+03 |  3.307800e+03 | ▁▁▂▇▇ |
-| fluorescence_radiance_757nm_uncert_idp_ph_sec_1\_m_2\_sr_1\_um_1 |         0 |             1 |  8.520719e+17 | 5.599367e+18 | -9.999990e+05 |  6.323256e+17 |  6.951592e+17 |  7.671609e+17 |  9.365539e+20 | ▇▁▁▁▁ |
-| fluorescence_radiance_757nm_idp_ph_sec_1\_m_2\_sr_1\_um_1        |         0 |             1 | -1.358150e+18 | 1.946775e+20 | -3.400736e+22 |  7.735159e+17 |  1.676353e+18 |  2.566089e+18 |  2.316112e+20 | ▁▁▁▁▇ |
-| xco2_moles_mole_1                                                |         0 |             1 |  0.000000e+00 | 0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 |  0.000000e+00 | ▁▁▇▁▁ |
-| aerosol_total_aod                                                |         0 |             1 |  4.828100e+02 | 7.848572e+04 |  2.000000e-02 |  1.100000e-01 |  1.700000e-01 |  2.600000e-01 |  1.487623e+07 | ▇▁▁▁▁ |
-| fluorescence_offset_relative_771nm_idp                           |         0 |             1 | -4.814400e+02 | 2.193698e+04 | -9.999990e+05 |  1.000000e-02 |  1.000000e-02 |  2.000000e-02 |  1.230000e+00 | ▁▁▁▁▇ |
-| fluorescence_at_reference_ph_sec_1\_m_2\_sr_1\_um_1              |         0 |             1 |  1.296932e+18 | 2.245185e+18 | -8.394901e+19 |  2.014560e+17 |  1.268715e+18 |  2.395217e+18 |  8.610756e+19 | ▁▁▇▁▁ |
-| fluorescence_radiance_771nm_idp_ph_sec_1\_m_2\_sr_1\_um_1        |         0 |             1 |  1.904438e+18 | 2.236381e+18 | -8.453983e+19 |  9.694709e+17 |  1.987682e+18 |  2.918792e+18 |  4.338306e+19 | ▁▁▁▇▁ |
-| fluorescence_offset_relative_757nm_idp                           |         0 |             1 | -3.744400e+02 | 1.934763e+04 | -9.999990e+05 |  1.000000e-02 |  1.000000e-02 |  2.000000e-02 |  2.086000e+01 | ▁▁▁▁▇ |
-| fluorescence_radiance_771nm_uncert_idp_ph_sec_1\_m_2\_sr_1\_um_1 |         0 |             1 |  5.235574e+17 | 7.580471e+16 | -9.999990e+05 |  4.695467e+17 |  5.216793e+17 |  5.736367e+17 |  1.143215e+18 | ▁▂▇▁▁ |
-| xco2                                                             |         0 |             1 |  4.000400e+02 | 5.090000e+00 |  3.573800e+02 |  3.966000e+02 |  4.003200e+02 |  4.037000e+02 |  4.386500e+02 | ▁▁▇▁▁ |
-| ano                                                              |         0 |             1 |  2.016880e+03 | 1.570000e+00 |  2.014000e+03 |  2.016000e+03 |  2.017000e+03 |  2.018000e+03 |  2.020000e+03 | ▇▇▅▆▇ |
-| mes                                                              |         0 |             1 |  6.820000e+00 | 3.170000e+00 |  1.000000e+00 |  4.000000e+00 |  7.000000e+00 |  9.000000e+00 |  1.200000e+01 | ▆▆▇▆▇ |
-| dia                                                              |         0 |             1 |  1.572000e+01 | 8.680000e+00 |  1.000000e+00 |  8.000000e+00 |  1.600000e+01 |  2.300000e+01 |  3.100000e+01 | ▇▇▇▇▆ |
-| dia_semana                                                       |         0 |             1 |  3.980000e+00 | 2.020000e+00 |  1.000000e+00 |  2.000000e+00 |  4.000000e+00 |  6.000000e+00 |  7.000000e+00 | ▇▃▃▃▇ |
-| x                                                                |         0 |             1 |  5.566068e+04 | 3.223617e+04 |  7.000000e+00 |  2.811250e+04 |  5.606800e+04 |  8.290750e+04 |  1.117280e+05 | ▇▇▇▇▇ |
-| xco2_est                                                         |         0 |             1 |  3.997700e+02 | 4.090000e+00 |  3.927100e+02 |  3.962700e+02 |  3.998200e+02 |  4.032300e+02 |  4.068800e+02 | ▇▇▇▇▇ |
-| delta                                                            |         0 |             1 | -2.700000e-01 | 3.120000e+00 | -4.452000e+01 | -2.190000e+00 | -6.800000e-01 |  1.210000e+00 |  4.728000e+01 | ▁▁▇▁▁ |
-| XCO2                                                             |         0 |             1 |  3.858900e+02 | 3.120000e+00 |  3.383400e+02 |  3.844100e+02 |  3.862900e+02 |  3.878000e+02 |  4.301400e+02 | ▁▁▇▁▁ |
-
-**Variable type: POSIXct**
-
-| skim_variable | n_missing | complete_rate | min                 | max                 | median              | n_unique |
-|:--------------|----------:|--------------:|:--------------------|:--------------------|:--------------------|---------:|
-| data          |         0 |             1 | 2014-09-06 12:00:00 | 2020-01-20 12:00:00 | 2017-05-18 12:00:00 |     1765 |
-
-``` r
-visdat::vis_miss(oco2_br %>% 
-                   sample_n(10000))
-#> Warning: `gather_()` was deprecated in tidyr 1.2.0.
-#> Please use `gather()` instead.
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
-```
-
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
 oco2 <- oco2_br
@@ -290,9 +177,7 @@ data_fco2 %>%
   summarise(FCO2 = mean(FCO2, na.rm=TRUE)) %>% 
   ggplot(aes(y=FCO2, x=data)) +
   geom_line() +
-   facet_wrap(~experimento+ cultura, scale="free")
-#> `summarise()` has grouped output by 'experimento', 'cultura'. You can override
-#> using the `.groups` argument.
+   facet_wrap(~experimento + cultura, scale="free")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
@@ -320,83 +205,8 @@ amostras do total do banco de dados
 #### Estatísticas descritivas
 
 ``` r
-skim(data_fco2)
+# skim(data_fco2)
 ```
-
-|                                                  |           |
-|:-------------------------------------------------|:----------|
-| Name                                             | data_fco2 |
-| Number of rows                                   | 15397     |
-| Number of columns                                | 39        |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |           |
-| Column type frequency:                           |           |
-| character                                        | 7         |
-| Date                                             | 3         |
-| logical                                          | 2         |
-| numeric                                          | 27        |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |           |
-| Group variables                                  | None      |
-
-Data summary
-
-**Variable type: character**
-
-| skim_variable | n_missing | complete_rate | min | max | empty | n_unique | whitespace |
-|:--------------|----------:|--------------:|----:|----:|------:|---------:|-----------:|
-| experimento   |         0 |             1 |   8 |   8 |     0 |        2 |          0 |
-| manejo        |         0 |             1 |   6 |  15 |     0 |       10 |          0 |
-| tratamento    |         0 |             1 |   2 |  10 |     0 |       21 |          0 |
-| cultura       |         0 |             1 |   4 |  14 |     0 |       11 |          0 |
-| estado        |         0 |             1 |   2 |   2 |     0 |        2 |          0 |
-| municipio     |         0 |             1 |   7 |  20 |     0 |        6 |          0 |
-| prof          |         0 |             1 |   5 |   7 |     0 |        2 |          0 |
-
-**Variable type: Date**
-
-| skim_variable | n_missing | complete_rate | min        | max        | median     | n_unique |
-|:--------------|----------:|--------------:|:-----------|:-----------|:-----------|---------:|
-| data          |         0 |             1 | 2001-07-10 | 2019-12-01 | 2014-07-12 |      205 |
-| data_preparo  |         0 |             1 | 1986-03-01 | 2019-04-01 | 2002-01-01 |       14 |
-| conversao     |         0 |             1 | 1970-01-01 | 2009-07-03 | 1986-03-01 |       11 |
-
-**Variable type: logical**
-
-| skim_variable     | n_missing | complete_rate | mean | count      |
-|:------------------|----------:|--------------:|-----:|:-----------|
-| revolvimento_solo |         0 |             1 |    0 | FAL: 15397 |
-| cobertura         |         0 |             1 |    1 | TRU: 15397 |
-
-**Variable type: numeric**
-
-| skim_variable  | n_missing | complete_rate |       mean |         sd |        p0 |        p25 |        p50 |        p75 |       p100 | hist  |
-|:---------------|----------:|--------------:|-----------:|-----------:|----------:|-----------:|-----------:|-----------:|-----------:|:------|
-| x              |         0 |          1.00 | 1392083.56 | 2923710.70 |      0.00 |       0.00 |      30.00 |     100.00 | 7749472.16 | ▇▁▁▁▂ |
-| y              |         0 |          1.00 |  495854.97 | 1722529.75 |      0.00 |       0.00 |      27.00 |      80.00 | 7630525.47 | ▇▁▁▁▁ |
-| longitude_muni |         0 |          1.00 | 1067926.05 | 1796771.47 | 456798.63 |  458447.46 |  458447.46 |  792043.56 | 7638196.06 | ▇▁▁▁▁ |
-| latitude_muni  |         0 |          1.00 | 7231328.21 | 1754220.76 | 795907.06 | 7635356.70 | 7749398.84 | 7749821.85 | 7758831.37 | ▁▁▁▁▇ |
-| ID             |         0 |          1.00 |      40.52 |      31.52 |      1.00 |      13.00 |      35.00 |      60.00 |     141.00 | ▇▅▃▁▁ |
-| FCO2           |       110 |          0.99 |       2.78 |       2.08 |     -3.42 |       1.30 |       2.16 |       3.75 |      46.93 | ▇▁▁▁▁ |
-| Ts             |       317 |          0.98 |      21.84 |       6.76 |      1.00 |      19.33 |      22.50 |      26.15 |     195.63 | ▇▁▁▁▁ |
-| Us             |      1754 |          0.89 |      16.31 |       8.93 |      0.00 |      10.00 |      14.06 |      22.00 |      89.00 | ▇▅▁▁▁ |
-| pH             |      2802 |          0.82 |       4.64 |       1.13 |      3.50 |       4.00 |       4.50 |       5.15 |      52.00 | ▇▁▁▁▁ |
-| MO             |      1355 |          0.91 |      21.59 |      12.60 |      1.35 |      12.00 |      23.00 |      29.00 |      61.26 | ▆▇▇▂▁ |
-| P              |      1355 |          0.91 |      20.95 |      24.74 |      1.00 |       6.00 |      15.48 |      27.36 |     253.00 | ▇▁▁▁▁ |
-| K              |      1348 |          0.91 |       2.40 |       2.21 |      0.03 |       0.90 |       1.70 |       3.40 |      34.00 | ▇▁▁▁▁ |
-| Ca             |      1376 |          0.91 |      17.20 |      14.57 |      1.10 |       6.00 |      11.00 |      26.00 |      94.00 | ▇▃▁▁▁ |
-| Mg             |      1376 |          0.91 |      10.13 |       5.65 |      0.32 |       7.00 |      10.00 |      13.00 |      65.00 | ▇▂▁▁▁ |
-| H_Al           |      1362 |          0.91 |      46.89 |      29.38 |      0.00 |      26.00 |      42.29 |      72.00 |     121.00 | ▅▇▆▂▂ |
-| SB             |      1376 |          0.91 |      29.69 |      20.10 |      1.54 |      15.60 |      23.80 |      42.00 |     161.30 | ▇▃▁▁▁ |
-| CTC            |      1369 |          0.91 |      77.10 |      32.99 |      4.62 |      59.23 |      83.40 |     103.20 |     173.30 | ▂▃▇▃▁ |
-| V              |      1383 |          0.91 |      41.68 |      20.05 |      4.96 |      22.00 |      43.00 |      58.00 |     100.00 | ▆▆▇▅▁ |
-| Ds             |      3284 |          0.79 |       1.38 |       0.17 |      0.88 |       1.24 |       1.38 |       1.52 |       1.86 | ▁▆▇▇▁ |
-| Macro          |      3277 |          0.79 |       8.55 |       7.85 |    -45.30 |       0.15 |       8.13 |      13.64 |      49.77 | ▁▁▇▃▁ |
-| Micro          |      3298 |          0.79 |      25.30 |      17.13 |      0.07 |       0.37 |      33.86 |      38.30 |      52.42 | ▅▁▂▇▁ |
-| VTP            |      3298 |          0.79 |      42.34 |      15.65 |     -4.68 |      40.81 |      46.25 |      51.32 |      87.80 | ▂▁▇▃▁ |
-| PLA            |      3438 |          0.78 |      29.57 |      11.80 |    -47.30 |      21.27 |      32.41 |      38.15 |      79.80 | ▁▁▅▇▁ |
-| AT             |      8083 |          0.48 |    1013.33 |    1358.81 |     11.72 |     236.00 |     593.62 |     816.00 |    4542.73 | ▇▁▁▁▂ |
-| SILTE          |      8048 |          0.48 |     229.26 |     336.37 |      1.26 |      50.87 |      73.65 |     188.00 |    1395.00 | ▇▁▁▁▁ |
-| ARG            |      8055 |          0.48 |     995.41 |    1560.32 |     27.19 |     173.27 |     403.69 |     609.50 |    5244.76 | ▇▁▁▁▂ |
-| HLIFS          |     10872 |          0.29 |   14590.11 |   17253.55 |    158.39 |    1110.15 |    2409.80 |   29707.78 |   84692.90 | ▇▃▁▁▁ |
 
 ``` r
 visdat::vis_miss(data_fco2 %>% 
@@ -405,55 +215,11 @@ visdat::vis_miss(data_fco2 %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
-``` r
-atributos <- data_fco2
-```
-
 #### Estatísticas descritivas
 
 ``` r
-skim(dados_estacao)
+# skim(dados_estacao)
 ```
-
-|                                                  |               |
-|:-------------------------------------------------|:--------------|
-| Name                                             | dados_estacao |
-| Number of rows                                   | 1826          |
-| Number of columns                                | 16            |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |               |
-| Column type frequency:                           |               |
-| numeric                                          | 15            |
-| POSIXct                                          | 1             |
-| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |               |
-| Group variables                                  | None          |
-
-Data summary
-
-**Variable type: numeric**
-
-| skim_variable | n_missing | complete_rate |   mean |    sd |   p0 |    p25 |    p50 |    p75 |  p100 | hist  |
-|:--------------|----------:|--------------:|-------:|------:|-----:|-------:|-------:|-------:|------:|:------|
-| Tmed          |         8 |          1.00 |  25.38 |  3.17 | 11.3 |  23.72 |  25.90 |  27.50 |  32.0 | ▁▁▃▇▃ |
-| Tmax          |         8 |          1.00 |  32.45 |  3.82 | 15.9 |  30.42 |  33.00 |  35.00 |  41.6 | ▁▁▃▇▂ |
-| Tmin          |         8 |          1.00 |  19.89 |  3.40 |  5.1 |  17.70 |  20.90 |  22.40 |  28.4 | ▁▁▃▇▁ |
-| Umed          |         8 |          1.00 |  74.28 | 13.17 | 34.3 |  65.50 |  75.80 |  84.50 | 100.0 | ▁▃▆▇▅ |
-| Umax          |         8 |          1.00 |  94.57 |  7.79 | 52.1 |  91.30 |  98.50 | 100.00 | 100.0 | ▁▁▁▂▇ |
-| Umin          |         8 |          1.00 |  49.14 | 14.43 | 14.9 |  38.23 |  49.25 |  58.90 | 100.0 | ▂▇▇▂▁ |
-| PkPa          |         8 |          1.00 |  97.47 |  0.33 | 96.2 |  97.20 |  97.40 |  97.70 |  98.6 | ▁▂▇▃▁ |
-| Rad           |         9 |          1.00 |  15.32 |  4.76 |  1.8 |  12.30 |  15.20 |  18.90 |  27.0 | ▁▃▇▆▂ |
-| PAR           |        62 |          0.97 | 325.61 | 99.10 | 34.8 | 264.85 | 322.00 | 395.92 | 785.2 | ▂▇▇▁▁ |
-| Eto           |         0 |          1.00 |   3.73 |  1.19 |  0.7 |   2.90 |   3.70 |   4.70 |   7.2 | ▂▇▇▆▁ |
-| Velmax        |         8 |          1.00 |   5.77 |  1.71 |  2.2 |   4.60 |   5.50 |   6.60 |  16.6 | ▆▇▁▁▁ |
-| Velmin        |         8 |          1.00 |   1.14 |  0.50 |  0.1 |   0.80 |   1.10 |   1.40 |   3.0 | ▃▇▅▂▁ |
-| Dir_vel       |         8 |          1.00 | 131.47 | 89.22 |  0.1 |  67.93 | 100.45 | 187.52 | 359.4 | ▆▇▂▃▂ |
-| chuva         |         0 |          1.00 |   3.61 |  9.99 |  0.0 |   0.00 |   0.00 |   0.80 |  93.2 | ▇▁▁▁▁ |
-| inso          |        10 |          0.99 |   5.03 |  2.78 |  0.0 |   3.20 |   5.50 |   7.20 |  11.2 | ▅▅▇▇▁ |
-
-**Variable type: POSIXct**
-
-| skim_variable | n_missing | complete_rate | min        | max        | median              | n_unique |
-|:--------------|----------:|--------------:|:-----------|:-----------|:--------------------|---------:|
-| data          |         0 |             1 | 2015-01-01 | 2019-12-31 | 2017-07-01 12:00:00 |     1826 |
 
 ``` r
 dados_estacao <- dados_estacao %>% 
@@ -470,13 +236,13 @@ visdat::vis_miss(dados_estacao)
 # Fazer em pipeline, usar o mutate do pacote dplyr e provavelmente
 # a funçoes do pacote lubridate
 oco2 <- oco2  %>% 
-  dplyr::mutate (
+  mutate (
     ano = time_yyyymmddhhmmss%/%1e10,
     mês = time_yyyymmddhhmmss%/%1e8 %%100,
     dia = time_yyyymmddhhmmss%/%1e6 %%100,
     data = as.Date(stringr::str_c(ano,mês,dia,sep="-"))
-    ) %>% 
-  dplyr::glimpse()
+  ) %>% 
+  glimpse()
 #> Rows: 37,387
 #> Columns: 33
 #> $ longitude                                                     <dbl> -70.5, -~
@@ -512,8 +278,9 @@ oco2 <- oco2  %>%
 #> $ flag_sudeste                                                  <lgl> FALSE, F~
 #> $ flag_centroeste                                               <lgl> FALSE, F~
 #> $ mês                                                           <dbl> 9, 9, 9,~
+```
 
-
+``` r
 dados_estacao <- dados_estacao %>% 
   mutate(
     ano = lubridate::year(data),
@@ -526,9 +293,8 @@ dados_estacao <- dados_estacao %>%
 ## Manipulação dos bancos de dados Fco2 e de estação.
 
 ``` r
-dim(atributos)
-#> [1] 15397    39
-atributos <- left_join(atributos, dados_estacao, by = "data")
+# atributos <- data_fco2
+atributos <- left_join(data_fco2, dados_estacao, by = "data")
 ```
 
 #### Listando as datas em ambos os bancos de dados
@@ -581,15 +347,18 @@ data_set <- left_join(fco2 %>%
           xco2 %>% 
             select(data,mês,dia,longitude,latitude,xco2,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
-         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1*2.6250912*10^(-19)  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1* 2.57743*10^(-19))/2) #
+         SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1*2.6250912*10^(-19)  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1* 2.57743*10^(-19))/2)
 
 data_set<-data_set %>%
-  select(-fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1, -fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1 ) %>% 
-  filter(dist <= .16) 
-visdat::vis_miss(data_set %>% sample_n(2000))
+  select(-fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1, -fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1 )  %>% 
+  filter(dist <= .16, FCO2 <= 20 ) 
+
+visdat::vis_miss(data_set %>% 
+                   sample_n(2000)
+                 )
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 ``` r
 # head(data_set)
@@ -609,34 +378,39 @@ tab_medias <- data_set %>%
 tab_medias %>% 
   ggplot(aes(x=XCO2, y=SIF)) +
   geom_point()+
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm")+
+  theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 ``` r
 
 tab_medias %>% 
   ggplot(aes(x=XCO2, y=FCO2)) +
   geom_point()+
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm")+
+  theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-23-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-24-2.png)<!-- -->
 
 ``` r
 
 tab_medias %>% 
   ggplot(aes(x=FCO2, y=SIF)) +
   geom_point()+
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm") +
+  theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-23-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-24-3.png)<!-- -->
 
 ## Estatística Descritiva
 
 Completar posteriormente.
+
+# Abordagem de Parendizado de Máquina
 
 ## Definindo a base de treino e a base de teste
 
@@ -644,12 +418,21 @@ Definindo a semente aleatória mais o conjunto de dados para teste e
 treino dos modelos
 
 ``` r
-set.seed(1235)
-fco2_initial_split <- initial_split(data_set, prop = 0.75)
+data_set_ml <- data_set #%>%
+#   select(cultura, FCO2, Ts,
+#                    Us, MO, Tmed,Tmax, Tmin, Umed,
+#                    Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
+#                    chuva, inso, SIF, xco2) %>% 
+#   drop_na(FCO2, Ts,Us,Tmed:inso)
+# visdat::vis_miss(data_set_ml)
+# set.seed(1235)
+fco2_initial_split <- initial_split(data_set_ml, prop = 0.75)
 ```
 
 ``` r
 fco2_train <- training(fco2_initial_split)
+# fco2_test <- testing(fco2_initial_split)
+# visdat::vis_miss(fco2_test)
 fco2_train  %>% 
   ggplot(aes(x=FCO2, y=..density..))+
   geom_histogram(bins = 30, color="black",  fill="lightgray")+
@@ -658,7 +441,7 @@ fco2_train  %>%
   labs(x="FCO2", y = "Densidade")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ``` r
 fco2_train  %>% 
@@ -669,7 +452,7 @@ fco2_train  %>%
   labs(x="SIF", y = "Densidade")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ``` r
 fco2_train  %>% 
@@ -680,90 +463,89 @@ fco2_train  %>%
   labs(x="XCO2", y = "Densidade")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 ## Correlação
 
 ``` r
 glimpse(fco2_train)
-#> Rows: 6,141
+#> Rows: 6,103
 #> Columns: 37
-#> $ ID        <int> 64, 72, 31, 14, 66, 6, 42, 63, 74, 49, 17, 76, 14, 42, 66, 4~
-#> $ data.x    <date> 2019-05-26, 2016-02-16, 2018-06-21, 2016-04-15, 2018-06-04,~
-#> $ cultura   <chr> "pasto", "eucalipto", "silvipastoril", "mata ciliar", "silvi~
-#> $ ano       <dbl> 2019, 2016, 2018, 2016, 2018, 2017, 2017, 2019, 2017, 2018, ~
-#> $ mes       <dbl> 5, 2, 6, 4, 6, 2, 6, 8, 6, 6, 7, 6, 3, 10, 7, 10, 3, 8, 2, 7~
-#> $ x         <dbl> 7747952, 0, 7749399, 0, 7749428, 100, 115, 7747952, 80, 7749~
-#> $ y         <dbl> 456878.7, 0.0, 457163.2, 0.0, 457254.1, 0.0, 20.0, 456878.7,~
-#> $ FCO2      <dbl> 2.80, 8.92, 0.94, 5.98, 3.08, 7.02, 2.54, 1.59, 2.21, 1.16, ~
-#> $ Ts        <dbl> 18.00000, 27.90000, 17.60000, 27.30000, 23.20000, 28.10000, ~
-#> $ Us        <dbl> 2.10000, 9.00000, 13.96000, 12.00000, 12.58123, 11.00000, 18~
-#> $ MO        <dbl> 23, 34, 4, 23, 30, 31, 30, 21, 28, 25, 16, 24, 23, 34, 26, 3~
-#> $ Macro     <dbl> 0.10000000, 0.07565281, 11.45000000, 0.04698687, 12.82000000~
-#> $ VTP       <dbl> 0.42000, 37.24987, 57.11000, 42.38546, 51.28000, NA, NA, 0.3~
-#> $ ARG       <dbl> 137.0000, 255.2497, NA, 403.6876, 667.9900, NA, NA, 135.2100~
-#> $ ano_mes   <chr> "2019-5", "2016-2", "2018-6", "2016-4", "2018-6", "2017-2", ~
-#> $ Tmed      <dbl> 20.7, NA, 24.5, NA, 20.7, 27.1, 13.7, 25.8, 13.7, 23.8, 23.9~
-#> $ Tmax      <dbl> 28.6, NA, 32.3, NA, 28.1, 34.4, 20.7, 34.0, 20.7, 30.5, 33.4~
-#> $ Tmin      <dbl> 13.0, NA, 16.8, NA, 16.1, 20.5, 8.0, 18.2, 8.0, 19.0, 16.0, ~
-#> $ Umed      <dbl> 67.1, NA, 58.5, NA, 81.8, 75.4, 72.6, 49.9, 72.6, 67.4, 60.1~
-#> $ Umax      <dbl> 89.1, NA, 85.1, NA, 100.0, 99.1, 95.7, 75.4, 95.7, 89.6, 98.~
-#> $ Umin      <dbl> 43.1, NA, 38.7, NA, 56.9, 47.3, 40.8, 30.3, 40.8, 45.7, 27.7~
-#> $ PkPa      <dbl> 97.7, NA, 97.9, NA, 98.1, 97.5, 98.1, 97.6, 98.1, 97.5, 97.6~
-#> $ Rad       <dbl> 11.4, NA, 11.5, NA, 10.7, 22.3, 14.8, 13.4, 14.8, 7.3, 12.5,~
-#> $ Eto       <dbl> 2.7, NA, 2.7, NA, 2.1, 4.8, 2.2, 4.7, 2.2, 2.1, 2.8, 2.8, NA~
-#> $ Velmax    <dbl> 4.6, NA, 5.4, NA, 4.3, 4.9, 4.6, 7.3, 4.6, 4.3, 4.3, 4.6, NA~
-#> $ Velmin    <dbl> 1.2, NA, 0.9, NA, 0.7, 0.7, 1.0, 2.1, 1.0, 0.8, 0.8, 1.2, NA~
-#> $ Dir_vel   <dbl> 98.0, NA, 61.1, NA, 171.7, 33.8, 213.8, 77.7, 213.8, 55.2, 8~
-#> $ chuva     <dbl> 0.0, NA, 0.0, NA, 0.0, 0.0, 0.3, 0.0, 0.3, 0.0, 0.0, 0.0, NA~
-#> $ inso      <dbl> 4.1, NA, 5.9, NA, 5.1, 7.2, 9.0, 5.1, 9.0, 1.8, 5.5, 8.2, NA~
-#> $ data.y    <date> 2019-05-25, 2016-02-26, 2018-06-16, 2016-04-30, 2018-06-16,~
-#> $ mês       <dbl> 5, 2, 6, 4, 6, 2, 6, 8, 6, 6, 7, 6, 3, 10, 7, 10, 3, 8, 2, 7~
-#> $ dia       <dbl> 25, 26, 16, 30, 16, 12, 29, 29, 20, 16, 18, 20, 6, 21, 5, 21~
+#> $ ID        <int> 20, 49, 19, 8, 50, 52, 3, 21, 3, 39, 66, 19, 28, 79, 13, 31,~
+#> $ data.x    <date> 2018-06-18, 2019-09-28, 2019-07-20, 2017-06-28, 2017-03-03,~
+#> $ cultura   <chr> "silvipastoril", "silvipastoril", "silvipastoril", "pinus", ~
+#> $ ano       <dbl> 2018, 2019, 2019, 2017, 2017, 2018, 2016, 2017, 2018, 2018, ~
+#> $ mes       <dbl> 6, 9, 7, 6, 3, 7, 1, 6, 6, 10, 6, 6, 2, 10, 6, 8, 3, 1, 5, 6~
+#> $ x         <dbl> 7749446, 7749399, 7749399, 0, 40, 7749432, 0, 0, 7747952, 77~
+#> $ y         <dbl> 457193.9, 457163.2, 457163.2, 0.0, 30.0, 457221.9, 0.0, 0.0,~
+#> $ FCO2      <dbl> 2.63, 1.82, 2.33, 2.87, 4.87, 1.86, 10.54, 2.89, 1.29, 3.23,~
+#> $ Ts        <dbl> 17.30, 22.00, 17.30, 4.00, 28.10, 18.60, 26.00, 11.00, 22.09~
+#> $ Us        <dbl> 19.510766, 18.000000, 19.100000, 21.100000, 18.000000, 17.98~
+#> $ MO        <dbl> 25, 2, 7, 6, 32, 32, 26, 9, 15, 7, 32, 7, 25, 35, 31, 4, 21,~
+#> $ Macro     <dbl> 9.31000000, 8.13000000, 14.09000000, 3.49000000, NA, 6.93000~
+#> $ VTP       <dbl> 53.96000, 46.25000, 54.36000, 45.65000, NA, 54.34000, 42.555~
+#> $ ARG       <dbl> 636.0100, NA, NA, 351.1700, NA, 663.0100, 374.2344, NA, 173.~
+#> $ ano_mes   <chr> "2018-6", "2019-9", "2019-7", "2017-6", "2017-3", "2018-7", ~
+#> $ Tmed      <dbl> 21.5, 25.2, 23.0, 22.6, 25.8, 23.4, 27.3, 22.6, 21.1, 29.4, ~
+#> $ Tmax      <dbl> 30.1, 33.0, 30.3, 30.8, 32.7, 33.1, 32.8, 29.6, 27.9, 37.6, ~
+#> $ Tmin      <dbl> 14.6, 17.6, 17.1, 15.6, 22.6, 15.9, 24.3, 17.1, 15.9, 23.5, ~
+#> $ Umed      <dbl> 76.2, 58.8, 56.5, 59.8, 91.4, 67.5, 84.6, 64.5, 80.8, 76.0, ~
+#> $ Umax      <dbl> 100.0, 83.4, 79.3, 84.4, 100.0, 98.0, 99.7, 85.2, 97.2, 98.0~
+#> $ Umin      <dbl> 49.1, 37.9, 36.5, 33.2, 64.8, 34.1, 60.3, 46.3, 58.3, 44.0, ~
+#> $ PkPa      <dbl> 98.3, 97.6, 97.9, 98.1, 97.4, 97.6, 97.3, 98.1, 97.7, 97.0, ~
+#> $ Rad       <dbl> 10.4, 18.0, 11.0, 13.4, 13.0, 12.7, 18.9, 13.7, 11.3, 16.5, ~
+#> $ Eto       <dbl> 2.0, 4.9, 3.5, 3.0, 2.9, 2.6, 4.7, 3.2, 2.2, 4.1, 2.8, 2.3, ~
+#> $ Velmax    <dbl> 3.7, 7.2, 5.8, 4.8, 4.7, 4.3, 10.5, 5.9, 5.8, 4.8, 4.6, 3.9,~
+#> $ Velmin    <dbl> 0.5, 1.9, 1.9, 1.1, 0.2, 0.6, 2.2, 1.6, 0.7, 0.7, 1.2, 1.1, ~
+#> $ Dir_vel   <dbl> 158.4, 130.7, 93.0, 101.5, 267.9, 312.6, 54.7, 101.2, 251.5,~
+#> $ chuva     <dbl> 0.0, 0.0, 0.0, 0.0, 12.2, 0.0, 0.0, 0.0, 0.0, 4.3, 0.0, 0.0,~
+#> $ inso      <dbl> 4.8, 7.3, 3.9, 7.7, 2.3, 5.6, 4.2, 8.0, 5.7, 4.5, 8.2, 4.7, ~
+#> $ data.y    <date> 2018-06-16, 2019-09-30, 2019-07-28, 2017-06-29, 2017-03-16,~
+#> $ mês       <dbl> 6, 9, 7, 6, 3, 7, 1, 6, 6, 10, 6, 6, 2, 10, 6, 8, 3, 1, 5, 6~
+#> $ dia       <dbl> 16, 30, 28, 29, 16, 9, 2, 29, 16, 22, 20, 16, 12, 21, 20, 19~
 #> $ longitude <dbl> -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.~
 #> $ latitude  <dbl> -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.~
-#> $ xco2      <dbl> 405.7114, 394.3991, 405.5445, 398.5355, 405.5445, 399.1649, ~
+#> $ xco2      <dbl> 405.5445, 407.4837, 406.9887, 401.2215, 397.8522, 398.5709, ~
 #> $ dist      <dbl> 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.156~
-#> $ SIF       <dbl> 0.34747084, 1.12135961, -0.26169899, 0.58374462, -0.26169899~
-fco2_train   %>%  
+#> $ SIF       <dbl> -0.26169899, 0.44584525, 0.30243534, -0.08236333, 0.66028494~
+fco2_train   %>%    select(-c(ID,ano,mes,x,y,latitude,longitude,dist,mês,dia)) %>% 
   select(where(is.numeric)) %>%
-  select(-c(ID,ano,mes,x,y,latitude,longitude,dist,mês,dia)) %>% 
   drop_na() %>% 
   cor()  %>%  
   corrplot::corrplot()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 ## Data-prep
 
 ``` r
 fco2_recipe <- recipe(FCO2 ~ ., data = fco2_train %>% 
-                    select(-c(data.x,data.y,ID,ano,mes,x,y,latitude,longitude,dist,mês,dia,ano_mes))
-                      ) %>%  
+                        select(-c(data.x,data.y,ID,ano,mes,x,y,latitude,longitude,dist,mês,dia,ano_mes))
+) %>%  
   step_normalize(all_numeric_predictors())  %>% 
   step_novel(all_nominal_predictors()) %>% 
   step_zv(all_predictors()) %>%
-  # step_poly(c(n_vacas, prod_diaria), degree = 9)  |> 
+  #step_naomit(c(Ts, Us)) %>% 
+  #step_poly(c(Ts, Us), degree = 3)  %>%  
   step_dummy(all_nominal_predictors())
-
 bake(prep(fco2_recipe), new_data = NULL)
-#> # A tibble: 6,141 x 29
-#>         Ts       Us      MO  Macro    VTP    ARG    Tmed   Tmax    Tmin   Umed
-#>      <dbl>    <dbl>   <dbl>  <dbl>  <dbl>  <dbl>   <dbl>  <dbl>   <dbl>  <dbl>
-#>  1 -0.794  -1.64     0.0860 -0.755 -1.56  -0.966 -0.706  -0.565 -1.08   -0.314
-#>  2  0.901  -0.689    1.17   -0.759  0.130 -0.347 NA      NA     NA      NA    
-#>  3 -0.862  -0.00807 -1.78    1.14   1.04  NA      0.147   0.208 -0.234  -1.21 
-#>  4  0.799  -0.277    0.0860 -0.764  0.366  0.429 NA      NA     NA      NA    
-#>  5  0.0966 -0.197    0.775   1.36   0.775  1.81  -0.706  -0.669 -0.389   1.22 
-#>  6  0.936  -0.414    0.874  NA     NA     NA      0.731   0.647  0.587   0.550
-#>  7 -0.623   0.642    0.775  NA     NA     NA     -2.28   -2.22  -2.19    0.258
-#>  8 -0.383  -1.46    -0.111  -0.762 -1.56  -0.975  0.439   0.563  0.0769 -2.10 
-#>  9 -0.794   0.615    0.578  NA     NA     NA     -2.28   -2.22  -2.19    0.258
-#> 10  0.268  -0.358    0.283   0.582  0.544  1.57  -0.0101 -0.168  0.254  -0.283
-#> # ... with 6,131 more rows, and 19 more variables: Umax <dbl>, Umin <dbl>,
-#> #   PkPa <dbl>, Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>,
-#> #   Dir_vel <dbl>, chuva <dbl>, inso <dbl>, xco2 <dbl>, SIF <dbl>, FCO2 <dbl>,
+#> # A tibble: 6,103 x 29
+#>        Ts     Us     MO  Macro    VTP    ARG   Tmed   Tmax    Tmin   Umed   Umax
+#>     <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>   <dbl>  <dbl>  <dbl>
+#>  1 -0.929  0.746  0.272  0.784  0.892  1.61  -0.555 -0.273 -0.753   0.632  1.03 
+#>  2 -0.120  0.539 -2.01   0.587  0.536 NA      0.288  0.340 -0.0787 -1.16  -1.36 
+#>  3 -0.929  0.689 -1.51   1.58   0.911 NA     -0.213 -0.231 -0.191  -1.40  -1.95 
+#>  4 -3.22   0.963 -1.61  -0.189  0.508  0.133 -0.304 -0.125 -0.528  -1.06  -1.22 
+#>  5  0.930  0.539  0.967 NA     NA     NA      0.425  0.277  1.05    2.20   1.03 
+#>  6 -0.706  0.537  0.967  0.386  0.910  1.75  -0.122  0.361 -0.461  -0.265  0.739
+#>  7  0.569  0.950  0.371 -0.762  0.365  0.253  0.766  0.298  1.43    1.50   0.984
+#>  8 -2.01   1.07  -1.31   1.06   0.699 NA     -0.304 -0.379 -0.191  -0.575 -1.10 
+#>  9 -0.105 -1.34  -0.720 -0.736 -1.59  -0.792 -0.646 -0.738 -0.461   1.11   0.624
+#> 10  1.12  -0.297 -1.51   0.799  0.770 NA      1.24   1.31   1.25    0.611  0.739
+#> # ... with 6,093 more rows, and 18 more variables: Umin <dbl>, PkPa <dbl>,
+#> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
+#> #   chuva <dbl>, inso <dbl>, xco2 <dbl>, SIF <dbl>, FCO2 <dbl>,
 #> #   cultura_eucalipto <dbl>, cultura_mata.ciliar <dbl>, cultura_pasto <dbl>,
 #> #   cultura_pinus <dbl>, cultura_silvipastoril <dbl>, cultura_new <dbl>
 ```
@@ -772,7 +554,7 @@ bake(prep(fco2_recipe), new_data = NULL)
 visdat::vis_miss(bake(prep(fco2_recipe), new_data = NULL))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- --> \## TUNAGEM
+![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- --> \## TUNAGEM
 
 ``` r
 fco2_resamples <- vfold_cv(fco2_train, v = 5)
@@ -809,14 +591,14 @@ grid_dt <- grid_random(
   cost_complexity(c(-6, -4)),
   tree_depth(range = c(8, 18)),
   min_n(range = c(42, 52)),
-  size = 20
+  size = 5 #20
 )
 glimpse(grid_dt)
-#> Rows: 20
+#> Rows: 5
 #> Columns: 3
-#> $ cost_complexity <dbl> 1.335198e-06, 2.145548e-06, 5.823121e-05, 8.188277e-05~
-#> $ tree_depth      <int> 10, 17, 18, 9, 8, 17, 10, 18, 8, 13, 8, 10, 18, 9, 10,~
-#> $ min_n           <int> 52, 50, 42, 48, 47, 45, 42, 51, 43, 47, 42, 48, 48, 47~
+#> $ cost_complexity <dbl> 1.353519e-06, 1.421074e-05, 3.956152e-05, 7.624621e-06~
+#> $ tree_depth      <int> 16, 13, 10, 9, 15
+#> $ min_n           <int> 42, 49, 50, 47, 50
 ```
 
 ``` r
@@ -832,33 +614,18 @@ fco2_dt_tune_grid <- tune_grid(
 autoplot(fco2_dt_tune_grid)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
 
 ``` r
 collect_metrics(fco2_dt_tune_grid)
-#> # A tibble: 20 x 9
-#>    cost_complexity tree_depth min_n .metric .estimator  mean     n std_err
-#>              <dbl>      <int> <int> <chr>   <chr>      <dbl> <int>   <dbl>
-#>  1      0.00000134         10    52 rmse    standard    1.44     5   0.115
-#>  2      0.00000215         17    50 rmse    standard    1.44     5   0.110
-#>  3      0.0000582          18    42 rmse    standard    1.44     5   0.114
-#>  4      0.0000819           9    48 rmse    standard    1.44     5   0.113
-#>  5      0.0000491           8    47 rmse    standard    1.45     5   0.114
-#>  6      0.0000428          17    45 rmse    standard    1.44     5   0.112
-#>  7      0.0000163          10    42 rmse    standard    1.44     5   0.114
-#>  8      0.00000554         18    51 rmse    standard    1.44     5   0.110
-#>  9      0.0000165           8    43 rmse    standard    1.45     5   0.115
-#> 10      0.0000165          13    47 rmse    standard    1.44     5   0.108
-#> 11      0.0000202           8    42 rmse    standard    1.45     5   0.115
-#> 12      0.00000235         10    48 rmse    standard    1.44     5   0.112
-#> 13      0.00000435         18    48 rmse    standard    1.44     5   0.109
-#> 14      0.0000132           9    47 rmse    standard    1.44     5   0.113
-#> 15      0.00000265         10    50 rmse    standard    1.43     5   0.114
-#> 16      0.00000399         11    47 rmse    standard    1.44     5   0.109
-#> 17      0.00000231         10    48 rmse    standard    1.44     5   0.112
-#> 18      0.0000892          14    49 rmse    standard    1.44     5   0.108
-#> 19      0.00000275          8    44 rmse    standard    1.45     5   0.115
-#> 20      0.0000805           8    46 rmse    standard    1.45     5   0.115
+#> # A tibble: 5 x 9
+#>   cost_complexity tree_depth min_n .metric .estimator  mean     n std_err
+#>             <dbl>      <int> <int> <chr>   <chr>      <dbl> <int>   <dbl>
+#> 1      0.00000135         16    42 rmse    standard    1.29     5  0.0168
+#> 2      0.0000142          13    49 rmse    standard    1.30     5  0.0194
+#> 3      0.0000396          10    50 rmse    standard    1.30     5  0.0182
+#> 4      0.00000762          9    47 rmse    standard    1.30     5  0.0174
+#> 5      0.00000527         15    50 rmse    standard    1.30     5  0.0187
 #> # ... with 1 more variable: .config <chr>
 ```
 
@@ -876,16 +643,24 @@ fco2_dt_last_fit <- last_fit(fco2_dt_wf, fco2_initial_split)
 fco2_test_preds <- bind_rows(
   collect_predictions(fco2_dt_last_fit)  %>%   mutate(modelo = "dt")
 )
+
+fco2_test <- testing(fco2_initial_split)
+visdat::vis_miss(fco2_test)
 ```
+
+![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
 
 ``` r
 fco2_test_preds %>% 
   ggplot(aes(x=.pred, y=FCO2)) +
-  geom_point()
-#> Warning: Removed 12 rows containing missing values (geom_point).
+  geom_point()+
+  theme_bw() +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(ggplot2::aes(
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~"))) 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
 
 ## Variáveis importantes
 
@@ -894,4 +669,173 @@ fco2_dt_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
 vip(fco2_dt_last_fit_model)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+
+# Random Forest (rf)
+
+Corrigindo os NAs no teste
+
+``` r
+visdat::vis_miss(fco2_test)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+
+``` r
+data_set_ml <- data_set_ml %>%
+  select(cultura, FCO2, Ts, xco2, SIF, 
+                   Us, MO, Tmed,Tmax, Tmin, Umed,
+                   Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
+                   chuva, inso) %>%
+  drop_na(FCO2, Ts,Us,Tmed:inso)
+visdat::vis_miss(data_set_ml)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+
+``` r
+fco2_initial_split <- initial_split(data_set_ml, prop = 0.75)
+fco2_test <- testing(fco2_initial_split)
+visdat::vis_miss(fco2_test)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-44-2.png)<!-- -->
+
+``` r
+fco2_train <- training(fco2_initial_split)
+visdat::vis_miss(fco2_train)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-44-3.png)<!-- -->
+
+``` r
+
+
+fco2_resamples_rf <- vfold_cv(fco2_train, v = 5)
+```
+
+## Data prep
+
+``` r
+fco2_rf_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>% 
+  step_string2factor(all_nominal(), skip = TRUE) %>% 
+  step_normalize(all_numeric_predictors())  %>% 
+  step_novel(all_nominal_predictors()) %>% 
+  # step_zv(all_predictors()) %>%
+  # step_naomit(all_predictors()) #%>% 
+  #step_poly(c(Ts, Us), degree = 3)  %>%  
+  step_dummy(all_nominal_predictors())
+bake(prep(fco2_rf_recipe), new_data = NULL)
+#> # A tibble: 5,459 x 26
+#>        Ts    xco2    SIF     Us       MO    Tmed    Tmax   Tmin     Umed    Umax
+#>     <dbl>   <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl>  <dbl>    <dbl>   <dbl>
+#>  1  0.943 -1.69    1.20  -1.52   1.34e+0  0.791   0.812   0.531 -0.814   -0.789 
+#>  2  0.178 -0.950  -0.353  2.17   4.79e-1  0.427   0.471   0.957  1.70     1.01  
+#>  3 -0.274  1.34   -0.202 -0.237 -1.72e+0 -0.302   0.237  -0.566  0.216    1.03  
+#>  4  0.947 -0.950  -0.353 -1.16   4.00e-5  1.02    0.578   1.05   0.330    0.349 
+#>  5  0.730 -1.69    1.20  -0.305  9.57e-1  0.950   0.663   1.09  -0.00265  0.0897
+#>  6  0.931 -0.832   0.473 -0.349  8.61e-1  1.02    0.578   1.05   0.330    0.349 
+#>  7  0.964 -0.950  -0.353  0.101  2.87e-1  0.427   0.280   1.05   2.21     1.03  
+#>  8 -2.38  -0.153   0.106  1.18  -1.72e+0 -0.302  -0.380  -0.185 -0.585   -1.11  
+#>  9 -1.04  -0.0311 -0.927  0.981  7.66e-1 -0.0519  0.0245 -0.140 -0.252    0.277 
+#> 10  0.715 -1.69    1.20  -1.25   5.74e-1  1.31    1.45    1.09  -0.762   -0.0832
+#> # ... with 5,449 more rows, and 16 more variables: Umin <dbl>, PkPa <dbl>,
+#> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
+#> #   chuva <dbl>, inso <dbl>, FCO2 <dbl>, cultura_eucalipto <dbl>,
+#> #   cultura_mata.ciliar <dbl>, cultura_pasto <dbl>, cultura_pinus <dbl>,
+#> #   cultura_silvipastoril <dbl>, cultura_new <dbl>
+visdat::vis_miss(bake(prep(fco2_rf_recipe), new_data = NULL))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+
+## Modelo
+
+``` r
+fco2_rf_model <- rand_forest(
+  min_n = tune(),
+  mtry = tune(),
+  trees = tune()
+)   %>%  
+  set_mode("regression")  %>% 
+  set_engine("randomForest")
+```
+
+## Workflow
+
+``` r
+fco2_rf_wf <- workflow()   %>%  
+  add_model(fco2_rf_model) %>%  
+  add_recipe(fco2_rf_recipe)
+```
+
+## Tune
+
+mtry trees min_n .config 10 769 21 Preprocessor1_Model39
+
+``` r
+grid_rf <- grid_random(
+  min_n(range = c(20, 22)),
+  mtry(range = c(10,12)),
+  trees(range = c(769,1000) ),
+  size = 1
+)
+```
+
+``` r
+fco2_rf_tune_grid <- tune_grid(
+ fco2_rf_wf,
+  resamples = fco2_resamples_rf,
+  grid = grid_rf,
+  metrics = metric_set(rmse)
+) 
+
+autoplot(fco2_rf_tune_grid)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+
+``` r
+collect_metrics(fco2_rf_tune_grid)
+#> # A tibble: 1 x 9
+#>    mtry trees min_n .metric .estimator  mean     n std_err .config             
+#>   <int> <int> <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#> 1    11   986    20 rmse    standard    1.15     5  0.0246 Preprocessor1_Model1
+```
+
+## Desempenho dos modelos finais
+
+``` r
+fco2_rf_best_params <- select_best(fco2_rf_tune_grid, "rmse")
+fco2_rf_wf <- fco2_rf_wf %>% finalize_workflow(fco2_rf_best_params)
+fco2_rf_last_fit <- last_fit(fco2_rf_wf, fco2_initial_split)
+```
+
+## Criar os preditos
+
+``` r
+fco2_test_preds <- bind_rows(
+  collect_predictions(fco2_rf_last_fit)  %>%   mutate(modelo = "rf")
+)
+```
+
+``` r
+fco2_test_preds %>% 
+  ggplot(aes(x=.pred, y=FCO2)) +
+  geom_point()+
+  theme_bw() +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(ggplot2::aes(
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~"))) 
+```
+
+![](README_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+
+## Variáveis importantes
+
+``` r
+fco2_rf_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
+vip(fco2_rf_last_fit_model)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
