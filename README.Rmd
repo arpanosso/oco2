@@ -246,7 +246,7 @@ data_set <- left_join(fco2 %>%
                    Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
                    chuva, inso), 
           xco2 %>% 
-            select(data,mês,dia,longitude,latitude,xco2,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
+            select(data,mês,dia,longitude,latitude,XCO2,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
          SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1*2.6250912*10^(-19)  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1* 2.57743*10^(-19))/2)
 
@@ -269,7 +269,7 @@ tab_medias <- data_set %>%
   mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
   group_by(ano_mes, cultura) %>% 
   summarise(FCO2 = mean(FCO2, na.rm=TRUE),
-            XCO2 = mean(xco2, na.rm=TRUE),
+            XCO2 = mean(XCO2, na.rm=TRUE),
             SIF = mean(SIF, na.rm=TRUE))
 
 tab_medias %>% 
@@ -340,7 +340,7 @@ fco2_train  %>%
 
 ```{r}
 fco2_train  %>% 
-  ggplot(aes(x=xco2, y=..density..))+
+  ggplot(aes(x=XCO2, y=..density..))+
   geom_histogram(bins = 15, color="black",  fill="lightgray")+
   geom_density(alpha=.05,fill="blue")+
   theme_bw() +
@@ -416,7 +416,7 @@ grid_dt <- grid_random(
   cost_complexity(c(-6, -4)),
   tree_depth(range = c(8, 18)),
   min_n(range = c(42, 52)),
-  size = 5 #20
+  size = 20 #20
 )
 glimpse(grid_dt)
 ```
@@ -484,7 +484,7 @@ visdat::vis_miss(fco2_test)
 
 ```{r}
 data_set_ml <- data_set_ml %>%
-  select(cultura, FCO2, Ts, xco2, SIF, 
+  select(cultura, FCO2, Ts, XCO2, SIF, 
                    Us, MO, Tmed,Tmax, Tmin, Umed,
                    Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
                    chuva, inso) %>%
@@ -547,10 +547,10 @@ mtry trees min_n .config
 
 ```{r}
 grid_rf <- grid_random(
-  min_n(range = c(20, 22)),
-  mtry(range = c(10,12)),
-  trees(range = c(769,1000) ),
-  size = 1
+  min_n(range = c(20, 30)),
+  mtry(range = c(10,20)),
+  trees(range = c(769,1500) ),
+  size = 20
 )
 ```
 

@@ -244,7 +244,7 @@ oco2 <- oco2  %>%
   ) %>% 
   glimpse()
 #> Rows: 37,387
-#> Columns: 33
+#> Columns: 22
 #> $ longitude                                                     <dbl> -70.5, -~
 #> $ longitude_bnds                                                <chr> "-71.0:-~
 #> $ latitude                                                      <dbl> -5.5, -4~
@@ -262,22 +262,11 @@ oco2 <- oco2  %>%
 #> $ fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 3.088582~
 #> $ fluorescence_offset_relative_757nm_idp                        <dbl> 0.013969~
 #> $ fluorescence_radiance_771nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 5.577878~
-#> $ xco2                                                          <dbl> 394.3686~
-#> $ data                                                          <date> 2014-09~
-#> $ ano                                                           <dbl> 2014, 20~
-#> $ mes                                                           <dbl> 9, 9, 9,~
-#> $ dia                                                           <dbl> 6, 6, 6,~
-#> $ dia_semana                                                    <dbl> 7, 7, 7,~
-#> $ x                                                             <int> 7, 8, 11~
-#> $ xco2_est                                                      <dbl> 392.7080~
-#> $ delta                                                         <dbl> -1.66062~
 #> $ XCO2                                                          <dbl> 387.2781~
-#> $ flag_norte                                                    <lgl> TRUE, TR~
-#> $ flag_nordeste                                                 <lgl> FALSE, F~
-#> $ flag_sul                                                      <lgl> FALSE, F~
-#> $ flag_sudeste                                                  <lgl> FALSE, F~
-#> $ flag_centroeste                                               <lgl> FALSE, F~
+#> $ ano                                                           <dbl> 2014, 20~
 #> $ mês                                                           <dbl> 9, 9, 9,~
+#> $ dia                                                           <dbl> 6, 6, 6,~
+#> $ data                                                          <date> 2014-09~
 ```
 
 ``` r
@@ -345,7 +334,7 @@ data_set <- left_join(fco2 %>%
                    Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
                    chuva, inso), 
           xco2 %>% 
-            select(data,mês,dia,longitude,latitude,xco2,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
+            select(data,mês,dia,longitude,latitude,XCO2,fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1,fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1, ano_mes), by = "ano_mes") %>% 
   mutate(dist = sqrt((longitude-(-51.423519))^2+(latitude-(-20.362911))^2),
          SIF = (fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1*2.6250912*10^(-19)  + 1.5*fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1* 2.57743*10^(-19))/2)
 
@@ -372,7 +361,7 @@ tab_medias <- data_set %>%
   mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
   group_by(ano_mes, cultura) %>% 
   summarise(FCO2 = mean(FCO2, na.rm=TRUE),
-            XCO2 = mean(xco2, na.rm=TRUE),
+            XCO2 = mean(XCO2, na.rm=TRUE),
             SIF = mean(SIF, na.rm=TRUE))
 
 tab_medias %>% 
@@ -456,7 +445,7 @@ fco2_train  %>%
 
 ``` r
 fco2_train  %>% 
-  ggplot(aes(x=xco2, y=..density..))+
+  ggplot(aes(x=XCO2, y=..density..))+
   geom_histogram(bins = 15, color="black",  fill="lightgray")+
   geom_density(alpha=.05,fill="blue")+
   theme_bw() +
@@ -471,43 +460,43 @@ fco2_train  %>%
 glimpse(fco2_train)
 #> Rows: 6,103
 #> Columns: 37
-#> $ ID        <int> 20, 49, 19, 8, 50, 52, 3, 21, 3, 39, 66, 19, 28, 79, 13, 31,~
-#> $ data.x    <date> 2018-06-18, 2019-09-28, 2019-07-20, 2017-06-28, 2017-03-03,~
-#> $ cultura   <chr> "silvipastoril", "silvipastoril", "silvipastoril", "pinus", ~
-#> $ ano       <dbl> 2018, 2019, 2019, 2017, 2017, 2018, 2016, 2017, 2018, 2018, ~
-#> $ mes       <dbl> 6, 9, 7, 6, 3, 7, 1, 6, 6, 10, 6, 6, 2, 10, 6, 8, 3, 1, 5, 6~
-#> $ x         <dbl> 7749446, 7749399, 7749399, 0, 40, 7749432, 0, 0, 7747952, 77~
-#> $ y         <dbl> 457193.9, 457163.2, 457163.2, 0.0, 30.0, 457221.9, 0.0, 0.0,~
-#> $ FCO2      <dbl> 2.63, 1.82, 2.33, 2.87, 4.87, 1.86, 10.54, 2.89, 1.29, 3.23,~
-#> $ Ts        <dbl> 17.30, 22.00, 17.30, 4.00, 28.10, 18.60, 26.00, 11.00, 22.09~
-#> $ Us        <dbl> 19.510766, 18.000000, 19.100000, 21.100000, 18.000000, 17.98~
-#> $ MO        <dbl> 25, 2, 7, 6, 32, 32, 26, 9, 15, 7, 32, 7, 25, 35, 31, 4, 21,~
-#> $ Macro     <dbl> 9.31000000, 8.13000000, 14.09000000, 3.49000000, NA, 6.93000~
-#> $ VTP       <dbl> 53.96000, 46.25000, 54.36000, 45.65000, NA, 54.34000, 42.555~
-#> $ ARG       <dbl> 636.0100, NA, NA, 351.1700, NA, 663.0100, 374.2344, NA, 173.~
-#> $ ano_mes   <chr> "2018-6", "2019-9", "2019-7", "2017-6", "2017-3", "2018-7", ~
-#> $ Tmed      <dbl> 21.5, 25.2, 23.0, 22.6, 25.8, 23.4, 27.3, 22.6, 21.1, 29.4, ~
-#> $ Tmax      <dbl> 30.1, 33.0, 30.3, 30.8, 32.7, 33.1, 32.8, 29.6, 27.9, 37.6, ~
-#> $ Tmin      <dbl> 14.6, 17.6, 17.1, 15.6, 22.6, 15.9, 24.3, 17.1, 15.9, 23.5, ~
-#> $ Umed      <dbl> 76.2, 58.8, 56.5, 59.8, 91.4, 67.5, 84.6, 64.5, 80.8, 76.0, ~
-#> $ Umax      <dbl> 100.0, 83.4, 79.3, 84.4, 100.0, 98.0, 99.7, 85.2, 97.2, 98.0~
-#> $ Umin      <dbl> 49.1, 37.9, 36.5, 33.2, 64.8, 34.1, 60.3, 46.3, 58.3, 44.0, ~
-#> $ PkPa      <dbl> 98.3, 97.6, 97.9, 98.1, 97.4, 97.6, 97.3, 98.1, 97.7, 97.0, ~
-#> $ Rad       <dbl> 10.4, 18.0, 11.0, 13.4, 13.0, 12.7, 18.9, 13.7, 11.3, 16.5, ~
-#> $ Eto       <dbl> 2.0, 4.9, 3.5, 3.0, 2.9, 2.6, 4.7, 3.2, 2.2, 4.1, 2.8, 2.3, ~
-#> $ Velmax    <dbl> 3.7, 7.2, 5.8, 4.8, 4.7, 4.3, 10.5, 5.9, 5.8, 4.8, 4.6, 3.9,~
-#> $ Velmin    <dbl> 0.5, 1.9, 1.9, 1.1, 0.2, 0.6, 2.2, 1.6, 0.7, 0.7, 1.2, 1.1, ~
-#> $ Dir_vel   <dbl> 158.4, 130.7, 93.0, 101.5, 267.9, 312.6, 54.7, 101.2, 251.5,~
-#> $ chuva     <dbl> 0.0, 0.0, 0.0, 0.0, 12.2, 0.0, 0.0, 0.0, 0.0, 4.3, 0.0, 0.0,~
-#> $ inso      <dbl> 4.8, 7.3, 3.9, 7.7, 2.3, 5.6, 4.2, 8.0, 5.7, 4.5, 8.2, 4.7, ~
-#> $ data.y    <date> 2018-06-16, 2019-09-30, 2019-07-28, 2017-06-29, 2017-03-16,~
-#> $ mês       <dbl> 6, 9, 7, 6, 3, 7, 1, 6, 6, 10, 6, 6, 2, 10, 6, 8, 3, 1, 5, 6~
-#> $ dia       <dbl> 16, 30, 28, 29, 16, 9, 2, 29, 16, 22, 20, 16, 12, 21, 20, 19~
+#> $ ID        <int> 13, 81, 19, 70, 15, 11, 15, 14, 45, 42, 23, 61, 2, 39, 67, 6~
+#> $ data.x    <date> 2018-10-16, 2018-06-16, 2018-07-09, 2017-06-03, 2018-06-26,~
+#> $ cultura   <chr> "silvipastoril", "silvipastoril", "silvipastoril", "eucalipt~
+#> $ ano       <dbl> 2018, 2018, 2018, 2017, 2018, 2017, 2019, 2018, 2016, 2015, ~
+#> $ mes       <dbl> 10, 6, 7, 6, 6, 7, 7, 5, 1, 10, 5, 2, 5, 6, 3, 6, 10, 3, 5, ~
+#> $ x         <dbl> 7749399, 7749420, 7749399, 70, 7747952, 0, 7747952, 7748006,~
+#> $ y         <dbl> 457163.2, 457260.7, 457163.2, 70.0, 456878.7, 0.0, 456878.7,~
+#> $ FCO2      <dbl> 4.39, 3.47, 1.55, 2.84, 1.28, 1.54, 2.46, 2.43, 5.85, 2.35, ~
+#> $ Ts        <dbl> 28.80000, 17.50000, 22.10000, 21.10000, 23.10000, 7.00000, 1~
+#> $ Us        <dbl> 13.300000, 19.275866, 27.630000, 15.429020, 3.410000, 19.100~
+#> $ MO        <dbl> 6, 31, 7, 26, 16, 11, 28, 23, 36, 34, 15, 34, 15, 34, 34, 14~
+#> $ Macro     <dbl> 16.50000000, 17.84000000, 14.09000000, NA, 0.13000000, 19.01~
+#> $ VTP       <dbl> 57.02000, 54.26000, 54.36000, NA, 0.36000, 51.76000, 0.41000~
+#> $ ARG       <dbl> NA, 618.0000, NA, NA, 149.5000, NA, 149.5000, 114.1100, 282.~
+#> $ ano_mes   <chr> "2018-10", "2018-6", "2018-7", "2017-6", "2018-6", "2017-7",~
+#> $ Tmed      <dbl> 29.4, 18.9, 17.7, 22.0, 25.4, 19.4, 23.2, 24.6, 26.4, 30.5, ~
+#> $ Tmax      <dbl> 37.6, 27.0, 21.1, 30.0, 34.6, 26.0, 33.4, 30.9, 31.1, 37.4, ~
+#> $ Tmin      <dbl> 23.5, 12.7, 14.8, 15.4, 17.4, 14.1, 14.7, 19.5, 20.8, 23.4, ~
+#> $ Umed      <dbl> 76.0, 77.2, 82.8, 74.7, 54.6, 59.4, 61.2, 57.0, 78.6, 60.0, ~
+#> $ Umax      <dbl> 98.0, 91.2, 96.7, 90.8, 91.8, 73.5, 95.5, 74.0, 94.6, 84.7, ~
+#> $ Umin      <dbl> 44.0, 55.2, 63.7, 54.7, 27.2, 43.7, 27.0, 36.2, 63.2, 37.7, ~
+#> $ PkPa      <dbl> 97.0, 98.3, 98.1, 97.8, 97.5, 98.3, 97.7, 97.6, 97.0, 97.1, ~
+#> $ Rad       <dbl> 16.5, 11.0, 3.9, 13.8, 12.4, 13.3, 10.1, 12.7, 14.9, 19.8, 1~
+#> $ Eto       <dbl> 4.1, 2.2, 1.6, 2.8, 3.0, 3.2, 2.4, 3.4, 3.5, 5.2, 2.9, NA, 2~
+#> $ Velmax    <dbl> 4.8, 4.9, 6.1, 4.6, 4.2, 7.3, 4.0, 4.9, 4.5, 6.4, 5.5, NA, 5~
+#> $ Velmin    <dbl> 0.7, 1.0, 2.1, 1.2, 0.9, 2.0, 0.6, 1.5, 0.9, 1.3, 1.1, NA, 1~
+#> $ Dir_vel   <dbl> 92.8, 243.6, 237.1, 93.0, 50.1, 89.8, 117.6, 80.7, 154.2, 27~
+#> $ chuva     <dbl> 4.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, NA, 0~
+#> $ inso      <dbl> 4.5, 5.4, 0.0, 8.2, 6.8, 6.2, 3.0, 7.1, 1.1, 6.5, 5.3, NA, 5~
+#> $ data.y    <date> 2018-10-13, 2018-06-16, 2018-07-18, 2017-06-29, 2018-06-16,~
+#> $ mês       <dbl> 10, 6, 7, 6, 6, 7, 7, 5, 1, 10, 5, 2, 5, 6, 3, 6, 10, 3, 5, ~
+#> $ dia       <dbl> 13, 16, 18, 29, 16, 22, 5, 6, 25, 21, 6, 26, 15, 16, 25, 16,~
 #> $ longitude <dbl> -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.~
 #> $ latitude  <dbl> -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.~
-#> $ xco2      <dbl> 405.5445, 407.4837, 406.9887, 401.2215, 397.8522, 398.5709, ~
+#> $ XCO2      <dbl> 387.6034, 388.7977, 388.2893, 386.6562, 388.7977, 387.4659, ~
 #> $ dist      <dbl> 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.156~
-#> $ SIF       <dbl> -0.26169899, 0.44584525, 0.30243534, -0.08236333, 0.66028494~
+#> $ SIF       <dbl> 1.22255676, -0.26169899, 0.17194793, -0.08236333, -0.2616989~
 fco2_train   %>%    select(-c(ID,ano,mes,x,y,latitude,longitude,dist,mês,dia)) %>% 
   select(where(is.numeric)) %>%
   drop_na() %>% 
@@ -531,23 +520,24 @@ fco2_recipe <- recipe(FCO2 ~ ., data = fco2_train %>%
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_recipe), new_data = NULL)
 #> # A tibble: 6,103 x 29
-#>        Ts     Us     MO  Macro    VTP    ARG   Tmed   Tmax    Tmin   Umed   Umax
-#>     <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>   <dbl>  <dbl>  <dbl>
-#>  1 -0.929  0.746  0.272  0.784  0.892  1.61  -0.555 -0.273 -0.753   0.632  1.03 
-#>  2 -0.120  0.539 -2.01   0.587  0.536 NA      0.288  0.340 -0.0787 -1.16  -1.36 
-#>  3 -0.929  0.689 -1.51   1.58   0.911 NA     -0.213 -0.231 -0.191  -1.40  -1.95 
-#>  4 -3.22   0.963 -1.61  -0.189  0.508  0.133 -0.304 -0.125 -0.528  -1.06  -1.22 
-#>  5  0.930  0.539  0.967 NA     NA     NA      0.425  0.277  1.05    2.20   1.03 
-#>  6 -0.706  0.537  0.967  0.386  0.910  1.75  -0.122  0.361 -0.461  -0.265  0.739
-#>  7  0.569  0.950  0.371 -0.762  0.365  0.253  0.766  0.298  1.43    1.50   0.984
-#>  8 -2.01   1.07  -1.31   1.06   0.699 NA     -0.304 -0.379 -0.191  -0.575 -1.10 
-#>  9 -0.105 -1.34  -0.720 -0.736 -1.59  -0.792 -0.646 -0.738 -0.461   1.11   0.624
-#> 10  1.12  -0.297 -1.51   0.799  0.770 NA      1.24   1.31   1.25    0.611  0.739
-#> # ... with 6,093 more rows, and 18 more variables: Umin <dbl>, PkPa <dbl>,
-#> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
-#> #   chuva <dbl>, inso <dbl>, xco2 <dbl>, SIF <dbl>, FCO2 <dbl>,
+#>         Ts      Us      MO  Macro    VTP    ARG   Tmed    Tmax   Tmin   Umed
+#>      <dbl>   <dbl>   <dbl>  <dbl>  <dbl>  <dbl>  <dbl>   <dbl>  <dbl>  <dbl>
+#>  1  1.05   -0.0984 -1.61    1.97   1.04  NA      1.24   1.31    1.24   0.617
+#>  2 -0.892   0.720   0.871   2.19   0.913  1.54  -1.13  -0.921  -1.16   0.741
+#>  3 -0.0996  1.87   -1.51    1.57   0.917 NA     -1.40  -2.16   -0.692  1.32 
+#>  4 -0.272   0.193   0.375  NA     NA     NA     -0.430 -0.289  -0.558  0.482
+#>  5  0.0727 -1.45   -0.617  -0.739 -1.57  -0.901  0.338  0.681  -0.113 -1.60 
+#>  6 -2.70    0.696  -1.11    2.39   0.798 NA     -1.02  -1.13   -0.847 -1.11 
+#>  7 -0.892  -1.44    0.573  -0.744 -1.57  -0.901 -0.159  0.428  -0.714 -0.918
+#>  8  0.383  -0.471   0.0773 -0.734 -1.57  -1.09   0.158 -0.0988  0.354 -1.35 
+#>  9  0.538  -0.414   1.37   -0.747  0.361 -0.210  0.564 -0.0567  0.643  0.887
+#> 10  0.738  -1.10    1.17   -0.745  0.291 NA      1.49   1.27    1.22  -1.04 
+#> # ... with 6,093 more rows, and 19 more variables: Umax <dbl>, Umin <dbl>,
+#> #   PkPa <dbl>, Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>,
+#> #   Dir_vel <dbl>, chuva <dbl>, inso <dbl>, XCO2 <dbl>, SIF <dbl>, FCO2 <dbl>,
 #> #   cultura_eucalipto <dbl>, cultura_mata.ciliar <dbl>, cultura_pasto <dbl>,
 #> #   cultura_pinus <dbl>, cultura_silvipastoril <dbl>, cultura_new <dbl>
+#> # i Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 ```
 
 ``` r
@@ -591,14 +581,14 @@ grid_dt <- grid_random(
   cost_complexity(c(-6, -4)),
   tree_depth(range = c(8, 18)),
   min_n(range = c(42, 52)),
-  size = 5 #20
+  size = 20 #20
 )
 glimpse(grid_dt)
-#> Rows: 5
+#> Rows: 20
 #> Columns: 3
-#> $ cost_complexity <dbl> 1.353519e-06, 1.421074e-05, 3.956152e-05, 7.624621e-06~
-#> $ tree_depth      <int> 16, 13, 10, 9, 15
-#> $ min_n           <int> 42, 49, 50, 47, 50
+#> $ cost_complexity <dbl> 5.226904e-05, 4.510574e-05, 2.210226e-06, 3.102727e-05~
+#> $ tree_depth      <int> 12, 13, 8, 12, 10, 11, 9, 11, 13, 14, 14, 16, 18, 11, ~
+#> $ min_n           <int> 45, 50, 50, 49, 47, 50, 47, 46, 47, 50, 46, 51, 43, 44~
 ```
 
 ``` r
@@ -618,15 +608,30 @@ autoplot(fco2_dt_tune_grid)
 
 ``` r
 collect_metrics(fco2_dt_tune_grid)
-#> # A tibble: 5 x 9
-#>   cost_complexity tree_depth min_n .metric .estimator  mean     n std_err
-#>             <dbl>      <int> <int> <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1      0.00000135         16    42 rmse    standard    1.29     5  0.0168
-#> 2      0.0000142          13    49 rmse    standard    1.30     5  0.0194
-#> 3      0.0000396          10    50 rmse    standard    1.30     5  0.0182
-#> 4      0.00000762          9    47 rmse    standard    1.30     5  0.0174
-#> 5      0.00000527         15    50 rmse    standard    1.30     5  0.0187
-#> # ... with 1 more variable: .config <chr>
+#> # A tibble: 20 x 9
+#>    cost_complexity tree_depth min_n .metric .estim~1  mean     n std_err .config
+#>              <dbl>      <int> <int> <chr>   <chr>    <dbl> <int>   <dbl> <chr>  
+#>  1      0.0000523          12    45 rmse    standard  1.31     5  0.0360 Prepro~
+#>  2      0.0000451          13    50 rmse    standard  1.30     5  0.0397 Prepro~
+#>  3      0.00000221          8    50 rmse    standard  1.33     5  0.0405 Prepro~
+#>  4      0.0000310          12    49 rmse    standard  1.31     5  0.0355 Prepro~
+#>  5      0.00000150         10    47 rmse    standard  1.32     5  0.0378 Prepro~
+#>  6      0.0000373          11    50 rmse    standard  1.31     5  0.0397 Prepro~
+#>  7      0.00000205          9    47 rmse    standard  1.33     5  0.0408 Prepro~
+#>  8      0.0000217          11    46 rmse    standard  1.32     5  0.0380 Prepro~
+#>  9      0.00000185         13    47 rmse    standard  1.31     5  0.0343 Prepro~
+#> 10      0.00000310         14    50 rmse    standard  1.30     5  0.0412 Prepro~
+#> 11      0.0000741          14    46 rmse    standard  1.31     5  0.0361 Prepro~
+#> 12      0.0000107          16    51 rmse    standard  1.30     5  0.0411 Prepro~
+#> 13      0.00000461         18    43 rmse    standard  1.31     5  0.0369 Prepro~
+#> 14      0.0000953          11    44 rmse    standard  1.32     5  0.0377 Prepro~
+#> 15      0.00000113         17    51 rmse    standard  1.30     5  0.0411 Prepro~
+#> 16      0.0000190          14    51 rmse    standard  1.30     5  0.0410 Prepro~
+#> 17      0.00000565         10    51 rmse    standard  1.31     5  0.0405 Prepro~
+#> 18      0.0000823          10    48 rmse    standard  1.32     5  0.0370 Prepro~
+#> 19      0.00000445         11    52 rmse    standard  1.31     5  0.0392 Prepro~
+#> 20      0.00000161         11    43 rmse    standard  1.31     5  0.0398 Prepro~
+#> # ... with abbreviated variable name 1: .estimator
 ```
 
 ## Desempenho dos modelos finais
@@ -683,7 +688,7 @@ visdat::vis_miss(fco2_test)
 
 ``` r
 data_set_ml <- data_set_ml %>%
-  select(cultura, FCO2, Ts, xco2, SIF, 
+  select(cultura, FCO2, Ts, XCO2, SIF, 
                    Us, MO, Tmed,Tmax, Tmin, Umed,
                    Umax, Umin, PkPa, Rad, Eto, Velmax, Velmin, Dir_vel,
                    chuva, inso) %>%
@@ -727,23 +732,24 @@ fco2_rf_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>%
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_rf_recipe), new_data = NULL)
 #> # A tibble: 5,459 x 26
-#>        Ts    xco2    SIF     Us       MO    Tmed    Tmax   Tmin     Umed    Umax
-#>     <dbl>   <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl>  <dbl>    <dbl>   <dbl>
-#>  1  0.943 -1.69    1.20  -1.52   1.34e+0  0.791   0.812   0.531 -0.814   -0.789 
-#>  2  0.178 -0.950  -0.353  2.17   4.79e-1  0.427   0.471   0.957  1.70     1.01  
-#>  3 -0.274  1.34   -0.202 -0.237 -1.72e+0 -0.302   0.237  -0.566  0.216    1.03  
-#>  4  0.947 -0.950  -0.353 -1.16   4.00e-5  1.02    0.578   1.05   0.330    0.349 
-#>  5  0.730 -1.69    1.20  -0.305  9.57e-1  0.950   0.663   1.09  -0.00265  0.0897
-#>  6  0.931 -0.832   0.473 -0.349  8.61e-1  1.02    0.578   1.05   0.330    0.349 
-#>  7  0.964 -0.950  -0.353  0.101  2.87e-1  0.427   0.280   1.05   2.21     1.03  
-#>  8 -2.38  -0.153   0.106  1.18  -1.72e+0 -0.302  -0.380  -0.185 -0.585   -1.11  
-#>  9 -1.04  -0.0311 -0.927  0.981  7.66e-1 -0.0519  0.0245 -0.140 -0.252    0.277 
-#> 10  0.715 -1.69    1.20  -1.25   5.74e-1  1.31    1.45    1.09  -0.762   -0.0832
+#>         Ts    XCO2    SIF      Us     MO     Tmed     Tmax   Tmin   Umed   Umax
+#>      <dbl>   <dbl>  <dbl>   <dbl>  <dbl>    <dbl>    <dbl>  <dbl>  <dbl>  <dbl>
+#>  1  0.646  -0.618   2.02   0.507   0.879  0.778    0.311    1.44   1.51   0.982
+#>  2  0.210  -0.847   0.486  2.08    0.495  0.437    0.481    0.967  1.71   1.01 
+#>  3 -0.880   0.292  -0.911  0.953   0.398 -0.0393   0.0355  -0.128 -0.252  0.278
+#>  4 -0.192   0.0989  0.119 -0.558   1.36  -2.31    -2.26    -2.21   0.258  0.407
+#>  5  1.10   -1.10   -0.338  0.237   0.591  0.437    0.290    1.06   2.22   1.03 
+#>  6  1.18   -0.169   2.27  -0.439   1.46   0.732    0.651    0.587  0.550  0.896
+#>  7 -0.0582 -0.192  -0.521 -0.0188 -0.467 -0.198   -0.00696 -0.531 -0.293 -0.297
+#>  8  0.915  -0.847   0.486 -0.505   1.65   1.03     0.587    1.06   0.331  0.350
+#>  9  0.344   1.03   -0.433 -0.399  -0.467  0.00607  0.439   -0.419 -1.04   0.824
+#> 10 -0.410   0.508  -0.187 -1.53   -0.371 -0.198   -0.219   -0.173 -1.42  -1.95 
 #> # ... with 5,449 more rows, and 16 more variables: Umin <dbl>, PkPa <dbl>,
 #> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
 #> #   chuva <dbl>, inso <dbl>, FCO2 <dbl>, cultura_eucalipto <dbl>,
 #> #   cultura_mata.ciliar <dbl>, cultura_pasto <dbl>, cultura_pinus <dbl>,
 #> #   cultura_silvipastoril <dbl>, cultura_new <dbl>
+#> # i Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 visdat::vis_miss(bake(prep(fco2_rf_recipe), new_data = NULL))
 ```
 
@@ -775,10 +781,10 @@ mtry trees min_n .config 10 769 21 Preprocessor1_Model39
 
 ``` r
 grid_rf <- grid_random(
-  min_n(range = c(20, 22)),
-  mtry(range = c(10,12)),
-  trees(range = c(769,1000) ),
-  size = 1
+  min_n(range = c(20, 30)),
+  mtry(range = c(10,20)),
+  trees(range = c(769,1500) ),
+  size = 20
 )
 ```
 
@@ -797,10 +803,29 @@ autoplot(fco2_rf_tune_grid)
 
 ``` r
 collect_metrics(fco2_rf_tune_grid)
-#> # A tibble: 1 x 9
-#>    mtry trees min_n .metric .estimator  mean     n std_err .config             
-#>   <int> <int> <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1    11   986    20 rmse    standard    1.15     5  0.0246 Preprocessor1_Model1
+#> # A tibble: 20 x 9
+#>     mtry trees min_n .metric .estimator  mean     n std_err .config             
+#>    <int> <int> <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#>  1    11  1416    27 rmse    standard    1.17     5  0.0301 Preprocessor1_Model~
+#>  2    18  1394    25 rmse    standard    1.16     5  0.0305 Preprocessor1_Model~
+#>  3    19  1190    26 rmse    standard    1.16     5  0.0304 Preprocessor1_Model~
+#>  4    18   798    22 rmse    standard    1.16     5  0.0312 Preprocessor1_Model~
+#>  5    13   819    22 rmse    standard    1.17     5  0.0313 Preprocessor1_Model~
+#>  6    18  1258    25 rmse    standard    1.16     5  0.0307 Preprocessor1_Model~
+#>  7    20   957    21 rmse    standard    1.16     5  0.0311 Preprocessor1_Model~
+#>  8    11  1129    28 rmse    standard    1.17     5  0.0299 Preprocessor1_Model~
+#>  9    15   902    22 rmse    standard    1.16     5  0.0312 Preprocessor1_Model~
+#> 10    15  1061    22 rmse    standard    1.16     5  0.0308 Preprocessor1_Model~
+#> 11    15   868    21 rmse    standard    1.16     5  0.0304 Preprocessor1_Model~
+#> 12    15   773    21 rmse    standard    1.16     5  0.0311 Preprocessor1_Model~
+#> 13    20  1308    27 rmse    standard    1.16     5  0.0302 Preprocessor1_Model~
+#> 14    13  1280    20 rmse    standard    1.16     5  0.0309 Preprocessor1_Model~
+#> 15    17  1122    28 rmse    standard    1.16     5  0.0305 Preprocessor1_Model~
+#> 16    15  1460    29 rmse    standard    1.17     5  0.0304 Preprocessor1_Model~
+#> 17    16  1008    22 rmse    standard    1.16     5  0.0307 Preprocessor1_Model~
+#> 18    15   879    22 rmse    standard    1.16     5  0.0307 Preprocessor1_Model~
+#> 19    17  1030    25 rmse    standard    1.16     5  0.0307 Preprocessor1_Model~
+#> 20    14   881    29 rmse    standard    1.17     5  0.0306 Preprocessor1_Model~
 ```
 
 ## Desempenho dos modelos finais
