@@ -601,3 +601,330 @@ fco2_test_preds %>%
 fco2_rf_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
 vip(fco2_rf_last_fit_model)
 ```
+
+
+# Boosting gradient tree (xgb)
+
+## Data prep
+
+```{r}
+fco2_xgb_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>% 
+  step_string2factor(all_nominal(), skip = TRUE) %>% 
+  step_normalize(all_numeric_predictors())  %>% 
+  step_novel(all_nominal_predictors()) %>% 
+  # step_zv(all_predictors()) %>%
+  # step_naomit(all_predictors()) #%>% 
+  #step_poly(c(Ts, Us), degree = 3)  %>%  
+  step_dummy(all_nominal_predictors())
+bake(prep(fco2_xgb_recipe), new_data = NULL)
+visdat::vis_miss(bake(prep(fco2_xgb_recipe), new_data = NULL))
+```
+
+### Estratégia de Tunagem de Hiperparâmetros  
+#### Passo 1:  
+Achar uma combinação `learning_rate` e `trees` que funciona relativamente bem.
+
+
++ learn_rate - 0.05, 0.1, 0.3
+    
++ trees - 100, 500, 1000, 1500
+
+## Modelo
+
+```{r}
+cores = 4
+fco2_xgb_model <- boost_tree(
+  mtry = 0.8, 
+  trees = tune(), # <---------------
+  min_n = 5, 
+  tree_depth = 4,
+  loss_reduction = 0, # lambda
+  learn_rate = tune(), # epsilon
+  sample_size = 0.8
+)  %>%   
+  set_mode("regression")  %>% 
+  set_engine("xgboost", nthread = cores, counts = FALSE)
+```
+
+## Workflow
+```{r}
+fco2_xgb_wf <- workflow()  |> 
+  add_model(fco2_xgb_model) |> 
+  add_recipe(fco2_xgb_recipe)
+```
+
+## Tune
+```{r}
+grid_xgb <- expand.grid(
+  learn_rate = c(0.05, 0.3, .8, 1.2),
+  trees = c(2, 250, 500, 1000)
+)
+```
+
+```{r}
+fco2_xgb_tune_grid <- tune_grid(
+ fco2_xgb_wf,
+  resamples = fco2_resamples,
+  grid = grid_xgb,
+  metrics = metric_set(rmse)
+)
+```
+
+```{r}
+autoplot(fco2_xgb_tune_grid)
+```
+
+```{r}
+fco2_xgb_tune_grid   %>%   show_best(metric = "rmse", n = 6)
+```
+
+```{r}
+fco2_xgb_select_best_passo1 <- fco2_xgb_tune_grid %>% 
+  select_best(metric = "rmse")
+fco2_xgb_select_best_passo1
+```
+
+#### Passo 2:
+
+São bons valores inciais. Agora, podemos tunar os parâmetros relacionados à árvore.
+
+  + tree_depth: vamos deixar ele variar entre 3 e 10.
+  + min_n: vamos deixar variar entre 5 e 90.
+
+```{r}
+fco2_xgb_model <- boost_tree(
+  mtry = 0.8,
+  trees = fco2_xgb_select_best_passo1$trees,
+  min_n = tune(),
+  tree_depth = tune(), 
+  loss_reduction = 0, 
+  learn_rate = fco2_xgb_select_best_passo1$learn_rate, 
+  sample_size = 0.8
+) %>% 
+  set_mode("regression")  %>% 
+  set_engine("xgboost", nthread = cores, counts = FALSE)
+
+#### Workflow
+fco2_xgb_wf <- workflow() %>%  
+    add_model(fco2_xgb_model)   %>%   
+    add_recipe(fco2_xgb_recipe)
+
+#### Grid
+fco2_xgb_grid <- expand.grid(
+  tree_depth = c(1, 3, 4, 6, 10), 
+  min_n = c(5, 30, 60, 90, 100, 200)
+)
+
+fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
+  tune_grid(
+    resamples =fco2_resamples,
+    grid = fco2_xgb_grid,
+    control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
+    metrics = metric_set(rmse)
+  )
+
+#### Melhores hiperparâmetros
+autoplot(fco2_xgb_tune_grid)
+```
+```{r}
+fco2_xgb_tune_grid  %>%   show_best(metric = "rmse", n = 5)
+fco2_xgb_select_best_passo2 <- fco2_xgb_tune_grid  %>%   select_best(metric = "rmse")
+fco2_xgb_select_best_passo2
+```
+
+#### Passo 3
+
+Vamos tunar o `loss_reduction`
+
+
+```{r}
+fco2_xgb_model <- boost_tree(
+  mtry = 0.8,
+  trees = fco2_xgb_select_best_passo1$trees,
+  min_n = fco2_xgb_select_best_passo2$min_n,
+  tree_depth = fco2_xgb_select_best_passo2$tree_depth, 
+  loss_reduction =tune(), 
+  learn_rate = fco2_xgb_select_best_passo1$learn_rate, 
+  sample_size = 0.8
+)  %>%  
+  set_mode("regression")  %>%  
+  set_engine("xgboost", nthread = cores, counts = FALSE)
+
+#### Workflow
+fco2_xgb_wf <- workflow()  %>%   
+    add_model(fco2_xgb_model)  %>%   
+    add_recipe(fco2_xgb_recipe)
+
+#### Grid
+fco2_xgb_grid <- expand.grid(
+  loss_reduction = c(0.01, 0.05, 1, 2, 4)
+)
+
+fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
+  tune_grid(
+    resamples = fco2_resamples,
+    grid = fco2_xgb_grid,
+    control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
+    metrics = metric_set(rmse)
+  )
+
+#### Melhores hiperparâmetros
+autoplot(fco2_xgb_tune_grid)
+```
+```{r}
+fco2_xgb_tune_grid   %>%   show_best(metric = "rmse", n = 5)
+fco2_xgb_select_best_passo3 <- fco2_xgb_tune_grid %>% select_best(metric = "rmse")
+fco2_xgb_select_best_passo3
+```
+
+#### Passo 4:
+
+Vamos então tunar o `mtry` e o `sample_size`:
+
+```{r}
+fco2_xgb_model <- boost_tree(
+  mtry = tune(),
+  trees = fco2_xgb_select_best_passo1$trees,
+  min_n = fco2_xgb_select_best_passo2$min_n,
+  tree_depth = fco2_xgb_select_best_passo2$tree_depth, 
+  loss_reduction = fco2_xgb_select_best_passo3$loss_reduction, 
+  learn_rate = fco2_xgb_select_best_passo1$learn_rate, 
+  sample_size = tune()
+)%>%  
+  set_mode("regression")  |> 
+  set_engine("xgboost", nthread = cores, counts = FALSE)
+
+#### Workflow
+fco2_xgb_wf <- workflow()  %>%   
+    add_model(fco2_xgb_model)  %>%   
+    add_recipe(fco2_xgb_recipe)
+
+#### Grid
+fco2_xgb_grid <- expand.grid(
+    sample_size = seq(0.5, 1.0, length.out = 2),
+    mtry = seq(0.1, 1.0, length.out = 2)
+)
+
+fco2_xgb_tune_grid <- fco2_xgb_wf  |>  
+  tune_grid(
+    resamples = fco2_resamples,
+    grid = fco2_xgb_grid,
+    control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
+    metrics = metric_set(rmse)
+  )
+
+#### Melhores hiperparâmetros
+autoplot(fco2_xgb_tune_grid)
+```
+
+```{r}
+fco2_xgb_tune_grid  |>  show_best(metric = "rmse", n = 5)
+fco2_xgb_select_best_passo4 <- fco2_xgb_tune_grid  |>  select_best(metric = "rmse")
+fco2_xgb_select_best_passo4
+```
+#### Passo 5
+
+Agora vamos tunar o `learn_rate` e o trees de novo, mas deixando o `learn_rate` assumir valores menores.
+
+
+```{r}
+fco2_xgb_model <- boost_tree(
+  mtry = fco2_xgb_select_best_passo4$mtry,
+  trees = tune(),
+  min_n = fco2_xgb_select_best_passo2$min_n,
+  tree_depth = fco2_xgb_select_best_passo2$tree_depth, 
+  loss_reduction = fco2_xgb_select_best_passo3$loss_reduction, 
+  learn_rate = tune(), 
+  sample_size = fco2_xgb_select_best_passo4$sample_size
+) |> 
+  set_mode("regression") |> 
+  set_engine("xgboost", nthread = cores, counts = FALSE)
+
+#### Workflow
+fco2_xgb_wf <- workflow() |>  
+    add_model(fco2_xgb_model) |>  
+    add_recipe(fco2_xgb_recipe)
+
+#### Grid
+fco2_xgb_grid <- expand.grid(
+    learn_rate = c(0.05, 0.10, 0.15, 0.25),
+    trees = c(100, 250)
+)
+
+fco2_xgb_tune_grid <- fco2_xgb_wf  |>  
+  tune_grid(
+    resamples = fco2_resamples,
+    grid = fco2_xgb_grid,
+    control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
+    metrics = metric_set(rmse)
+  )
+
+#### Melhores hiperparâmetros
+autoplot(fco2_xgb_tune_grid)
+```
+
+```{r}
+fco2_xgb_tune_grid  %>%   show_best(metric = "rmse", n = 5)
+fco2_xgb_select_best_passo5 <- fco2_xgb_tune_grid   %>%   select_best(metric = "rmse")
+fco2_xgb_select_best_passo5
+```
+
+### Desempenho dos modelos finais
+
+```{r}
+fco2_xgb_model <- boost_tree(
+  mtry = fco2_xgb_select_best_passo4$mtry,
+  trees = fco2_xgb_select_best_passo5$trees,
+  min_n = fco2_xgb_select_best_passo2$min_n,
+  tree_depth = fco2_xgb_select_best_passo2$tree_depth, 
+  loss_reduction = fco2_xgb_select_best_passo3$loss_reduction, 
+  learn_rate = fco2_xgb_select_best_passo5$learn_rate, 
+  sample_size = fco2_xgb_select_best_passo4$sample_size
+) %>%  
+  set_mode("regression")  %>%  
+  set_engine("xgboost", nthread = cores, counts = FALSE)
+
+#### Workflow
+fco2_xgb_wf <- workflow()  |>  
+    add_model(fco2_xgb_model) |>  
+    add_recipe(fco2_xgb_recipe)
+
+fco2_xgb_last_fit <- fco2_xgb_wf  |>  
+  last_fit(
+    split = fco2_initial_split,
+    control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
+    metrics = metric_set(rmse)
+  )
+```
+
+
+```{r}
+fco2_xgb_best_params <- select_best(fco2_xgb_model, "rmse")
+fco2_xgb_wf <- fco2_xgb_wf %>% finalize_workflow(fco2_xgb_best_params)
+fco2_xgb_last_fit <- last_fit(fco2_xgb_wf, fco2_initial_split)
+```
+
+## Criar os preditos
+
+```{r}
+fco2_test_preds <- bind_rows(
+  collect_predictions(fco2_rf_last_fit)  %>%   mutate(modelo = "rf")
+)
+```
+
+```{r}
+fco2_test_preds %>% 
+  ggplot(aes(x=.pred, y=FCO2)) +
+  geom_point()+
+  theme_bw() +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(ggplot2::aes(
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~"))) 
+```
+
+## Variáveis importantes
+
+```{r}
+fco2_rf_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
+vip(fco2_rf_last_fit_model)
+```
