@@ -598,7 +598,7 @@ fco2_test_preds %>%
 ## Variáveis importantes
 
 ```{r}
-fco2_rf_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
+fco2_rf_last_fit_model <-fco2_rf_last_fit$.workflow[[1]]$fit$fit
 vip(fco2_rf_last_fit_model)
 ```
 
@@ -883,24 +883,14 @@ fco2_xgb_model <- boost_tree(
 ) %>%  
   set_mode("regression")  %>%  
   set_engine("xgboost", nthread = cores, counts = FALSE)
-
-#### Workflow
-fco2_xgb_wf <- workflow()  |>  
-    add_model(fco2_xgb_model) |>  
-    add_recipe(fco2_xgb_recipe)
-
-fco2_xgb_last_fit <- fco2_xgb_wf  |>  
-  last_fit(
-    split = fco2_initial_split,
-    control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
-    metrics = metric_set(rmse)
-  )
 ```
 
 
+## Desempenho dos modelos finais
+
 ```{r}
-fco2_xgb_best_params <- select_best(fco2_xgb_model, "rmse")
-fco2_xgb_wf <- fco2_xgb_wf %>% finalize_workflow(fco2_xgb_best_params)
+# fco2_xgb_best_params <- select_best(fco2_xgb_tune_grid, "rmse")
+fco2_xgb_wf <- fco2_xgb_wf %>% finalize_workflow(fco2_xgb_model)
 fco2_xgb_last_fit <- last_fit(fco2_xgb_wf, fco2_initial_split)
 ```
 
@@ -908,7 +898,7 @@ fco2_xgb_last_fit <- last_fit(fco2_xgb_wf, fco2_initial_split)
 
 ```{r}
 fco2_test_preds <- bind_rows(
-  collect_predictions(fco2_rf_last_fit)  %>%   mutate(modelo = "rf")
+  collect_predictions(fco2_xgb_last_fit)  %>%   mutate(modelo = "xgb")
 )
 ```
 
@@ -925,6 +915,6 @@ fco2_test_preds %>%
 ## Variáveis importantes
 
 ```{r}
-fco2_rf_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
-vip(fco2_rf_last_fit_model)
+fco2_xgb_last_fit_model <-fco2_xgb_last_fit$.workflow[[1]]$fit$fit
+vip(fco2_xgb_last_fit_model)
 ```
