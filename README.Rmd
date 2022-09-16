@@ -416,7 +416,7 @@ grid_dt <- grid_random(
   cost_complexity(c(-6, -4)),
   tree_depth(range = c(8, 18)),
   min_n(range = c(42, 52)),
-  size = 20 #20
+  size = 2 #20
 )
 glimpse(grid_dt)
 ```
@@ -496,11 +496,8 @@ visdat::vis_miss(fco2_test)
 fco2_train <- training(fco2_initial_split)
 visdat::vis_miss(fco2_train)
 
-
 fco2_resamples_rf <- vfold_cv(fco2_train, v = 5)
 ```
-
-
 
 
 ## Data prep
@@ -550,9 +547,10 @@ grid_rf <- grid_random(
   min_n(range = c(20, 30)),
   mtry(range = c(10,20)),
   trees(range = c(769,1500) ),
-  size = 20
+  size = 1
 )
 ```
+
 
 ```{r}
 fco2_rf_tune_grid <- tune_grid(
@@ -561,7 +559,6 @@ fco2_rf_tune_grid <- tune_grid(
   grid = grid_rf,
   metrics = metric_set(rmse)
 ) 
-
 autoplot(fco2_rf_tune_grid)
 ```
 
@@ -656,8 +653,8 @@ fco2_xgb_wf <- workflow()  |>
 ## Tune
 ```{r}
 grid_xgb <- expand.grid(
-  learn_rate = c(0.05, 0.3, .8, 1.2),
-  trees = c(2, 250, 500, 1000)
+  learn_rate =  c(0.05, 0.3), #c(0.05, 0.3, .8, 1.2),
+  trees = c(2, 250) #c(2, 250, 500, 1000)
 )
 ```
 
@@ -711,8 +708,8 @@ fco2_xgb_wf <- workflow() %>%
 
 #### Grid
 fco2_xgb_grid <- expand.grid(
-  tree_depth = c(1, 3, 4, 6, 10), 
-  min_n = c(5, 30, 60, 90, 100, 200)
+  tree_depth = c(1, 3),#c(1, 3, 4, 6, 10), 
+  min_n = c(5, 30) #c(5, 30, 60, 90, 100, 200)
 )
 
 fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
@@ -757,7 +754,7 @@ fco2_xgb_wf <- workflow()  %>%
 
 #### Grid
 fco2_xgb_grid <- expand.grid(
-  loss_reduction = c(0.01, 0.05, 1, 2, 4)
+  loss_reduction = c(0.01)#c(0.01, 0.05, 1, 2, 4)
 )
 
 fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
@@ -805,7 +802,7 @@ fco2_xgb_grid <- expand.grid(
     mtry = seq(0.1, 1.0, length.out = 2)
 )
 
-fco2_xgb_tune_grid <- fco2_xgb_wf  |>  
+fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
   tune_grid(
     resamples = fco2_resamples,
     grid = fco2_xgb_grid,
@@ -819,7 +816,7 @@ autoplot(fco2_xgb_tune_grid)
 
 ```{r}
 fco2_xgb_tune_grid  |>  show_best(metric = "rmse", n = 5)
-fco2_xgb_select_best_passo4 <- fco2_xgb_tune_grid  |>  select_best(metric = "rmse")
+fco2_xgb_select_best_passo4 <- fco2_xgb_tune_grid   %>%   select_best(metric = "rmse")
 fco2_xgb_select_best_passo4
 ```
 #### Passo 5
@@ -837,21 +834,21 @@ fco2_xgb_model <- boost_tree(
   learn_rate = tune(), 
   sample_size = fco2_xgb_select_best_passo4$sample_size
 ) |> 
-  set_mode("regression") |> 
+  set_mode("regression")  %>%  
   set_engine("xgboost", nthread = cores, counts = FALSE)
 
 #### Workflow
-fco2_xgb_wf <- workflow() |>  
-    add_model(fco2_xgb_model) |>  
+fco2_xgb_wf <- workflow() %>%   
+    add_model(fco2_xgb_model)  %>%   
     add_recipe(fco2_xgb_recipe)
 
 #### Grid
 fco2_xgb_grid <- expand.grid(
-    learn_rate = c(0.05, 0.10, 0.15, 0.25),
+    learn_rate = c(0.05),#c(0.05, 0.10, 0.15, 0.25),
     trees = c(100, 250)
 )
 
-fco2_xgb_tune_grid <- fco2_xgb_wf  |>  
+fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
   tune_grid(
     resamples = fco2_resamples,
     grid = fco2_xgb_grid,
@@ -890,7 +887,16 @@ fco2_xgb_model <- boost_tree(
 
 ```{r}
 # fco2_xgb_best_params <- select_best(fco2_xgb_tune_grid, "rmse")
-fco2_xgb_wf <- fco2_xgb_wf %>% finalize_workflow(fco2_xgb_model) # <------
+df <- data.frame(
+  mtry = fco2_xgb_select_best_passo4$mtry,
+  trees = fco2_xgb_select_best_passo5$trees,
+  min_n = fco2_xgb_select_best_passo2$min_n,
+  tree_depth = fco2_xgb_select_best_passo2$tree_depth, 
+  loss_reduction = fco2_xgb_select_best_passo3$loss_reduction, 
+  learn_rate = fco2_xgb_select_best_passo5$learn_rate, 
+  sample_size = fco2_xgb_select_best_passo4$sample_size
+)
+fco2_xgb_wf <- fco2_xgb_wf %>% finalize_workflow(df) # <------
 fco2_xgb_last_fit <- last_fit(fco2_xgb_wf, fco2_initial_split) # <--------
 ```
 
