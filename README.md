@@ -460,43 +460,43 @@ fco2_train  %>%
 glimpse(fco2_train)
 #> Rows: 6,103
 #> Columns: 37
-#> $ ID        <int> 9, 11, 2, 62, 80, 56, 26, 19, 9, 1, 76, 20, 64, 10, 58, 33, ~
-#> $ data.x    <date> 2016-04-01, 2017-07-15, 2018-07-04, 2018-07-10, 2017-03-15,~
-#> $ cultura   <chr> "mata ciliar", "pinus", "pasto", "silvipastoril", "eucalipto~
-#> $ ano       <dbl> 2016, 2017, 2018, 2018, 2017, 2016, 2018, 2019, 2017, 2018, ~
-#> $ mes       <dbl> 4, 7, 7, 7, 3, 4, 8, 5, 7, 7, 6, 3, 7, 6, 6, 7, 10, 8, 1, 3,~
-#> $ x         <dbl> 0, 0, 7748003, 7749433, 45, 0, 7747952, 7749399, 0, 7749472,~
-#> $ y         <dbl> 0.0, 0.0, 456925.0, 457278.2, 80.0, 0.0, 456878.7, 457163.2,~
-#> $ FCO2      <dbl> 6.02, 1.80, 0.68, 1.49, 5.15, 4.25, 1.30, 2.12, 1.85, 1.68, ~
-#> $ Ts        <dbl> 27.70000, 3.00000, 22.60000, 17.80000, 28.00000, 27.80000, 2~
-#> $ Us        <dbl> 13.000000, 21.100000, 13.285927, 18.923517, 12.530828, 7.000~
-#> $ MO        <dbl> 26, 6, 15, 31, 30, 28, 15, 7, 7, 38, 24, 7, 16, 24, 17, 5, 4~
-#> $ Macro     <dbl> 0.01580963, 5.93000000, 0.20000000, 13.13000000, NA, 0.07615~
-#> $ VTP       <dbl> 41.32061, 42.97000, 0.36000, 56.32000, NA, 42.74492, 0.38000~
-#> $ ARG       <dbl> 360.6349, 334.2100, 118.8800, 655.0000, NA, 298.1670, 69.210~
-#> $ ano_mes   <chr> "2016-4", "2017-7", "2018-7", "2018-7", "2017-3", "2016-4", ~
-#> $ Tmed      <dbl> NA, 23.3, 23.9, 15.8, 28.4, NA, 20.3, 20.7, 23.3, 23.4, 23.8~
-#> $ Tmax      <dbl> NA, 30.2, 33.4, 21.8, 34.1, NA, 27.9, 28.6, 30.2, 33.1, 30.5~
-#> $ Tmin      <dbl> NA, 17.2, 16.0, 11.9, 22.6, NA, 16.1, 13.0, 17.2, 15.9, 19.0~
-#> $ Umed      <dbl> NA, 56.7, 60.1, 66.4, 73.3, NA, 83.7, 67.1, 56.7, 67.5, 67.4~
-#> $ Umax      <dbl> NA, 85.8, 98.6, 85.4, 95.3, NA, 99.0, 89.1, 85.8, 98.0, 89.6~
-#> $ Umin      <dbl> NA, 32.0, 27.7, 46.5, 52.0, NA, 56.2, 43.1, 32.0, 34.1, 45.7~
-#> $ PkPa      <dbl> NA, 97.8, 97.6, 98.3, 97.3, NA, 97.9, 97.7, 97.8, 97.6, 97.5~
-#> $ Rad       <dbl> NA, 14.2, 12.5, 13.2, 20.5, NA, 11.7, 11.4, 14.2, 12.7, 7.3,~
-#> $ Eto       <dbl> NA, 4.2, 2.8, 2.8, 4.7, NA, 2.5, 2.7, 4.2, 2.6, 2.1, 4.2, 1.~
-#> $ Velmax    <dbl> NA, 6.5, 4.3, 6.4, 5.2, NA, 5.3, 4.6, 6.5, 4.3, 4.3, 4.9, 6.~
-#> $ Velmin    <dbl> NA, 2.3, 0.8, 2.1, 1.2, NA, 1.2, 1.2, 2.3, 0.6, 0.8, 1.4, 2.~
-#> $ Dir_vel   <dbl> NA, 73.8, 85.2, 235.2, 78.4, NA, 118.7, 98.0, 73.8, 312.6, 5~
-#> $ chuva     <dbl> NA, 0.0, 0.0, 0.0, 0.0, NA, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.~
-#> $ inso      <dbl> NA, 7.2, 5.5, 6.1, 7.5, NA, 3.7, 4.1, 7.2, 5.6, 1.8, 5.4, 0.~
-#> $ data.y    <date> 2016-04-07, 2017-07-22, 2018-07-18, 2018-07-09, 2017-03-25,~
-#> $ mês       <dbl> 4, 7, 7, 7, 3, 4, 8, 5, 7, 7, 6, 3, 7, 6, 6, 7, 10, 8, 1, 3,~
-#> $ dia       <dbl> 7, 22, 18, 9, 25, 30, 19, 25, 22, 9, 16, 16, 9, 20, 16, 18, ~
+#> $ ID        <int> 64, 51, 76, 101, 3, 16, 66, 14, 65, 45, 59, 10, 25, 45, 62, ~
+#> $ data.x    <date> 2019-09-21, 2019-08-03, 2017-03-15, 2017-06-03, 2017-07-28,~
+#> $ cultura   <chr> "pasto", "silvipastoril", "eucalipto", "eucalipto", "cerrado~
+#> $ ano       <dbl> 2019, 2019, 2017, 2017, 2017, 2018, 2015, 2018, 2018, 2018, ~
+#> $ mes       <dbl> 9, 8, 3, 6, 7, 7, 10, 7, 7, 6, 4, 9, 4, 6, 7, 10, 7, 6, 6, 3~
+#> $ x         <dbl> 7747952, 7749399, 20, 80, 0, 7747998, 35, 7748006, 7747897, ~
+#> $ y         <dbl> 456878.7, 457163.2, 80.0, 100.0, 0.0, 456881.0, 70.0, 456856~
+#> $ FCO2      <dbl> 3.77, 1.51, 5.25, 3.37, 2.34, 0.82, 3.45, 0.79, 0.87, 1.27, ~
+#> $ Ts        <dbl> 25.40000, 28.50000, 28.00000, 21.80000, 4.00000, 21.30000, 2~
+#> $ Us        <dbl> 5.200000, 15.300000, 9.633034, 12.042492, 22.100000, 14.8127~
+#> $ MO        <dbl> 23, 5, 40, 30, 10, 19, 32, 23, 18, 21, 32, 14, 19, 29, 31, 4~
+#> $ Macro     <dbl> 0.10000000, 10.84000000, NA, NA, 16.21000000, 0.12000000, 0.~
+#> $ VTP       <dbl> 0.42000, 51.82000, NA, NA, 45.49000, 0.33000, 40.37482, 0.35~
+#> $ ARG       <dbl> 137.0000, NA, NA, NA, NA, 133.7300, NA, 114.1100, 150.8000, ~
+#> $ ano_mes   <chr> "2019-9", "2019-8", "2017-3", "2017-6", "2017-7", "2018-7", ~
+#> $ Tmed      <dbl> 28.5, 15.7, 28.4, 22.0, 22.8, 17.7, 29.7, 17.7, 23.9, 25.4, ~
+#> $ Tmax      <dbl> 37.1, 21.3, 34.1, 30.0, 30.1, 21.1, 38.2, 21.1, 33.4, 34.6, ~
+#> $ Tmin      <dbl> 22.1, 10.6, 22.6, 15.4, 16.3, 14.8, 22.8, 14.8, 16.0, 17.4, ~
+#> $ Umed      <dbl> 73.1, 66.9, 73.3, 74.7, 52.0, 82.8, 62.8, 82.8, 60.1, 54.6, ~
+#> $ Umax      <dbl> 96.1, 84.7, 95.3, 90.8, 71.6, 96.7, 92.3, 96.7, 98.6, 91.8, ~
+#> $ Umin      <dbl> 42.9, 53.5, 52.0, 54.7, 33.9, 63.7, 33.1, 63.7, 27.7, 27.2, ~
+#> $ PkPa      <dbl> 97.4, 98.2, 97.3, 97.8, 98.1, 98.1, 97.1, 98.1, 97.6, 97.5, ~
+#> $ Rad       <dbl> 15.5, 7.0, 20.5, 13.8, 14.6, 3.9, 19.7, 3.9, 12.5, 12.4, NA,~
+#> $ Eto       <dbl> 4.4, 2.3, 4.7, 2.8, 3.8, 1.6, 5.3, 1.6, 2.8, 3.0, NA, 3.3, N~
+#> $ Velmax    <dbl> 5.3, 6.4, 5.2, 4.6, 6.4, 6.1, 5.1, 6.1, 4.3, 4.2, NA, 6.5, N~
+#> $ Velmin    <dbl> 1.4, 2.3, 1.2, 1.2, 1.7, 2.1, 1.3, 2.1, 0.8, 0.9, NA, 1.7, N~
+#> $ Dir_vel   <dbl> 138.9, 241.4, 78.4, 93.0, 85.9, 237.1, 95.6, 237.1, 85.2, 50~
+#> $ chuva     <dbl> 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, NA, 0.0, N~
+#> $ inso      <dbl> 5.5, 0.0, 7.5, 8.2, 7.7, 0.0, 6.4, 0.0, 5.5, 6.8, NA, 4.0, N~
+#> $ data.y    <date> 2019-09-30, 2019-08-29, 2017-03-25, 2017-06-20, 2017-07-22,~
+#> $ mês       <dbl> 9, 8, 3, 6, 7, 7, 10, 7, 7, 6, 4, 9, 4, 6, 7, 10, 7, 6, 6, 3~
+#> $ dia       <dbl> 30, 29, 25, 20, 22, 9, 21, 9, 18, 16, 7, 11, 30, 16, 9, 21, ~
 #> $ longitude <dbl> -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.~
 #> $ latitude  <dbl> -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.~
-#> $ XCO2      <dbl> 385.7844, 387.4659, 388.2893, 381.6135, 383.5677, 387.2597, ~
+#> $ XCO2      <dbl> 387.0282, 390.1713, 383.5677, 386.2278, 387.4659, 381.6135, ~
 #> $ dist      <dbl> 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.156~
-#> $ SIF       <dbl> 0.6927430, 0.2679274, 0.1719479, 0.3130879, 0.2223887, 0.583~
+#> $ SIF       <dbl> 0.44584525, 0.19841400, 0.22238866, 0.46547278, 0.26792742, ~
 fco2_train   %>%    select(-c(ID,ano,mes,x,y,latitude,longitude,dist,mês,dia)) %>% 
   select(where(is.numeric)) %>%
   drop_na() %>% 
@@ -520,18 +520,18 @@ fco2_recipe <- recipe(FCO2 ~ ., data = fco2_train %>%
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_recipe), new_data = NULL)
 #> # A tibble: 6,103 x 29
-#>         Ts      Us     MO  Macro    VTP     ARG     Tmed   Tmax   Tmin   Umed
-#>      <dbl>   <dbl>  <dbl>  <dbl>  <dbl>   <dbl>    <dbl>  <dbl>  <dbl>  <dbl>
-#>  1  0.862  -0.136   0.381 -0.765  0.318  0.208  NA       NA     NA     NA    
-#>  2 -3.40    0.973  -1.61   0.223  0.393  0.0696 -0.141   -0.250 -0.164 -1.39 
-#>  3 -0.0175 -0.0969 -0.712 -0.735 -1.57  -1.06   -0.00393  0.430 -0.433 -1.04 
-#>  4 -0.846   0.675   0.877  1.43   1.01   1.75   -1.85    -2.03  -1.35  -0.388
-#>  5  0.914  -0.200   0.778 NA     NA     NA       1.02     0.578  1.05   0.322
-#>  6  0.880  -0.958   0.579 -0.755  0.383 -0.119  NA       NA     NA     NA    
-#>  7 -0.190   0.0420 -0.712 -0.735 -1.57  -1.32   -0.825   -0.738 -0.411  1.39 
-#>  8 -1.38   -0.177  -1.51   1.59   0.918 NA      -0.734   -0.589 -1.11  -0.316
-#>  9 -3.23    0.905  -1.51   0.899  0.780 NA      -0.141   -0.250 -0.164 -1.39 
-#> 10 -0.604   0.450   1.57   1.02   0.749  1.21   -0.118    0.366 -0.456 -0.275
+#>         Ts      Us      MO  Macro    VTP    ARG     Tmed   Tmax   Tmin   Umed
+#>      <dbl>   <dbl>   <dbl>  <dbl>  <dbl>  <dbl>    <dbl>  <dbl>  <dbl>  <dbl>
+#>  1  0.465  -1.22    0.0796 -0.751 -1.56  -0.966  1.04     1.22   0.928  0.297
+#>  2  0.994   0.172  -1.71    1.04   0.807 NA     -1.85    -2.11  -1.63  -0.342
+#>  3  0.909  -0.608   1.77   NA     NA     NA      1.02     0.584  1.04   0.318
+#>  4 -0.150  -0.277   0.777  NA     NA     NA     -0.428   -0.280 -0.563  0.462
+#>  5 -3.19    1.11   -1.22    1.94   0.515 NA     -0.247   -0.259 -0.362 -1.88 
+#>  6 -0.235   0.105  -0.319  -0.748 -1.56  -0.983 -1.40    -2.15  -0.696  1.30 
+#>  7  0.757  -0.971   0.976  -0.758  0.280 NA      1.31     1.45   1.08  -0.764
+#>  8 -0.184   0.0562  0.0796 -0.741 -1.56  -1.09  -1.40    -2.15  -0.696  1.30 
+#>  9  0.0378 -0.154  -0.418  -0.748 -1.56  -0.894  0.00142  0.436 -0.429 -1.04 
+#> 10  0.328  -0.429  -0.120  -0.755 -1.57  -0.939  0.341    0.689 -0.117 -1.61 
 #> # ... with 6,093 more rows, and 19 more variables: Umax <dbl>, Umin <dbl>,
 #> #   PkPa <dbl>, Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>,
 #> #   Dir_vel <dbl>, chuva <dbl>, inso <dbl>, XCO2 <dbl>, SIF <dbl>, FCO2 <dbl>,
@@ -549,7 +549,7 @@ visdat::vis_miss(bake(prep(fco2_recipe), new_data = NULL))
 ``` r
 fco2_resamples <- vfold_cv(fco2_train, v = 5)
 grid <- grid_regular(
-  penalty(range = c(-4, -2)),
+  penalty(range = c(-8, 0)),
   levels = 20
 )
 ```
@@ -578,17 +578,17 @@ fco2_dt_wf <- workflow()   %>%
 
 ``` r
 grid_dt <- grid_random(
-  cost_complexity(c(-6, -4)),
-  tree_depth(range = c(8, 18)),
-  min_n(range = c(42, 52)),
-  size = 2 #20
+  cost_complexity(c(-10, -1)),
+  tree_depth(range = c(4, 20)),
+  min_n(range = c(20, 10)),
+  size = 80
 )
 glimpse(grid_dt)
-#> Rows: 2
+#> Rows: 80
 #> Columns: 3
-#> $ cost_complexity <dbl> 1.345300e-05, 6.502366e-05
-#> $ tree_depth      <int> 18, 10
-#> $ min_n           <int> 49, 51
+#> $ cost_complexity <dbl> 8.316592e-08, 9.688503e-02, 1.022271e-08, 4.667095e-04~
+#> $ tree_depth      <int> 9, 8, 10, 17, 6, 20, 17, 16, 20, 18, 17, 13, 5, 14, 11~
+#> $ min_n           <int> 17, 11, 20, 17, 16, 15, 13, 15, 15, 15, 17, 20, 13, 16~
 ```
 
 ``` r
@@ -608,12 +608,21 @@ autoplot(fco2_dt_tune_grid)
 
 ``` r
 collect_metrics(fco2_dt_tune_grid)
-#> # A tibble: 2 x 9
-#>   cost_complexity tree_depth min_n .metric .estima~1  mean     n std_err .config
-#>             <dbl>      <int> <int> <chr>   <chr>     <dbl> <int>   <dbl> <chr>  
-#> 1       0.0000135         18    49 rmse    standard   1.31     5  0.0439 Prepro~
-#> 2       0.0000650         10    51 rmse    standard   1.34     5  0.0444 Prepro~
-#> # ... with abbreviated variable name 1: .estimator
+#> # A tibble: 80 x 9
+#>    cost_complexity tree_depth min_n .metric .estim~1  mean     n std_err .config
+#>              <dbl>      <int> <int> <chr>   <chr>    <dbl> <int>   <dbl> <chr>  
+#>  1        8.32e- 8          9    17 rmse    standard  1.32     5  0.0205 Prepro~
+#>  2        9.69e- 2          8    11 rmse    standard  1.73     5  0.0556 Prepro~
+#>  3        1.02e- 8         10    20 rmse    standard  1.31     5  0.0239 Prepro~
+#>  4        4.67e- 4         17    17 rmse    standard  1.31     5  0.0222 Prepro~
+#>  5        1.21e- 9          6    16 rmse    standard  1.38     5  0.0259 Prepro~
+#>  6        3.26e- 9         20    15 rmse    standard  1.33     5  0.0150 Prepro~
+#>  7        2.59e- 2         17    13 rmse    standard  1.53     5  0.0402 Prepro~
+#>  8        2.81e- 8         16    15 rmse    standard  1.32     5  0.0164 Prepro~
+#>  9        1.20e-10         20    15 rmse    standard  1.33     5  0.0150 Prepro~
+#> 10        1.28e- 4         18    15 rmse    standard  1.32     5  0.0163 Prepro~
+#> # ... with 70 more rows, and abbreviated variable name 1: .estimator
+#> # i Use `print(n = ...)` to see more rows
 ```
 
 ## Desempenho dos modelos finais
@@ -707,27 +716,28 @@ fco2_rf_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>%
   step_string2factor(all_nominal(), skip = TRUE) %>% 
   step_normalize(all_numeric_predictors())  %>% 
   step_novel(all_nominal_predictors()) %>% 
-  # step_zv(all_predictors()) %>%
+  step_zv(all_predictors()) %>%
   # step_naomit(all_predictors()) #%>% 
-  #step_poly(c(Ts, Us), degree = 3)  %>%  
+  step_poly(c(Ts, Us), degree = 3)  %>%  
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_rf_recipe), new_data = NULL)
-#> # A tibble: 5,459 x 26
-#>         Ts   XCO2    SIF     Us     MO    Tmed    Tmax   Tmin   Umed   Umax
-#>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>   <dbl>   <dbl>  <dbl>  <dbl>  <dbl>
-#>  1 -3.08    0.105  0.116  0.859 -1.33  -0.282  -0.103  -0.501 -1.09  -1.23 
-#>  2  0.723  -0.754  1.22  -1.11   0.200  1.51    1.29    1.24  -1.06  -1.19 
-#>  3  0.182   0.105  0.116 -0.992  0.583 -0.0327  0.0447 -0.122 -0.259  0.277
-#>  4  0.892  -0.754  1.22  -1.11   0.200  1.35    1.50    1.12  -0.164 -0.404
-#>  5  0.0127  0.299 -0.922 -1.24   1.35  -0.0327  0.0447 -0.122 -0.259  0.277
-#>  6  0.503  -1.09   1.36  -0.705  0.296  1.08    1.04    1.04   0.307  0.639
-#>  7  1.03   -1.10  -0.345  1.59   0.200  1.23    1.02    1.26   0.956  1.03 
-#>  8  0.588   0.550 -0.431 -1.77  -0.854  1.05    1.23    0.946  0.307  0.466
-#>  9 -1.39   -0.843  0.485  1.47  -1.05   0.397   0.235   0.635  0.338 -0.462
-#> 10  0.622   0.407  0.651 -1.76   0.583  1.01    1.08    0.568 -1.00   1.03 
-#> # ... with 5,449 more rows, and 16 more variables: Umin <dbl>, PkPa <dbl>,
-#> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
-#> #   chuva <dbl>, inso <dbl>, FCO2 <dbl>, cultura_eucalipto <dbl>,
+#> # A tibble: 5,459 x 30
+#>      XCO2     SIF     MO   Tmed    Tmax    Tmin   Umed    Umax   Umin    PkPa
+#>     <dbl>   <dbl>  <dbl>  <dbl>   <dbl>   <dbl>  <dbl>   <dbl>  <dbl>   <dbl>
+#>  1  1.26  -1.26    0.394 -0.721 -0.677  -0.403   1.21   1.03    1.16   1.23  
+#>  2  1.88  -0.382   0.108  0.437  0.569   0.0694 -2.09  -2.49   -1.32  -0.0784
+#>  3  0.464  0.0892 -1.71   1.05   1.22    0.946   0.311  0.476  -0.145 -0.604 
+#>  4  1.26  -1.26   -0.561 -0.176 -0.0435 -0.313  -0.932 -0.771  -1.58   1.23  
+#>  5  0.464  0.0892 -1.13   0.301  0.358  -0.0654 -1.17  -1.34   -0.610 -0.0784
+#>  6  1.26  -1.26    0.490  0.324  0.548  -0.0205 -1.35   0.0745 -1.61  -0.0784
+#>  7 -0.844  0.498   0.872  0.437  0.484   0.968   1.70   1.02    0.544 -0.866 
+#>  8  0.103  0.127   1.25  -0.426 -0.276  -0.560   0.477 -0.284   0.953  0.447 
+#>  9  0.173 -0.0983 -1.61  -0.721 -0.571  -1.10   -0.311 -0.528  -0.126  0.184 
+#> 10  1.26  -1.26    0.394 -0.540 -0.255  -0.740   0.632  1.03    0.432  1.76  
+#> # ... with 5,449 more rows, and 20 more variables: Rad <dbl>, Eto <dbl>,
+#> #   Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>, chuva <dbl>, inso <dbl>,
+#> #   FCO2 <dbl>, Ts_poly_1 <dbl>, Ts_poly_2 <dbl>, Ts_poly_3 <dbl>,
+#> #   Us_poly_1 <dbl>, Us_poly_2 <dbl>, Us_poly_3 <dbl>, cultura_eucalipto <dbl>,
 #> #   cultura_mata.ciliar <dbl>, cultura_pasto <dbl>, cultura_pinus <dbl>,
 #> #   cultura_silvipastoril <dbl>, cultura_new <dbl>
 #> # i Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
@@ -765,7 +775,7 @@ grid_rf <- grid_random(
   min_n(range = c(20, 30)),
   mtry(range = c(10,20)),
   trees(range = c(769,1500) ),
-  size = 1
+  size = 20
 )
 ```
 
@@ -783,10 +793,29 @@ autoplot(fco2_rf_tune_grid)
 
 ``` r
 collect_metrics(fco2_rf_tune_grid)
-#> # A tibble: 1 x 9
-#>    mtry trees min_n .metric .estimator  mean     n std_err .config             
-#>   <int> <int> <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1    12   904    26 rmse    standard    1.14     5  0.0422 Preprocessor1_Model1
+#> # A tibble: 20 x 9
+#>     mtry trees min_n .metric .estimator  mean     n std_err .config             
+#>    <int> <int> <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#>  1    15   929    29 rmse    standard    1.11     5  0.0526 Preprocessor1_Model~
+#>  2    20  1252    29 rmse    standard    1.10     5  0.0521 Preprocessor1_Model~
+#>  3    20  1247    21 rmse    standard    1.10     5  0.0508 Preprocessor1_Model~
+#>  4    15  1468    29 rmse    standard    1.11     5  0.0522 Preprocessor1_Model~
+#>  5    11   770    20 rmse    standard    1.10     5  0.0509 Preprocessor1_Model~
+#>  6    17  1298    27 rmse    standard    1.10     5  0.0518 Preprocessor1_Model~
+#>  7    14  1312    30 rmse    standard    1.11     5  0.0524 Preprocessor1_Model~
+#>  8    19  1395    27 rmse    standard    1.10     5  0.0520 Preprocessor1_Model~
+#>  9    20  1294    20 rmse    standard    1.10     5  0.0506 Preprocessor1_Model~
+#> 10    12   903    25 rmse    standard    1.11     5  0.0523 Preprocessor1_Model~
+#> 11    10  1095    21 rmse    standard    1.11     5  0.0515 Preprocessor1_Model~
+#> 12    17   977    27 rmse    standard    1.10     5  0.0515 Preprocessor1_Model~
+#> 13    16   908    25 rmse    standard    1.10     5  0.0521 Preprocessor1_Model~
+#> 14    11  1352    29 rmse    standard    1.11     5  0.0527 Preprocessor1_Model~
+#> 15    12  1424    28 rmse    standard    1.11     5  0.0523 Preprocessor1_Model~
+#> 16    10  1465    27 rmse    standard    1.11     5  0.0527 Preprocessor1_Model~
+#> 17    17  1269    29 rmse    standard    1.10     5  0.0525 Preprocessor1_Model~
+#> 18    20  1364    25 rmse    standard    1.10     5  0.0520 Preprocessor1_Model~
+#> 19    20  1165    29 rmse    standard    1.10     5  0.0519 Preprocessor1_Model~
+#> 20    19   874    28 rmse    standard    1.10     5  0.0522 Preprocessor1_Model~
 ```
 
 ## Desempenho dos modelos finais
@@ -841,18 +870,18 @@ fco2_xgb_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>%
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_xgb_recipe), new_data = NULL)
 #> # A tibble: 5,459 x 26
-#>         Ts   XCO2    SIF     Us     MO    Tmed    Tmax   Tmin   Umed   Umax
-#>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>   <dbl>   <dbl>  <dbl>  <dbl>  <dbl>
-#>  1 -3.08    0.105  0.116  0.859 -1.33  -0.282  -0.103  -0.501 -1.09  -1.23 
-#>  2  0.723  -0.754  1.22  -1.11   0.200  1.51    1.29    1.24  -1.06  -1.19 
-#>  3  0.182   0.105  0.116 -0.992  0.583 -0.0327  0.0447 -0.122 -0.259  0.277
-#>  4  0.892  -0.754  1.22  -1.11   0.200  1.35    1.50    1.12  -0.164 -0.404
-#>  5  0.0127  0.299 -0.922 -1.24   1.35  -0.0327  0.0447 -0.122 -0.259  0.277
-#>  6  0.503  -1.09   1.36  -0.705  0.296  1.08    1.04    1.04   0.307  0.639
-#>  7  1.03   -1.10  -0.345  1.59   0.200  1.23    1.02    1.26   0.956  1.03 
-#>  8  0.588   0.550 -0.431 -1.77  -0.854  1.05    1.23    0.946  0.307  0.466
-#>  9 -1.39   -0.843  0.485  1.47  -1.05   0.397   0.235   0.635  0.338 -0.462
-#> 10  0.622   0.407  0.651 -1.76   0.583  1.01    1.08    0.568 -1.00   1.03 
+#>          Ts   XCO2     SIF     Us     MO   Tmed    Tmax    Tmin   Umed    Umax
+#>       <dbl>  <dbl>   <dbl>  <dbl>  <dbl>  <dbl>   <dbl>   <dbl>  <dbl>   <dbl>
+#>  1  0.120    1.26  -1.26   -0.178  0.394 -0.721 -0.677  -0.403   1.21   1.03  
+#>  2 -0.361    1.88  -0.382  -0.726  0.108  0.437  0.569   0.0694 -2.09  -2.49  
+#>  3  0.617    0.464  0.0892 -0.536 -1.71   1.05   1.22    0.946   0.311  0.476 
+#>  4  0.120    1.26  -1.26   -0.178 -0.561 -0.176 -0.0435 -0.313  -0.932 -0.771 
+#>  5  0.00396  0.464  0.0892 -1.46  -1.13   0.301  0.358  -0.0654 -1.17  -1.34  
+#>  6 -0.394    1.26  -1.26    0.316  0.490  0.324  0.548  -0.0205 -1.35   0.0745
+#>  7  0.208   -0.844  0.498   2.18   0.872  0.437  0.484   0.968   1.70   1.02  
+#>  8  0.0371   0.103  0.127  -0.188  1.25  -0.426 -0.276  -0.560   0.477 -0.284 
+#>  9 -1.27     0.173 -0.0983 -0.767 -1.61  -0.721 -0.571  -1.10   -0.311 -0.528 
+#> 10 -0.476    1.26  -1.26    0.396  0.394 -0.540 -0.255  -0.740   0.632  1.03  
 #> # ... with 5,449 more rows, and 16 more variables: Umin <dbl>, PkPa <dbl>,
 #> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
 #> #   chuva <dbl>, inso <dbl>, FCO2 <dbl>, cultura_eucalipto <dbl>,
@@ -895,8 +924,8 @@ fco2_xgb_model <- boost_tree(
 ## Workflow
 
 ``` r
-fco2_xgb_wf <- workflow()  |> 
-  add_model(fco2_xgb_model) |> 
+fco2_xgb_wf <- workflow()  %>%  
+  add_model(fco2_xgb_model) %>%  
   add_recipe(fco2_xgb_recipe)
 ```
 
@@ -904,8 +933,8 @@ fco2_xgb_wf <- workflow()  |>
 
 ``` r
 grid_xgb <- expand.grid(
-  learn_rate =  c(0.05, 0.3), #c(0.05, 0.3, .8, 1.2),
-  trees = c(2, 250) #c(2, 250, 500, 1000)
+  learn_rate =  c(0.05, 0.3),
+  trees = c(2, 250, 500)
 )
 ```
 
@@ -916,16 +945,26 @@ fco2_xgb_tune_grid <- tune_grid(
   grid = grid_xgb,
   metrics = metric_set(rmse)
 )
-#> [02:27:26] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:28] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:30] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:32] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:35] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:37] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:40] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:42] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:44] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:27:46] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:46] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:46] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:49] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:49] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:52] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:52] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:55] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:55] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:58] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:34:58] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:01] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:01] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:05] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:05] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:08] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:08] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:11] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:11] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:14] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [14:35:14] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
 ```
 
 ``` r
@@ -936,13 +975,15 @@ autoplot(fco2_xgb_tune_grid)
 
 ``` r
 fco2_xgb_tune_grid   %>%   show_best(metric = "rmse", n = 6)
-#> # A tibble: 4 x 8
+#> # A tibble: 6 x 8
 #>   trees learn_rate .metric .estimator  mean     n std_err .config             
 #>   <dbl>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1   250       0.05 rmse    standard    1.23     5  0.0415 Preprocessor1_Model2
-#> 2   250       0.3  rmse    standard    1.24     5  0.0380 Preprocessor1_Model4
-#> 3     2       0.3  rmse    standard    2.08     5  0.0450 Preprocessor1_Model3
-#> 4     2       0.05 rmse    standard    3.17     5  0.0407 Preprocessor1_Model1
+#> 1   500       0.05 rmse    standard    1.22     5  0.0247 Preprocessor1_Model3
+#> 2   250       0.05 rmse    standard    1.24     5  0.0231 Preprocessor1_Model2
+#> 3   250       0.3  rmse    standard    1.24     5  0.0267 Preprocessor1_Model5
+#> 4   500       0.3  rmse    standard    1.26     5  0.0253 Preprocessor1_Model6
+#> 5     2       0.3  rmse    standard    2.08     5  0.0359 Preprocessor1_Model4
+#> 6     2       0.05 rmse    standard    3.16     5  0.0408 Preprocessor1_Model1
 ```
 
 ``` r
@@ -952,7 +993,7 @@ fco2_xgb_select_best_passo1
 #> # A tibble: 1 x 3
 #>   trees learn_rate .config             
 #>   <dbl>      <dbl> <chr>               
-#> 1   250       0.05 Preprocessor1_Model2
+#> 1   500       0.05 Preprocessor1_Model3
 ```
 
 #### Passo 2:
@@ -983,8 +1024,8 @@ fco2_xgb_wf <- workflow() %>%
 
 #### Grid
 fco2_xgb_grid <- expand.grid(
-  tree_depth = c(1, 3),#c(1, 3, 4, 6, 10), 
-  min_n = c(5, 30) #c(5, 30, 60, 90, 100, 200)
+  tree_depth = c(1, 3, 4), 
+  min_n = c(5, 30, 60)
 )
 
 fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
@@ -1003,19 +1044,20 @@ autoplot(fco2_xgb_tune_grid)
 
 ``` r
 fco2_xgb_tune_grid  %>%   show_best(metric = "rmse", n = 5)
-#> # A tibble: 4 x 8
+#> # A tibble: 5 x 8
 #>   min_n tree_depth .metric .estimator  mean     n std_err .config             
 #>   <dbl>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1     5          3 rmse    standard    1.25     5  0.0450 Preprocessor1_Model2
-#> 2    30          3 rmse    standard    1.26     5  0.0465 Preprocessor1_Model4
-#> 3     5          1 rmse    standard    1.38     5  0.0466 Preprocessor1_Model1
-#> 4    30          1 rmse    standard    1.39     5  0.0480 Preprocessor1_Model3
+#> 1     5          4 rmse    standard    1.22     5  0.0232 Preprocessor1_Model3
+#> 2     5          3 rmse    standard    1.25     5  0.0219 Preprocessor1_Model2
+#> 3    30          4 rmse    standard    1.25     5  0.0238 Preprocessor1_Model6
+#> 4    60          4 rmse    standard    1.26     5  0.0209 Preprocessor1_Model9
+#> 5    30          3 rmse    standard    1.26     5  0.0222 Preprocessor1_Model5
 fco2_xgb_select_best_passo2 <- fco2_xgb_tune_grid  %>%   select_best(metric = "rmse")
 fco2_xgb_select_best_passo2
 #> # A tibble: 1 x 3
 #>   min_n tree_depth .config             
 #>   <dbl>      <dbl> <chr>               
-#> 1     5          3 Preprocessor1_Model2
+#> 1     5          4 Preprocessor1_Model3
 ```
 
 #### Passo 3
@@ -1042,7 +1084,7 @@ fco2_xgb_wf <- workflow()  %>%
 
 #### Grid
 fco2_xgb_grid <- expand.grid(
-  loss_reduction = c(0.01)#c(0.01, 0.05, 1, 2, 4)
+  loss_reduction = c(0.01, 0.05, 1, 2, 4, 8)
 )
 
 fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
@@ -1061,16 +1103,20 @@ autoplot(fco2_xgb_tune_grid)
 
 ``` r
 fco2_xgb_tune_grid   %>%   show_best(metric = "rmse", n = 5)
-#> # A tibble: 1 x 7
+#> # A tibble: 5 x 7
 #>   loss_reduction .metric .estimator  mean     n std_err .config             
 #>            <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1           0.01 rmse    standard    1.25     5  0.0463 Preprocessor1_Model1
+#> 1           1    rmse    standard    1.22     5  0.0221 Preprocessor1_Model3
+#> 2           0.05 rmse    standard    1.22     5  0.0248 Preprocessor1_Model2
+#> 3           4    rmse    standard    1.23     5  0.0237 Preprocessor1_Model5
+#> 4           2    rmse    standard    1.23     5  0.0222 Preprocessor1_Model4
+#> 5           0.01 rmse    standard    1.23     5  0.0244 Preprocessor1_Model1
 fco2_xgb_select_best_passo3 <- fco2_xgb_tune_grid %>% select_best(metric = "rmse")
 fco2_xgb_select_best_passo3
 #> # A tibble: 1 x 2
 #>   loss_reduction .config             
 #>            <dbl> <chr>               
-#> 1           0.01 Preprocessor1_Model1
+#> 1              1 Preprocessor1_Model3
 ```
 
 #### Passo 4:
@@ -1097,8 +1143,8 @@ fco2_xgb_wf <- workflow()  %>%
 
 #### Grid
 fco2_xgb_grid <- expand.grid(
-    sample_size = seq(0.5, 1.0, length.out = 2),
-    mtry = seq(0.1, 1.0, length.out = 2)
+    sample_size = seq(0.5, 1.0, length.out = 10),
+    mtry = seq(0.1, 1.0, length.out = 10)
 )
 
 fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
@@ -1117,19 +1163,20 @@ autoplot(fco2_xgb_tune_grid)
 
 ``` r
 fco2_xgb_tune_grid  |>  show_best(metric = "rmse", n = 5)
-#> # A tibble: 4 x 8
-#>    mtry sample_size .metric .estimator  mean     n std_err .config             
-#>   <dbl>       <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1   1           0.5 rmse    standard    1.25     5  0.0454 Preprocessor1_Model3
-#> 2   1           1   rmse    standard    1.25     5  0.0447 Preprocessor1_Model4
-#> 3   0.1         0.5 rmse    standard    1.28     5  0.0458 Preprocessor1_Model1
-#> 4   0.1         1   rmse    standard    1.28     5  0.0442 Preprocessor1_Model2
+#> # A tibble: 5 x 8
+#>    mtry sample_size .metric .estimator  mean     n std_err .config              
+#>   <dbl>       <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>                
+#> 1   1         0.944 rmse    standard    1.22     5  0.0247 Preprocessor1_Model0~
+#> 2   1         0.889 rmse    standard    1.22     5  0.0247 Preprocessor1_Model0~
+#> 3   0.8       0.944 rmse    standard    1.22     5  0.0250 Preprocessor1_Model0~
+#> 4   0.9       0.944 rmse    standard    1.22     5  0.0245 Preprocessor1_Model0~
+#> 5   0.9       0.833 rmse    standard    1.22     5  0.0271 Preprocessor1_Model0~
 fco2_xgb_select_best_passo4 <- fco2_xgb_tune_grid   %>%   select_best(metric = "rmse")
 fco2_xgb_select_best_passo4
 #> # A tibble: 1 x 3
-#>    mtry sample_size .config             
-#>   <dbl>       <dbl> <chr>               
-#> 1     1         0.5 Preprocessor1_Model3
+#>    mtry sample_size .config               
+#>   <dbl>       <dbl> <chr>                 
+#> 1     1       0.944 Preprocessor1_Model099
 ```
 
 #### Passo 5
@@ -1157,8 +1204,8 @@ fco2_xgb_wf <- workflow() %>%
 
 #### Grid
 fco2_xgb_grid <- expand.grid(
-    learn_rate = c(0.05),#c(0.05, 0.10, 0.15, 0.25),
-    trees = c(100, 250)
+    learn_rate = c(0.05, 0.10, 0.15, 0.25),
+    trees = c(100, 250, 500)
 )
 
 fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
@@ -1168,11 +1215,46 @@ fco2_xgb_tune_grid <- fco2_xgb_wf   %>%
     control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
     metrics = metric_set(rmse)
   )
-#> [02:29:08] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:29:11] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:29:13] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:29:15] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
-#> [02:29:17] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:00:57] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:00:57] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:00] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:00] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:04] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:04] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:07] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:07] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:11] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:11] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:14] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:14] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:18] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:18] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:21] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:21] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:25] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:25] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:28] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:28] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:31] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:31] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:35] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:35] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:38] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:38] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:42] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:42] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:45] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:45] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:49] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:49] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:52] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:52] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:56] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:56] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:59] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:01:59] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:02:02] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
+#> [15:02:02] WARNING: amalgamation/../src/c_api/c_api.cc:785: `ntree_limit` is deprecated, use `iteration_range` instead.
 
 #### Melhores hiperparâmetros
 autoplot(fco2_xgb_tune_grid)
@@ -1182,17 +1264,20 @@ autoplot(fco2_xgb_tune_grid)
 
 ``` r
 fco2_xgb_tune_grid  %>%   show_best(metric = "rmse", n = 5)
-#> # A tibble: 2 x 8
-#>   trees learn_rate .metric .estimator  mean     n std_err .config             
-#>   <dbl>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1   250       0.05 rmse    standard    1.25     5  0.0436 Preprocessor1_Model2
-#> 2   100       0.05 rmse    standard    1.29     5  0.0451 Preprocessor1_Model1
+#> # A tibble: 5 x 8
+#>   trees learn_rate .metric .estimator  mean     n std_err .config              
+#>   <dbl>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>                
+#> 1   500       0.1  rmse    standard    1.21     5  0.0262 Preprocessor1_Model06
+#> 2   500       0.15 rmse    standard    1.22     5  0.0235 Preprocessor1_Model09
+#> 3   250       0.15 rmse    standard    1.22     5  0.0238 Preprocessor1_Model08
+#> 4   100       0.25 rmse    standard    1.22     5  0.0235 Preprocessor1_Model10
+#> 5   250       0.25 rmse    standard    1.22     5  0.0243 Preprocessor1_Model11
 fco2_xgb_select_best_passo5 <- fco2_xgb_tune_grid   %>%   select_best(metric = "rmse")
 fco2_xgb_select_best_passo5
 #> # A tibble: 1 x 3
-#>   trees learn_rate .config             
-#>   <dbl>      <dbl> <chr>               
-#> 1   250       0.05 Preprocessor1_Model2
+#>   trees learn_rate .config              
+#>   <dbl>      <dbl> <chr>                
+#> 1   500        0.1 Preprocessor1_Model06
 ```
 
 ### Desempenho dos modelos finais
