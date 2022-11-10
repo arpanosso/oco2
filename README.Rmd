@@ -414,17 +414,10 @@ fco2_dt_wf <- workflow()   %>%
 
 ```{r}
 grid_dt <- grid_random(
-<<<<<<< HEAD
   cost_complexity(c(-6, -4)),
   tree_depth(range = c(8, 18)),
   min_n(range = c(42, 52)),
   size = 2
-=======
-  cost_complexity(c(-10, -1)),
-  tree_depth(range = c(4, 20)),
-  min_n(range = c(20, 10)),
-  size = 80
->>>>>>> 9e1aa4ae3b4c4c93915ee49c3c54e50b9229ea51
 )
 glimpse(grid_dt)
 ```
@@ -486,7 +479,7 @@ vip(fco2_dt_last_fit_model)
 
 ```{r}
 da <- fco2_test_preds %>% 
-  filter(FCO2 >= 0, .pred>=0 )
+  filter(FCO2 > 0, .pred>0 )
 
 my_rmse <- Metrics::rmse(da$FCO2,
                          da$.pred)
@@ -539,12 +532,8 @@ fco2_rf_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>%
   step_novel(all_nominal_predictors()) %>% 
   step_zv(all_predictors()) %>%
   # step_naomit(all_predictors()) #%>% 
-<<<<<<< HEAD
   # step_impute_mean(c(Ts,Us)) %>% 
   # step_poly(c(Ts, Us), degree = 2)  %>%  
-=======
-  step_poly(c(Ts, Us), degree = 3)  %>%  
->>>>>>> 9e1aa4ae3b4c4c93915ee49c3c54e50b9229ea51
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_rf_recipe), new_data = NULL)
 visdat::vis_miss(bake(prep(fco2_rf_recipe), new_data = NULL))
@@ -582,7 +571,7 @@ grid_rf <- grid_random(
   min_n(range = c(20, 30)),
   mtry(range = c(10,20)),
   trees(range = c(769,1500) ),
-  size = 20
+  size = 2
 )
 ```
 
@@ -638,7 +627,7 @@ vip(fco2_rf_last_fit_model)
 
 ```{r}
 da <- fco2_test_preds %>% 
-  filter(FCO2 >= 0, .pred>=0 )
+  filter(FCO2 > 0, .pred> 0 )
 
 my_rmse <- Metrics::rmse(da$FCO2,
                          da$.pred)
@@ -849,18 +838,27 @@ fco2_xgb_model <- boost_tree(
 )%>%  
   set_mode("regression")  |> 
   set_engine("xgboost", nthread = cores, counts = FALSE)
+```
 
+
+```{r}
 #### Workflow
 fco2_xgb_wf <- workflow()  %>%   
     add_model(fco2_xgb_model)  %>%   
     add_recipe(fco2_xgb_recipe)
+```
 
+
+```{r}
 #### Grid
 fco2_xgb_grid <- expand.grid(
-    sample_size = seq(0.5, 1.0, length.out = 10),
-    mtry = seq(0.1, 1.0, length.out = 10)
+    sample_size = seq(0.5, 1.0, length.out = 2), ## <---
+    mtry = seq(0.1, 1.0, length.out = 2) ## <---
 )
+```
 
+
+```{r}
 fco2_xgb_tune_grid <- fco2_xgb_wf   %>%   
   tune_grid(
     resamples = fco2_resamples,
@@ -868,7 +866,10 @@ fco2_xgb_tune_grid <- fco2_xgb_wf   %>%
     control = control_grid(save_pred = TRUE, verbose = FALSE, allow_par = TRUE),
     metrics = metric_set(rmse)
   )
+```
 
+
+```{r}
 #### Melhores hiperparâmetros
 autoplot(fco2_xgb_tune_grid)
 ```
@@ -988,7 +989,7 @@ vip(fco2_xgb_last_fit_model)
 
 ```{r}
 da <- fco2_test_preds %>% 
-  filter(FCO2 >= 0, .pred>=0 )
+  filter(FCO2 > 0, .pred> 0 )
 
 my_rmse <- Metrics::rmse(da$FCO2,
                          da$.pred)
