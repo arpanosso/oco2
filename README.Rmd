@@ -368,7 +368,8 @@ fco2_recipe <- recipe(FCO2 ~ ., data = fco2_train %>%
   step_novel(all_nominal_predictors()) %>% 
   step_zv(all_predictors()) %>%
   #step_naomit(c(Ts, Us)) %>% 
-  #step_poly(c(Ts, Us), degree = 3)  %>%  
+  #step_impute_mean(c(Us,Ts)) %>% 
+  #step_poly(c(Us,Ts), degree = 2)  %>%  
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_recipe), new_data = NULL)
 ```
@@ -416,7 +417,7 @@ grid_dt <- grid_random(
   cost_complexity(c(-6, -4)),
   tree_depth(range = c(8, 18)),
   min_n(range = c(42, 52)),
-  size = 2 #20
+  size = 2
 )
 glimpse(grid_dt)
 ```
@@ -474,9 +475,31 @@ fco2_dt_last_fit_model <-fco2_dt_last_fit$.workflow[[1]]$fit$fit
 vip(fco2_dt_last_fit_model)
 ```
 
+## Métricas
+
+```{r}
+da <- fco2_test_preds %>% 
+  filter(FCO2 >= 0, .pred>=0 )
+
+my_rmse <- Metrics::rmse(da$FCO2,
+                         da$.pred)
+my_mape <- Metrics::mape(da$FCO2,da$.pred)*100
+
+fco2_test_preds %>% 
+  ggplot(aes(x=FCO2,y=.pred))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  stat_regline_equation(ggplot2::aes(
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")),size=5)+
+  ggplot2::annotate('text',x=10.4,y=16.7,label=paste0('RMSE = ',round(my_rmse,2),', MAPE = '
+                                                      ,round(my_mape,2),'%'),size=5)+
+  theme_bw()
+```
+
+
 # Random Forest (rf)
 
-Corrigindo os NAs  no teste
+Corrigindo os `NAs` no teste.
 
 ```{r}
 visdat::vis_miss(fco2_test)
@@ -509,7 +532,8 @@ fco2_rf_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>%
   step_novel(all_nominal_predictors()) %>% 
   # step_zv(all_predictors()) %>%
   # step_naomit(all_predictors()) #%>% 
-  #step_poly(c(Ts, Us), degree = 3)  %>%  
+  # step_impute_mean(c(Ts,Us)) %>% 
+  # step_poly(c(Ts, Us), degree = 2)  %>%  
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_rf_recipe), new_data = NULL)
 visdat::vis_miss(bake(prep(fco2_rf_recipe), new_data = NULL))
@@ -599,6 +623,26 @@ fco2_rf_last_fit_model <-fco2_rf_last_fit$.workflow[[1]]$fit$fit
 vip(fco2_rf_last_fit_model)
 ```
 
+## Métricas
+
+```{r}
+da <- fco2_test_preds %>% 
+  filter(FCO2 >= 0, .pred>=0 )
+
+my_rmse <- Metrics::rmse(da$FCO2,
+                         da$.pred)
+my_mape <- Metrics::mape(da$FCO2,da$.pred)*100
+
+fco2_test_preds %>% 
+  ggplot(aes(x=FCO2,y=.pred))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  stat_regline_equation(ggplot2::aes(
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")),size=5)+
+  ggplot2::annotate('text',x=10.4,y=16.7,label=paste0('RMSE = ',round(my_rmse,2),', MAPE = '
+                                                      ,round(my_mape,2),'%'),size=5)+
+  theme_bw()
+```
 
 # Boosting gradient tree (xgb)
 
@@ -723,6 +767,8 @@ fco2_xgb_tune_grid <- fco2_xgb_wf   %>%
 #### Melhores hiperparâmetros
 autoplot(fco2_xgb_tune_grid)
 ```
+
+
 ```{r}
 fco2_xgb_tune_grid  %>%   show_best(metric = "rmse", n = 5)
 fco2_xgb_select_best_passo2 <- fco2_xgb_tune_grid  %>%   select_best(metric = "rmse")
@@ -768,6 +814,8 @@ fco2_xgb_tune_grid <- fco2_xgb_wf   %>%
 #### Melhores hiperparâmetros
 autoplot(fco2_xgb_tune_grid)
 ```
+
+
 ```{r}
 fco2_xgb_tune_grid   %>%   show_best(metric = "rmse", n = 5)
 fco2_xgb_select_best_passo3 <- fco2_xgb_tune_grid %>% select_best(metric = "rmse")
@@ -923,4 +971,25 @@ fco2_test_preds %>%
 ```{r}
 fco2_xgb_last_fit_model <-fco2_xgb_last_fit$.workflow[[1]]$fit$fit
 vip(fco2_xgb_last_fit_model)
+```
+
+## Métricas
+
+```{r}
+da <- fco2_test_preds %>% 
+  filter(FCO2 >= 0, .pred>=0 )
+
+my_rmse <- Metrics::rmse(da$FCO2,
+                         da$.pred)
+my_mape <- Metrics::mape(da$FCO2,da$.pred)*100
+
+fco2_test_preds %>% 
+  ggplot(aes(x=FCO2,y=.pred))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  stat_regline_equation(ggplot2::aes(
+    label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")),size=5)+
+  ggplot2::annotate('text',x=10.4,y=16.7,label=paste0('RMSE = ',round(my_rmse,2),', MAPE = '
+                                                      ,round(my_mape,2),'%'),size=5)+
+  theme_bw()
 ```
