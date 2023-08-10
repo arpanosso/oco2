@@ -266,7 +266,7 @@ visdat::vis_miss(data_set %>%
 
 ```{r,message=FALSE,warning=FALSE,error=FALSE}
 tab_medias <- data_set %>% 
-  mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
+  # mutate(SIF = ifelse(SIF <=0, mean(data_set$SIF, na.rm=TRUE),SIF)) %>% 
   group_by(ano_mes, cultura) %>% 
   summarise(FCO2 = mean(FCO2, na.rm=TRUE),
             XCO2 = mean(XCO2, na.rm=TRUE),
