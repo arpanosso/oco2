@@ -1,32 +1,39 @@
 ---
-title: "Aprendizado de Máquina: Emissão de CO~2~ e CO~2~ Atmosférico e SIF"
+title: "MODELOS DE APRENDIZADO DE MÁQUINA PARA A EMISSÃO DE CO~2~ DO SOLO EM ÁREAS AGRÍCOLAS NO BRASIL"
 output: github_document
 ---
+
+#### *Panosso, A. R.; Costa, L. M.; Lima, L. R. ; Crispim, V. S.* 
+
+##### Financiamento: CNPq (311981/2020-8); CNPq (301606/2017-0); Fapesp (2016/03861-5)
+
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  message=FALSE, warning=FALSE, error=FALSE,
+  message=FALSE, 
+  warning=FALSE, 
+  error=FALSE,
   comment = "#>"
 )
 ```
 
-##### *Panosso AR; Costa LM; Lima LR; Crispim, VS*  
-##### Financiamento: Fapesp (202102487-0); CNPq-PIBIC (Nº 2517 - EDITAL 4/2021)  
-# Resumo do Projeto
+ 
 
-## Aquisição dos dados de CO~2~ atmosférico (xCO2)
+## Resumo do Trabalho
 
-A aquisição de dados e o processamento inicial destes pode ser encontrada no link:
+### Aquisição dos dados de CO~2~ atmosférico (xCO2)
+
+A aquisição de dados de X~co2~ e SIF, e seus processamentos iniciais pode ser encontrados no link:
 
 #### https://arpanosso.github.io/oco2/
 
 
 Para facilitar o acesso, os dodos foram adquiridos por meio do pacote `{fco2}`.
 
-```{r, message=FALSE, warning=FALSE, error=FALSE}
+```{r}
 ## Instalando pacotes (se necessário)
 # install.packages("devtools")
 # Sys.getenv("GITHUB_PAT")
@@ -44,6 +51,9 @@ library(modeldata)
 library(vip)
 library(ggpubr)
 source("R/my_fun.R")
+
+# Definindo o plano de multisession
+future::plan("multisession")
 ```
 
 
@@ -51,44 +61,106 @@ source("R/my_fun.R")
 
 ```{r,}
 dados_estacao <- read_excel("data-raw/xlsx/estacao_meteorologia_ilha_solteira.xlsx", na = "NA") 
-  # dplyr::mutate_if(is.character, as.numeric)
-dplyr::glimpse(dados_estacao)
+glimpse(dados_estacao)
 ```
 
 ### Conhecendo a base de dados de CO~2~ atmosférico
 
 ```{r}
-# help(oco2_br)
-# glimpse(oco2_br)
+help(oco2_br)
+glimpse(fco2r::oco2_br)
+```
+Inicialmente devemos transformar os dados de concentração de CO~2~, variável `xco2_moles_mole_1` para ppm em seguida devemos criar as variáveis de data a partir da variável `time_yyyymmddhhmmss`.
+
+```{r}
+oco2<-oco2_br  %>% 
+         mutate(
+           xco2 = xco2_moles_mole_1*1e06,
+           data = ymd_hms(time_yyyymmddhhmmss),
+           ano = year(data),
+           mes = month(data),
+           dia = day(data),
+           dia_semana = wday(data))
+```
+
+Existe uma tendência de aumento monotônica mundial da concentração de CO2 na atmosfera, assim, ela deve ser retirada para podermos observar as tendências regionais.
+
+```{r}
+oco2  %>%  
+  ggplot(aes(x=data,y=xco2)) +
+  geom_point(color="blue") +
+  geom_line(color="red")
+```
+Agora devemos retirar a tendência ao longo do tempo, para isso, dentro do período específico, faremos a retirada por meio de um ajuste linear:
+
+
+```{r}
+oco2  %>%  
+  mutate(x= 1:nrow(oco2))  %>%  
+  ggplot(aes(x=data,y=xco2)) +
+  geom_point(shape=21,color="black",fill="gray") +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(ggplot2::aes(
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
+```
+
+Extrair os coeficientes $\alpha$ e $\beta$ da análise de regressão linear $(y=\alpha+\beta x)$.
+
+
+```{r}
+modelo_linear_tendencia <- lm(xco2~data,
+          data = oco2)
+coefs <- modelo_linear_tendencia$coefficients
+```
+
+Criando a variável `xco2_est` a partir da retirada da tendência.
+
+```{r}
+oco2 |> 
+  mutate(
+    xco2_est = coefs[1] + coefs[2] * as.numeric(data),
+    delta = xco2_est - xco2,
+    XCO2 = (coefs[1]-delta) - (mean(xco2) - coefs[1])
+  ) 
+glimpse(oco2)
+```
+
+```{r}
+oco2  %>%  
+  ggplot(aes(x=data,y=XCO2)) +
+  geom_point(shape=21,color="black",fill="gray") +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(ggplot2::aes(
+  label =  paste(..eq.label.., ..rr.label.., sep = "*plain(\",\")~~")))
 ```
 
 ### Alguns gráficos
 
 ```{r}
-oco2_br %>% 
-  sample_n(1000) %>% 
-  ggplot(aes(x = longitude, y = latitude)) + 
-  geom_point(color = "blue")
+# oco2 %>% 
+#   sample_n(1000) %>% 
+#   ggplot(aes(x = longitude, y = latitude)) + 
+#   geom_point(color = "blue")
 ```
 
 ### Carregando o contorno do território
 
 ```{r}
-br <- geobr::read_country(showProgress = FALSE)
+# br <- geobr::read_country(showProgress = FALSE)
 ```
 
 ### Construindo o mapa com os pontos
 
 ```{r}
-br %>% 
-  ggplot() +
-  geom_sf(fill = "white") +
-    geom_point(data=oco2_br %>% 
-                 sample_n(1000),
-             aes(x=longitude,y=latitude),
-             shape=3,
-             col="red",
-             alpha=0.2)
+# br %>% 
+#   ggplot() +
+#   geom_sf(fill = "white") +
+#     geom_point(data=oco2 %>% 
+#                  sample_n(1000),
+#              aes(x=longitude,y=latitude),
+#              shape=3,
+#              col="red",
+#              alpha=0.2)
 ```
 
 Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $37387$.
@@ -98,10 +170,6 @@ Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras d
 
 ```{r}
 # skim(oco2_br)
-```
-
-```{r}
-oco2 <- oco2_br
 ```
 
 
@@ -126,14 +194,14 @@ data_fco2 %>%
 ### Construindo o mapa com os pontos
 
 ```{r}
-br %>% 
-  ggplot() +
-  geom_sf(fill = "white") +
-    geom_point(data=oco2 %>% sample_n(1000),
-             aes(x=longitude,y=latitude),
-             shape=3,
-             col="red",
-             alpha=0.2)
+# br %>% 
+#   ggplot() +
+#   geom_sf(fill = "white") +
+#     geom_point(data=oco2 %>% sample_n(1000),
+#              aes(x=longitude,y=latitude),
+#              shape=3,
+#              col="red",
+#              alpha=0.2)
 ```
 
 Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$ amostras do total do banco de dados $146,646$.
@@ -381,7 +449,7 @@ visdat::vis_miss(bake(prep(fco2_recipe), new_data = NULL))
 ## TUNAGEM
 
 ```{r}
-fco2_resamples <- vfold_cv(fco2_train, v = 5)
+fco2_resamples <- vfold_cv(fco2_train, v = 10)
 grid <- grid_regular(
   penalty(range = c(-8, 0)),
   levels = 20
