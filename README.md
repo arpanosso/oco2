@@ -74,7 +74,7 @@ glimpse(dados_estacao)
 help(oco2_br)
 glimpse(fco2r::oco2_br)
 #> Rows: 37,387
-#> Columns: 32
+#> Columns: 18
 #> $ longitude                                                     <dbl> -70.5, -~
 #> $ longitude_bnds                                                <chr> "-71.0:-~
 #> $ latitude                                                      <dbl> -5.5, -4~
@@ -92,21 +92,7 @@ glimpse(fco2r::oco2_br)
 #> $ fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 3.088582~
 #> $ fluorescence_offset_relative_757nm_idp                        <dbl> 0.013969~
 #> $ fluorescence_radiance_771nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 5.577878~
-#> $ xco2                                                          <dbl> 394.3686~
-#> $ data                                                          <dttm> 2014-09~
-#> $ ano                                                           <dbl> 2014, 20~
-#> $ mes                                                           <dbl> 9, 9, 9,~
-#> $ dia                                                           <int> 6, 6, 6,~
-#> $ dia_semana                                                    <dbl> 7, 7, 7,~
-#> $ x                                                             <int> 7, 8, 11~
-#> $ xco2_est                                                      <dbl> 392.7080~
-#> $ delta                                                         <dbl> -1.66062~
 #> $ XCO2                                                          <dbl> 387.2781~
-#> $ flag_norte                                                    <lgl> TRUE, TR~
-#> $ flag_nordeste                                                 <lgl> FALSE, F~
-#> $ flag_sul                                                      <lgl> FALSE, F~
-#> $ flag_sudeste                                                  <lgl> FALSE, F~
-#> $ flag_centroeste                                               <lgl> FALSE, F~
 ```
 
 Inicialmente devemos transformar os dados de concentração de
@@ -151,12 +137,8 @@ oco2  %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-Extrair os coeficientes
-![\alpha](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Calpha "\alpha")
-e
-![\beta](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cbeta "\beta")
-da análise de regressão linear
-![(y=\alpha+\beta x)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%28y%3D%5Calpha%2B%5Cbeta%20x%29 "(y=\alpha+\beta x)").
+Extrair os coeficientes $\alpha$ e $\beta$ da análise de regressão
+linear $(y=\alpha+\beta x)$.
 
 ``` r
 modelo_linear_tendencia <- lm(xco2~data,
@@ -173,29 +155,29 @@ oco2 |>
     delta = xco2_est - xco2,
     XCO2 = (coefs[1]-delta) - (mean(xco2) - coefs[1])
   ) 
-#> # A tibble: 37,387 x 32
-#>    longitude longitude_bnds latitude latitude_bnds time_yyyymmddhhmmss
-#>        <dbl> <chr>             <dbl> <chr>                       <dbl>
-#>  1     -70.5 -71.0:-70.0        -5.5 -6.0:-5.0                 2.01e13
-#>  2     -70.5 -71.0:-70.0        -4.5 -5.0:-4.0                 2.01e13
-#>  3     -69.5 -70.0:-69.0       -10.5 -11.0:-10.0               2.01e13
-#>  4     -69.5 -70.0:-69.0        -9.5 -10.0:-9.0                2.01e13
-#>  5     -69.5 -70.0:-69.0        -8.5 -9.0:-8.0                 2.01e13
-#>  6     -69.5 -70.0:-69.0        -7.5 -8.0:-7.0                 2.01e13
-#>  7     -69.5 -70.0:-69.0        -6.5 -7.0:-6.0                 2.01e13
-#>  8     -69.5 -70.0:-69.0        -5.5 -6.0:-5.0                 2.01e13
-#>  9     -68.5 -69.0:-68.0       -10.5 -11.0:-10.0               2.01e13
-#> 10     -46.5 -47.0:-46.0        -1.5 -2.0:-1.0                 2.01e13
-#> # i 37,377 more rows
-#> # i 27 more variables: time_bnds_yyyymmddhhmmss <chr>, altitude_km <dbl>,
-#> #   alt_bnds_km <chr>,
-#> #   fluorescence_radiance_757nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl>,
+#> # A tibble: 37,387 x 26
+#>    longitude longitude~1 latit~2 latit~3 time_~4 time_~5 altit~6 alt_b~7 fluor~8
+#>        <dbl> <chr>         <dbl> <chr>     <dbl> <chr>     <dbl> <chr>     <dbl>
+#>  1     -70.5 -71.0:-70.0    -5.5 -6.0:-~ 2.01e13 201409~   3308. 0.0:66~ 7.27e17
+#>  2     -70.5 -71.0:-70.0    -4.5 -5.0:-~ 2.01e13 201409~   3308. 0.0:66~ 7.56e17
+#>  3     -69.5 -70.0:-69.0   -10.5 -11.0:~ 2.01e13 201409~   3308. 0.0:66~ 7.17e17
+#>  4     -69.5 -70.0:-69.0    -9.5 -10.0:~ 2.01e13 201409~   3308. 0.0:66~ 7.34e17
+#>  5     -69.5 -70.0:-69.0    -8.5 -9.0:-~ 2.01e13 201409~   3308. 0.0:66~ 7.68e17
+#>  6     -69.5 -70.0:-69.0    -7.5 -8.0:-~ 2.01e13 201409~   3308. 0.0:66~ 7.46e17
+#>  7     -69.5 -70.0:-69.0    -6.5 -7.0:-~ 2.01e13 201409~   3308. 0.0:66~ 7.40e17
+#>  8     -69.5 -70.0:-69.0    -5.5 -6.0:-~ 2.01e13 201409~   3308. 0.0:66~ 6.91e17
+#>  9     -68.5 -69.0:-68.0   -10.5 -11.0:~ 2.01e13 201409~   3308. 0.0:66~ 6.99e17
+#> 10     -46.5 -47.0:-46.0    -1.5 -2.0:-~ 2.01e13 201409~   3308. 0.0:66~ 7.74e17
+#> # ... with 37,377 more rows, 17 more variables:
 #> #   fluorescence_radiance_757nm_idp_ph_sec_1_m_2_sr_1_um_1 <dbl>,
 #> #   xco2_moles_mole_1 <dbl>, aerosol_total_aod <dbl>,
-#> #   fluorescence_offset_relative_771nm_idp <dbl>, ...
+#> #   fluorescence_offset_relative_771nm_idp <dbl>,
+#> #   fluorescence_at_reference_ph_sec_1_m_2_sr_1_um_1 <dbl>,
+#> #   fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1 <dbl>,
+#> #   fluorescence_offset_relative_757nm_idp <dbl>, ...
 glimpse(oco2)
 #> Rows: 37,387
-#> Columns: 32
+#> Columns: 24
 #> $ longitude                                                     <dbl> -70.5, -~
 #> $ longitude_bnds                                                <chr> "-71.0:-~
 #> $ latitude                                                      <dbl> -5.5, -4~
@@ -213,21 +195,13 @@ glimpse(oco2)
 #> $ fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 3.088582~
 #> $ fluorescence_offset_relative_757nm_idp                        <dbl> 0.013969~
 #> $ fluorescence_radiance_771nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 5.577878~
+#> $ XCO2                                                          <dbl> 387.2781~
 #> $ xco2                                                          <dbl> 394.3686~
 #> $ data                                                          <dttm> 2014-09~
 #> $ ano                                                           <dbl> 2014, 20~
 #> $ mes                                                           <dbl> 9, 9, 9,~
 #> $ dia                                                           <int> 6, 6, 6,~
 #> $ dia_semana                                                    <dbl> 7, 7, 7,~
-#> $ x                                                             <int> 7, 8, 11~
-#> $ xco2_est                                                      <dbl> 392.7080~
-#> $ delta                                                         <dbl> -1.66062~
-#> $ XCO2                                                          <dbl> 387.2781~
-#> $ flag_norte                                                    <lgl> TRUE, TR~
-#> $ flag_nordeste                                                 <lgl> FALSE, F~
-#> $ flag_sul                                                      <lgl> FALSE, F~
-#> $ flag_sudeste                                                  <lgl> FALSE, F~
-#> $ flag_centroeste                                               <lgl> FALSE, F~
 ```
 
 ``` r
@@ -270,10 +244,8 @@ oco2  %>%
 #              alpha=0.2)
 ```
 
-Observe que utilizamos `dplyr::sample_n()` para retirar apenas
-![1000](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;1000 "1000")
-amostras do total do banco de dados
-![37387](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;37387 "37387").
+Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$
+amostras do total do banco de dados $37387$.
 
 #### Estatísticas descritivas
 
@@ -355,10 +327,8 @@ data_fco2 %>%
 #              alpha=0.2)
 ```
 
-Observe que utilizamos `dplyr::sample_n()` para retirar apenas
-![1000](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;1000 "1000")
-amostras do total do banco de dados
-![146,646](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;146%2C646 "146,646").
+Observe que utilizamos `dplyr::sample_n()` para retirar apenas $1000$
+amostras do total do banco de dados $146,646$.
 
 #### Estatísticas descritivas
 
@@ -402,7 +372,7 @@ oco2 <- oco2  %>%
   ) %>% 
   glimpse()
 #> Rows: 37,387
-#> Columns: 33
+#> Columns: 25
 #> $ longitude                                                     <dbl> -70.5, -~
 #> $ longitude_bnds                                                <chr> "-71.0:-~
 #> $ latitude                                                      <dbl> -5.5, -4~
@@ -420,21 +390,13 @@ oco2 <- oco2  %>%
 #> $ fluorescence_radiance_771nm_idp_ph_sec_1_m_2_sr_1_um_1        <dbl> 3.088582~
 #> $ fluorescence_offset_relative_757nm_idp                        <dbl> 0.013969~
 #> $ fluorescence_radiance_771nm_uncert_idp_ph_sec_1_m_2_sr_1_um_1 <dbl> 5.577878~
+#> $ XCO2                                                          <dbl> 387.2781~
 #> $ xco2                                                          <dbl> 394.3686~
 #> $ data                                                          <date> 2014-09~
 #> $ ano                                                           <dbl> 2014, 20~
 #> $ mes                                                           <dbl> 9, 9, 9,~
 #> $ dia                                                           <dbl> 6, 6, 6,~
 #> $ dia_semana                                                    <dbl> 7, 7, 7,~
-#> $ x                                                             <int> 7, 8, 11~
-#> $ xco2_est                                                      <dbl> 392.7080~
-#> $ delta                                                         <dbl> -1.66062~
-#> $ XCO2                                                          <dbl> 387.2781~
-#> $ flag_norte                                                    <lgl> TRUE, TR~
-#> $ flag_nordeste                                                 <lgl> FALSE, F~
-#> $ flag_sul                                                      <lgl> FALSE, F~
-#> $ flag_sudeste                                                  <lgl> FALSE, F~
-#> $ flag_centroeste                                               <lgl> FALSE, F~
 #> $ mês                                                           <dbl> 9, 9, 9,~
 ```
 
@@ -629,43 +591,43 @@ fco2_train  %>%
 glimpse(fco2_train)
 #> Rows: 6,103
 #> Columns: 37
-#> $ ID        <int> 45, 24, 90, 18, 14, 11, 13, 6, 95, 47, 51, 23, 59, 45, 22, 1~
-#> $ data.x    <date> 2016-02-25, 2018-07-09, 2015-10-06, 2016-05-06, 2017-06-03,~
-#> $ cultura   <chr> "eucalipto", "pasto", "eucalipto", "pinus", "silvipastoril",~
-#> $ ano       <dbl> 2016, 2018, 2015, 2016, 2017, 2016, 2018, 2017, 2017, 2017, ~
-#> $ mes       <dbl> 2, 7, 10, 5, 6, 1, 7, 6, 3, 3, 9, 5, 5, 5, 5, 5, 6, 3, 6, 7,~
-#> $ x         <dbl> 0, 7747971, 30, 0, 40, 0, 7748008, 100, 70, 20, 7749399, 0, ~
-#> $ y         <dbl> 0.0, 456858.5, 90.0, 0.0, 10.0, 0.0, 456851.0, 0.0, 90.0, 30~
-#> $ FCO2      <dbl> 6.72, 0.81, 12.63, 3.14, 2.45, 2.04, 1.08, 2.83, 6.32, 4.95,~
-#> $ Ts        <dbl> 25.80000, 22.60000, 26.51197, 22.70000, 19.20000, 25.90000, ~
-#> $ Us        <dbl> 14.000000, 13.285927, 7.000000, 10.000000, 7.000000, 11.0000~
-#> $ MO        <dbl> 36.00, 19.00, 39.00, 17.00, 25.00, 21.00, 15.00, 30.00, 39.0~
-#> $ Macro     <dbl> 0.08391657, 0.18000000, 0.16400000, 0.04537568, NA, 0.034864~
-#> $ VTP       <dbl> 42.28709, 0.35000, 56.10190, 40.58146, NA, 45.64706, 0.39000~
-#> $ ARG       <dbl> 282.1974, 71.9700, NA, 323.9959, NA, 351.1699, 133.6000, NA,~
-#> $ ano_mes   <chr> "2016-2", "2018-7", "2015-10", "2016-5", "2017-6", "2016-1",~
-#> $ Tmed      <dbl> NA, 17.7, 27.4, 24.7, 22.0, 27.3, 17.7, 23.7, 28.4, 25.8, 25~
-#> $ Tmax      <dbl> NA, 21.1, 35.2, 33.7, 30.0, 32.8, 21.1, 31.5, 34.1, 33.6, 33~
-#> $ Tmin      <dbl> NA, 14.8, 20.3, 17.5, 15.4, 24.3, 14.8, 17.3, 22.6, 22.2, 17~
-#> $ Umed      <dbl> NA, 82.8, 62.3, 65.4, 74.7, 84.6, 82.8, 67.7, 73.3, 86.5, 58~
-#> $ Umax      <dbl> NA, 96.7, 87.4, 99.4, 90.8, 99.7, 96.7, 94.8, 95.3, 99.9, 83~
-#> $ Umin      <dbl> NA, 63.7, 41.2, 36.5, 54.7, 60.3, 63.7, 38.8, 52.0, 50.3, 37~
-#> $ PkPa      <dbl> NA, 98.1, 97.4, 97.6, 97.8, 97.3, 98.1, 97.6, 97.3, 97.3, 97~
-#> $ Rad       <dbl> NA, 3.9, 21.5, 16.1, 13.8, 18.9, 3.9, 13.7, 20.5, 14.9, 18.0~
-#> $ Eto       <dbl> NA, 1.6, 5.7, 3.8, 2.8, 4.7, 1.6, 3.1, 4.7, 3.5, 4.9, 3.8, 2~
-#> $ Velmax    <dbl> NA, 6.1, 7.3, 5.5, 4.6, 10.5, 6.1, 5.2, 5.2, 5.2, 7.2, 5.5, ~
-#> $ Velmin    <dbl> NA, 2.1, 2.0, 1.3, 1.2, 2.2, 2.1, 1.2, 1.2, 0.7, 1.9, 1.3, 0~
-#> $ Dir_vel   <dbl> NA, 237.1, 130.0, 99.0, 93.0, 54.7, 237.1, 72.5, 78.4, 264.9~
-#> $ chuva     <dbl> NA, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0~
-#> $ inso      <dbl> NA, 0.0, 7.5, 8.3, 8.2, 4.2, 0.0, 8.0, 7.5, 3.6, 7.3, 8.3, 6~
-#> $ data.y    <date> 2016-02-26, 2018-07-18, 2015-10-21, 2016-05-09, 2017-06-29,~
-#> $ mês       <dbl> 2, 7, 10, 5, 6, 1, 7, 6, 3, 3, 9, 5, 5, 5, 5, 5, 6, 3, 6, 7,~
-#> $ dia       <dbl> 26, 18, 21, 9, 29, 2, 9, 29, 16, 25, 30, 9, 6, 25, 15, 15, 2~
+#> $ ID        <int> 15, 10, 64, 47, 13, 15, 7, 36, 84, 51, 69, 63, 60, 14, 63, 4~
+#> $ data.x    <date> 2017-06-10, 2018-07-03, 2017-06-17, 2018-05-31, 2019-11-02,~
+#> $ cultura   <chr> "silvipastoril", "silvipastoril", "silvipastoril", "pasto", ~
+#> $ ano       <dbl> 2017, 2018, 2017, 2018, 2019, 2018, 2016, 2017, 2017, 2019, ~
+#> $ mes       <dbl> 6, 7, 6, 5, 11, 9, 1, 2, 6, 7, 6, 7, 5, 2, 10, 6, 6, 7, 4, 7~
+#> $ x         <dbl> 50, 7749460, 15, 7747931, 7749399, 7749399, 0, 30, 80, 77493~
+#> $ y         <dbl> 10.0, 457257.5, 40.0, 456878.5, 457163.2, 457163.2, 0.0, 30.~
+#> $ FCO2      <dbl> 2.26, 1.71, 2.98, 1.37, 2.35, 0.94, 3.89, 4.56, 2.44, 1.59, ~
+#> $ Ts        <dbl> 20.00000, 18.90000, 25.00000, 24.90000, 28.70000, 21.80000, ~
+#> $ Us        <dbl> 19.900000, 17.631569, 22.200000, 10.584581, 8.100000, 5.6000~
+#> $ MO        <dbl> 33, 31, 30, 16, 6, 5, 27, 35, 30, 5, 18, 16, 27, 25, 28, 6, ~
+#> $ Macro     <dbl> 12.01000000, 6.59000000, NA, 0.18000000, 16.50000000, 12.010~
+#> $ VTP       <dbl> 52.20000, 51.21000, NA, 0.35000, 57.02000, 52.20000, 36.5567~
+#> $ ARG       <dbl> NA, 645.9800, NA, 129.9800, NA, NA, 266.6667, NA, NA, NA, 14~
+#> $ ano_mes   <chr> "2017-6", "2018-7", "2017-6", "2018-5", "2019-11", "2018-9",~
+#> $ Tmed      <dbl> 13.7, 23.4, 23.7, 24.6, 29.8, 18.0, 27.3, 27.1, 13.7, 22.6, ~
+#> $ Tmax      <dbl> 20.7, 33.1, 31.5, 30.9, 37.7, 26.3, 32.8, 34.4, 20.7, 32.5, ~
+#> $ Tmin      <dbl> 8.0, 15.9, 17.3, 19.5, 23.2, 11.4, 24.3, 20.5, 8.0, 15.4, 15~
+#> $ Umed      <dbl> 72.6, 67.5, 67.7, 57.0, 62.8, 71.1, 84.6, 75.4, 72.6, 72.2, ~
+#> $ Umax      <dbl> 95.7, 98.0, 94.8, 74.0, 88.5, 99.3, 99.7, 99.1, 95.7, 100.0,~
+#> $ Umin      <dbl> 40.8, 34.1, 38.8, 36.2, 35.3, 42.2, 60.3, 47.3, 40.8, 36.2, ~
+#> $ PkPa      <dbl> 98.1, 97.6, 97.6, 97.6, 97.2, 97.7, 97.3, 97.5, 98.1, 98.1, ~
+#> $ Rad       <dbl> 14.8, 12.7, 13.7, 12.7, 19.5, 13.6, 18.9, 22.3, 14.8, 10.7, ~
+#> $ Eto       <dbl> 2.2, 2.6, 3.1, 3.4, 5.1, 3.3, 4.7, 4.8, 2.2, 2.5, 2.3, 2.8, ~
+#> $ Velmax    <dbl> 4.6, 4.3, 5.2, 4.9, 6.0, 6.5, 10.5, 4.9, 4.6, 3.4, 3.9, 4.3,~
+#> $ Velmin    <dbl> 1.0, 0.6, 1.2, 1.5, 1.0, 1.7, 2.2, 0.7, 1.0, 0.7, 1.1, 0.8, ~
+#> $ Dir_vel   <dbl> 213.8, 312.6, 72.5, 80.7, 70.4, 233.6, 54.7, 33.8, 213.8, 24~
+#> $ chuva     <dbl> 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, ~
+#> $ inso      <dbl> 9.0, 5.6, 8.0, 7.1, 6.8, 4.0, 4.2, 7.2, 9.0, 3.6, 4.7, 5.5, ~
+#> $ data.y    <date> 2017-06-20, 2018-07-09, 2017-06-20, 2018-05-06, 2019-11-01,~
+#> $ mês       <dbl> 6, 7, 6, 5, 11, 9, 1, 2, 6, 7, 6, 7, 5, 2, 10, 6, 6, 7, 4, 7~
+#> $ dia       <dbl> 20, 9, 20, 6, 1, 11, 25, 12, 20, 5, 16, 18, 15, 12, 21, 20, ~
 #> $ longitude <dbl> -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.5, -51.~
 #> $ latitude  <dbl> -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.5, -20.~
-#> $ XCO2      <dbl> 383.5738, 388.2893, 384.3260, 389.9741, 386.6562, 384.9647, ~
+#> $ XCO2      <dbl> 386.2278, 381.6135, 386.2278, 385.5825, 386.8944, 389.6532, ~
 #> $ dist      <dbl> 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.1569801, 0.156~
-#> $ SIF       <dbl> 1.12135961, 0.17194793, 1.04607328, -0.17171688, -0.08236333~
+#> $ SIF       <dbl> 0.46547278, 0.31308794, 0.46547278, 0.12510317, 0.74781438, ~
 fco2_train   %>%    select(-c(ID,ano,mes,x,y,latitude,longitude,dist,mês,dia)) %>% 
   select(where(is.numeric)) %>%
   drop_na() %>% 
@@ -690,24 +652,23 @@ fco2_recipe <- recipe(FCO2 ~ ., data = fco2_train %>%
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_recipe), new_data = NULL)
 #> # A tibble: 6,103 x 29
-#>          Ts       Us     MO  Macro    VTP     ARG    Tmed    Tmax   Tmin   Umed
-#>       <dbl>    <dbl>  <dbl>  <dbl>  <dbl>   <dbl>   <dbl>   <dbl>  <dbl>  <dbl>
-#>  1  0.526    0.00436  1.36  -0.742  0.372 -0.193  NA      NA      NA     NA    
-#>  2 -0.0248  -0.0934  -0.323 -0.726 -1.56  -1.30   -1.43   -2.18   -0.715  1.30 
-#>  3  0.649   -0.954    1.66  -0.728  1.01  NA       0.783   0.806   0.521 -0.818
-#>  4 -0.00753 -0.543   -0.521 -0.748  0.293  0.0268  0.168   0.488  -0.108 -0.498
-#>  5 -0.610   -0.954    0.273 NA     NA     NA      -0.447  -0.295  -0.580  0.463
-#>  6  0.544   -0.406   -0.124 -0.750  0.526  0.170   0.760   0.298   1.42   1.49 
-#>  7 -0.231    0.0996  -0.720 -0.717 -1.55  -0.974  -1.43   -2.18   -0.715  1.30 
-#>  8 -1.16     1.03     0.769 NA     NA     NA      -0.0597  0.0225 -0.153 -0.260
-#>  9  0.923    0.351    1.66  NA     NA     NA       1.01    0.573   1.04   0.319
-#> 10  0.141    2.32     0.570 NA     NA     NA       0.418   0.467   0.948  1.68 
-#> # i 6,093 more rows
-#> # i 19 more variables: Umax <dbl>, Umin <dbl>, PkPa <dbl>, Rad <dbl>,
-#> #   Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>, chuva <dbl>,
-#> #   inso <dbl>, XCO2 <dbl>, SIF <dbl>, FCO2 <dbl>, cultura_eucalipto <dbl>,
-#> #   cultura_mata.ciliar <dbl>, cultura_pasto <dbl>, cultura_pinus <dbl>,
-#> #   cultura_silvipastoril <dbl>, cultura_new <dbl>
+#>        Ts       Us     MO  Macro    VTP    ARG    Tmed    Tmax   Tmin   Umed
+#>     <dbl>    <dbl>  <dbl>  <dbl>  <dbl>  <dbl>   <dbl>   <dbl>  <dbl>  <dbl>
+#>  1 -0.461  0.804    1.08   1.22   0.820 NA     -2.34   -2.27   -2.24   0.256
+#>  2 -0.650  0.494    0.883  0.320  0.775  1.69  -0.123   0.360  -0.459 -0.271
+#>  3  0.403  1.12     0.784 NA     NA     NA     -0.0540  0.0201 -0.144 -0.250
+#>  4  0.385 -0.470   -0.606 -0.743 -1.55  -0.989  0.152  -0.107   0.351 -1.36 
+#>  5  1.04  -0.810   -1.60   1.96   1.04  NA      1.34    1.34    1.18  -0.757
+#>  6 -0.150 -1.15    -1.70   1.22   0.820 NA     -1.36   -1.08   -1.47   0.101
+#>  7  0.558 -0.00317  0.486 -0.769  0.104 -0.279  0.769   0.296   1.43   1.50 
+#>  8  0.782 -0.00317  1.28  NA     NA     NA      0.723   0.636   0.576  0.546
+#>  9 -0.806  0.694    0.784 NA     NA     NA     -2.34   -2.27   -2.24   0.256
+#> 10 -0.184 -0.290   -1.70   1.03   0.803 NA     -0.305   0.232  -0.572  0.215
+#> # ... with 6,093 more rows, and 19 more variables: Umax <dbl>, Umin <dbl>,
+#> #   PkPa <dbl>, Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>,
+#> #   Dir_vel <dbl>, chuva <dbl>, inso <dbl>, XCO2 <dbl>, SIF <dbl>, FCO2 <dbl>,
+#> #   cultura_eucalipto <dbl>, cultura_mata.ciliar <dbl>, cultura_pasto <dbl>,
+#> #   cultura_pinus <dbl>, cultura_silvipastoril <dbl>, cultura_new <dbl>
 ```
 
 ``` r
@@ -756,9 +717,9 @@ grid_dt <- grid_random(
 glimpse(grid_dt)
 #> Rows: 2
 #> Columns: 3
-#> $ cost_complexity <dbl> 1.539228e-05, 1.403220e-06
-#> $ tree_depth      <int> 8, 8
-#> $ min_n           <int> 51, 42
+#> $ cost_complexity <dbl> 2.496174e-06, 2.318892e-05
+#> $ tree_depth      <int> 17, 10
+#> $ min_n           <int> 43, 48
 ```
 
 ``` r
@@ -779,11 +740,11 @@ autoplot(fco2_dt_tune_grid)
 ``` r
 collect_metrics(fco2_dt_tune_grid)
 #> # A tibble: 2 x 9
-#>   cost_complexity tree_depth min_n .metric .estimator  mean     n std_err
-#>             <dbl>      <int> <int> <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1      0.0000154           8    51 rmse    standard    1.32    10  0.0359
-#> 2      0.00000140          8    42 rmse    standard    1.32    10  0.0375
-#> # i 1 more variable: .config <chr>
+#>   cost_complexity tree_depth min_n .metric .estima~1  mean     n std_err .config
+#>             <dbl>      <int> <int> <chr>   <chr>     <dbl> <int>   <dbl> <chr>  
+#> 1      0.00000250         17    43 rmse    standard   1.26    10  0.0349 Prepro~
+#> 2      0.0000232          10    48 rmse    standard   1.27    10  0.0323 Prepro~
+#> # ... with abbreviated variable name 1: .estimator
 ```
 
 ## Desempenho dos modelos finais
@@ -907,24 +868,23 @@ fco2_rf_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>%
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_rf_recipe), new_data = NULL)
 #> # A tibble: 5,459 x 26
-#>         Ts   XCO2     SIF     Us     MO    Tmed    Tmax   Tmin   Umed   Umax
-#>      <dbl>  <dbl>   <dbl>  <dbl>  <dbl>   <dbl>   <dbl>  <dbl>  <dbl>  <dbl>
-#>  1  0.365   0.556 -0.427  -1.70  -0.183  1.04    1.22    0.935  0.311  0.475
-#>  2  0.0824  0.108  0.118  -0.924  0.869 -0.0468  0.0348 -0.141 -0.250  0.288
-#>  3 -1.56   -0.185 -0.525   1.43   0.964 -1.39   -0.960  -1.84  -0.770  0.748
-#>  4  1.06   -0.162  2.28   -0.441  0.964  0.726   0.649   0.576  0.550  0.906
-#>  5  0.796   1.28  -1.26   -0.832 -0.565 -0.183  -0.0498 -0.320 -0.936 -0.776
-#>  6 -1.01    1.05  -0.437   0.903  0.678 -1.84   -2.02   -1.35  -0.385 -1.06 
-#>  7  1.08   -0.162  2.28   -0.712  0.773  1.27    0.797   1.41   0.259 -0.316
-#>  8  0.365   0.472  0.0807 -1.70  -0.183  1.04    1.22    0.935  0.311  0.475
-#>  9  0.913   1.90  -0.387   0.399 -1.52  -0.274  -0.0922 -0.477 -1.28  -0.158
-#> 10 -1.01   -1.99  -0.170   0.903  0.678 -1.84   -2.02   -1.35  -0.385 -1.06 
-#> # i 5,449 more rows
-#> # i 16 more variables: Umin <dbl>, PkPa <dbl>, Rad <dbl>, Eto <dbl>,
-#> #   Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>, chuva <dbl>, inso <dbl>,
-#> #   FCO2 <dbl>, cultura_eucalipto <dbl>, cultura_mata.ciliar <dbl>,
-#> #   cultura_pasto <dbl>, cultura_pinus <dbl>, cultura_silvipastoril <dbl>,
-#> #   cultura_new <dbl>
+#>         Ts   XCO2     SIF     Us      MO    Tmed    Tmax    Tmin   Umed   Umax
+#>      <dbl>  <dbl>   <dbl>  <dbl>   <dbl>   <dbl>   <dbl>   <dbl>  <dbl>  <dbl>
+#>  1  0.303   0.102  0.115   1.05   0.685  -0.0462  0.0332 -0.138  -0.256  0.277
+#>  2  0.953  -0.168  2.27   -0.578  2.22    0.731   0.650   0.582   0.546  0.904
+#>  3 -0.662  -1.99  -0.173   0.569  0.685  -0.115   0.374  -0.454  -0.277  0.744
+#>  4  0.736   0.404  0.648  -1.27  -0.0838  0.594   0.757   1.08    1.20   0.481
+#>  5  0.237   1.27  -1.26   -0.291 -0.757  -0.869  -1.05   -0.476   0.619  0.700
+#>  6  0.886  -0.761  1.21   -1.39  -0.276   1.35    1.50    1.12   -0.163 -0.408
+#>  7  0.503   0.548 -0.430  -1.61   0.589   1.05    1.23    0.943   0.307  0.467
+#>  8  0.0371  0.464  0.0779 -1.51   0.0123  0.297   0.352  -0.0707 -1.18  -1.39 
+#>  9 -0.479   1.27  -1.26    0.394  0.493  -0.549  -0.265  -0.746   0.630  1.04 
+#> 10  0.684  -0.761  1.21   -0.984  0.685   0.800   0.821   0.537  -0.820 -0.802
+#> # ... with 5,449 more rows, and 16 more variables: Umin <dbl>, PkPa <dbl>,
+#> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
+#> #   chuva <dbl>, inso <dbl>, FCO2 <dbl>, cultura_eucalipto <dbl>,
+#> #   cultura_mata.ciliar <dbl>, cultura_pasto <dbl>, cultura_pinus <dbl>,
+#> #   cultura_silvipastoril <dbl>, cultura_new <dbl>
 visdat::vis_miss(bake(prep(fco2_rf_recipe), new_data = NULL))
 ```
 
@@ -980,8 +940,8 @@ collect_metrics(fco2_rf_tune_grid)
 #> # A tibble: 2 x 9
 #>    mtry trees min_n .metric .estimator  mean     n std_err .config             
 #>   <int> <int> <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1    10  1129    30 rmse    standard    1.15     5  0.0180 Preprocessor1_Model1
-#> 2    19  1335    25 rmse    standard    1.13     5  0.0214 Preprocessor1_Model2
+#> 1    18   991    20 rmse    standard    1.15     5  0.0166 Preprocessor1_Model1
+#> 2    12  1439    27 rmse    standard    1.16     5  0.0149 Preprocessor1_Model2
 ```
 
 ## Desempenho dos modelos finais
@@ -1059,24 +1019,23 @@ fco2_xgb_recipe <- recipe(FCO2 ~ ., data = fco2_train) %>%
   step_dummy(all_nominal_predictors())
 bake(prep(fco2_xgb_recipe), new_data = NULL)
 #> # A tibble: 5,459 x 26
-#>         Ts   XCO2     SIF     Us     MO    Tmed    Tmax   Tmin   Umed   Umax
-#>      <dbl>  <dbl>   <dbl>  <dbl>  <dbl>   <dbl>   <dbl>  <dbl>  <dbl>  <dbl>
-#>  1  0.365   0.556 -0.427  -1.70  -0.183  1.04    1.22    0.935  0.311  0.475
-#>  2  0.0824  0.108  0.118  -0.924  0.869 -0.0468  0.0348 -0.141 -0.250  0.288
-#>  3 -1.56   -0.185 -0.525   1.43   0.964 -1.39   -0.960  -1.84  -0.770  0.748
-#>  4  1.06   -0.162  2.28   -0.441  0.964  0.726   0.649   0.576  0.550  0.906
-#>  5  0.796   1.28  -1.26   -0.832 -0.565 -0.183  -0.0498 -0.320 -0.936 -0.776
-#>  6 -1.01    1.05  -0.437   0.903  0.678 -1.84   -2.02   -1.35  -0.385 -1.06 
-#>  7  1.08   -0.162  2.28   -0.712  0.773  1.27    0.797   1.41   0.259 -0.316
-#>  8  0.365   0.472  0.0807 -1.70  -0.183  1.04    1.22    0.935  0.311  0.475
-#>  9  0.913   1.90  -0.387   0.399 -1.52  -0.274  -0.0922 -0.477 -1.28  -0.158
-#> 10 -1.01   -1.99  -0.170   0.903  0.678 -1.84   -2.02   -1.35  -0.385 -1.06 
-#> # i 5,449 more rows
-#> # i 16 more variables: Umin <dbl>, PkPa <dbl>, Rad <dbl>, Eto <dbl>,
-#> #   Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>, chuva <dbl>, inso <dbl>,
-#> #   FCO2 <dbl>, cultura_eucalipto <dbl>, cultura_mata.ciliar <dbl>,
-#> #   cultura_pasto <dbl>, cultura_pinus <dbl>, cultura_silvipastoril <dbl>,
-#> #   cultura_new <dbl>
+#>         Ts   XCO2     SIF     Us      MO    Tmed    Tmax    Tmin   Umed   Umax
+#>      <dbl>  <dbl>   <dbl>  <dbl>   <dbl>   <dbl>   <dbl>   <dbl>  <dbl>  <dbl>
+#>  1  0.303   0.102  0.115   1.05   0.685  -0.0462  0.0332 -0.138  -0.256  0.277
+#>  2  0.953  -0.168  2.27   -0.578  2.22    0.731   0.650   0.582   0.546  0.904
+#>  3 -0.662  -1.99  -0.173   0.569  0.685  -0.115   0.374  -0.454  -0.277  0.744
+#>  4  0.736   0.404  0.648  -1.27  -0.0838  0.594   0.757   1.08    1.20   0.481
+#>  5  0.237   1.27  -1.26   -0.291 -0.757  -0.869  -1.05   -0.476   0.619  0.700
+#>  6  0.886  -0.761  1.21   -1.39  -0.276   1.35    1.50    1.12   -0.163 -0.408
+#>  7  0.503   0.548 -0.430  -1.61   0.589   1.05    1.23    0.943   0.307  0.467
+#>  8  0.0371  0.464  0.0779 -1.51   0.0123  0.297   0.352  -0.0707 -1.18  -1.39 
+#>  9 -0.479   1.27  -1.26    0.394  0.493  -0.549  -0.265  -0.746   0.630  1.04 
+#> 10  0.684  -0.761  1.21   -0.984  0.685   0.800   0.821   0.537  -0.820 -0.802
+#> # ... with 5,449 more rows, and 16 more variables: Umin <dbl>, PkPa <dbl>,
+#> #   Rad <dbl>, Eto <dbl>, Velmax <dbl>, Velmin <dbl>, Dir_vel <dbl>,
+#> #   chuva <dbl>, inso <dbl>, FCO2 <dbl>, cultura_eucalipto <dbl>,
+#> #   cultura_mata.ciliar <dbl>, cultura_pasto <dbl>, cultura_pinus <dbl>,
+#> #   cultura_silvipastoril <dbl>, cultura_new <dbl>
 visdat::vis_miss(bake(prep(fco2_xgb_recipe), new_data = NULL))
 ```
 
@@ -1147,12 +1106,12 @@ fco2_xgb_tune_grid   %>%   show_best(metric = "rmse", n = 6)
 #> # A tibble: 6 x 8
 #>   trees learn_rate .metric .estimator  mean     n std_err .config             
 #>   <dbl>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1   500       0.05 rmse    standard    1.20    10  0.0363 Preprocessor1_Model3
-#> 2   250       0.05 rmse    standard    1.21    10  0.0359 Preprocessor1_Model2
-#> 3   250       0.3  rmse    standard    1.23    10  0.0354 Preprocessor1_Model5
-#> 4   500       0.3  rmse    standard    1.24    10  0.0345 Preprocessor1_Model6
-#> 5     2       0.3  rmse    standard    2.07    10  0.0446 Preprocessor1_Model4
-#> 6     2       0.05 rmse    standard    3.16    10  0.0461 Preprocessor1_Model1
+#> 1   500       0.05 rmse    standard    1.19    10  0.0298 Preprocessor1_Model3
+#> 2   250       0.05 rmse    standard    1.20    10  0.0292 Preprocessor1_Model2
+#> 3   250       0.3  rmse    standard    1.21    10  0.0314 Preprocessor1_Model5
+#> 4   500       0.3  rmse    standard    1.23    10  0.0349 Preprocessor1_Model6
+#> 5     2       0.3  rmse    standard    2.05    10  0.0318 Preprocessor1_Model4
+#> 6     2       0.05 rmse    standard    3.13    10  0.0330 Preprocessor1_Model1
 ```
 
 ``` r
@@ -1216,11 +1175,11 @@ fco2_xgb_tune_grid  %>%   show_best(metric = "rmse", n = 5)
 #> # A tibble: 5 x 8
 #>   min_n tree_depth .metric .estimator  mean     n std_err .config             
 #>   <dbl>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1     5          4 rmse    standard    1.20    10  0.0370 Preprocessor1_Model3
-#> 2    30          4 rmse    standard    1.22    10  0.0373 Preprocessor1_Model6
-#> 3     5          3 rmse    standard    1.22    10  0.0344 Preprocessor1_Model2
-#> 4    60          4 rmse    standard    1.23    10  0.0379 Preprocessor1_Model9
-#> 5    30          3 rmse    standard    1.24    10  0.0364 Preprocessor1_Model5
+#> 1     5          4 rmse    standard    1.19    10  0.0291 Preprocessor1_Model3
+#> 2    30          4 rmse    standard    1.21    10  0.0279 Preprocessor1_Model6
+#> 3     5          3 rmse    standard    1.21    10  0.0285 Preprocessor1_Model2
+#> 4    30          3 rmse    standard    1.22    10  0.0283 Preprocessor1_Model5
+#> 5    60          4 rmse    standard    1.22    10  0.0280 Preprocessor1_Model9
 fco2_xgb_select_best_passo2 <- fco2_xgb_tune_grid  %>%   select_best(metric = "rmse")
 fco2_xgb_select_best_passo2
 #> # A tibble: 1 x 3
@@ -1275,17 +1234,17 @@ fco2_xgb_tune_grid   %>%   show_best(metric = "rmse", n = 5)
 #> # A tibble: 5 x 7
 #>   loss_reduction .metric .estimator  mean     n std_err .config             
 #>            <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1           0.05 rmse    standard    1.20    10  0.0356 Preprocessor1_Model2
-#> 2           1    rmse    standard    1.20    10  0.0369 Preprocessor1_Model3
-#> 3           2    rmse    standard    1.20    10  0.0367 Preprocessor1_Model4
-#> 4           4    rmse    standard    1.20    10  0.0365 Preprocessor1_Model5
-#> 5           0.01 rmse    standard    1.21    10  0.0373 Preprocessor1_Model1
+#> 1           0.01 rmse    standard    1.19    10  0.0289 Preprocessor1_Model1
+#> 2           1    rmse    standard    1.19    10  0.0285 Preprocessor1_Model3
+#> 3           0.05 rmse    standard    1.19    10  0.0299 Preprocessor1_Model2
+#> 4           2    rmse    standard    1.19    10  0.0291 Preprocessor1_Model4
+#> 5           4    rmse    standard    1.19    10  0.0287 Preprocessor1_Model5
 fco2_xgb_select_best_passo3 <- fco2_xgb_tune_grid %>% select_best(metric = "rmse")
 fco2_xgb_select_best_passo3
 #> # A tibble: 1 x 2
 #>   loss_reduction .config             
 #>            <dbl> <chr>               
-#> 1           0.05 Preprocessor1_Model2
+#> 1           0.01 Preprocessor1_Model1
 ```
 
 #### Passo 4:
@@ -1343,10 +1302,10 @@ fco2_xgb_tune_grid  |>  show_best(metric = "rmse", n = 5)
 #> # A tibble: 4 x 8
 #>    mtry sample_size .metric .estimator  mean     n std_err .config             
 #>   <dbl>       <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1   1           1   rmse    standard    1.21    10  0.0363 Preprocessor1_Model4
-#> 2   1           0.5 rmse    standard    1.22    10  0.0352 Preprocessor1_Model3
-#> 3   0.1         1   rmse    standard    1.23    10  0.0336 Preprocessor1_Model2
-#> 4   0.1         0.5 rmse    standard    1.23    10  0.0333 Preprocessor1_Model1
+#> 1   1           1   rmse    standard    1.19    10  0.0292 Preprocessor1_Model4
+#> 2   1           0.5 rmse    standard    1.20    10  0.0285 Preprocessor1_Model3
+#> 3   0.1         1   rmse    standard    1.22    10  0.0287 Preprocessor1_Model2
+#> 4   0.1         0.5 rmse    standard    1.22    10  0.0284 Preprocessor1_Model1
 fco2_xgb_select_best_passo4 <- fco2_xgb_tune_grid   %>%   select_best(metric = "rmse")
 fco2_xgb_select_best_passo4
 #> # A tibble: 1 x 3
@@ -1403,17 +1362,17 @@ fco2_xgb_tune_grid  %>%   show_best(metric = "rmse", n = 5)
 #> # A tibble: 5 x 8
 #>   trees learn_rate .metric .estimator  mean     n std_err .config              
 #>   <dbl>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>                
-#> 1   500       0.25 rmse    standard    1.18    10  0.0372 Preprocessor1_Model12
-#> 2   250       0.25 rmse    standard    1.18    10  0.0372 Preprocessor1_Model11
-#> 3   500       0.15 rmse    standard    1.18    10  0.0379 Preprocessor1_Model09
-#> 4   500       0.1  rmse    standard    1.19    10  0.0386 Preprocessor1_Model06
-#> 5   250       0.15 rmse    standard    1.20    10  0.0376 Preprocessor1_Model08
+#> 1   250       0.25 rmse    standard    1.17    10  0.0305 Preprocessor1_Model11
+#> 2   500       0.25 rmse    standard    1.18    10  0.0340 Preprocessor1_Model12
+#> 3   500       0.1  rmse    standard    1.18    10  0.0303 Preprocessor1_Model06
+#> 4   500       0.15 rmse    standard    1.18    10  0.0310 Preprocessor1_Model09
+#> 5   100       0.25 rmse    standard    1.19    10  0.0284 Preprocessor1_Model10
 fco2_xgb_select_best_passo5 <- fco2_xgb_tune_grid   %>%   select_best(metric = "rmse")
 fco2_xgb_select_best_passo5
 #> # A tibble: 1 x 3
 #>   trees learn_rate .config              
 #>   <dbl>      <dbl> <chr>                
-#> 1   500       0.25 Preprocessor1_Model12
+#> 1   250       0.25 Preprocessor1_Model11
 ```
 
 ### Desempenho dos modelos finais
